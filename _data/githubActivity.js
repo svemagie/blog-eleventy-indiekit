@@ -219,10 +219,11 @@ export default async function () {
     console.log("[githubActivity] Fetching GitHub data...");
 
     // Try Indiekit public API first
-    const [indiekitStars, indiekitCommits, indiekitActivity, indiekitFeatured] =
+    const [indiekitStars, indiekitCommits, indiekitContributions, indiekitActivity, indiekitFeatured] =
       await Promise.all([
         fetchFromIndiekit("stars"),
         fetchFromIndiekit("commits"),
+        fetchFromIndiekit("contributions"),
         fetchFromIndiekit("activity"),
         fetchFromIndiekit("featured"),
       ]);
@@ -238,6 +239,7 @@ export default async function () {
       return {
         stars: indiekitStars?.stars || [],
         commits: indiekitCommits?.commits || [],
+        contributions: indiekitContributions?.contributions || [],
         activity: indiekitActivity?.activity || [],
         featured: indiekitFeatured?.featured || [],
         source: "indiekit",
