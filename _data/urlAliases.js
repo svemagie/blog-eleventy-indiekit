@@ -74,20 +74,38 @@ function mergeAliases(...maps) {
   return merged;
 }
 
-// Parse redirect maps from package root (one level up from _data)
+// Parse redirect maps from /app/pkg (Docker) or parent directory (local dev)
+// In Docker: eleventy-site is at /app/pkg/eleventy-site, maps are at /app/pkg/
+// In local dev: maps might be at ../
 const pkgRoot = resolve(__dirname, "../..");
 
-// Try multiple possible locations
-const mapLocations = [
-  resolve(pkgRoot, "redirects.map.rmendes"),
-  resolve(pkgRoot, "old-blog-redirects.map.rmendes"),
-  // Fallback to template files if .rmendes versions don't exist
-  resolve(pkgRoot, "redirects.map"),
-  resolve(pkgRoot, "old-blog-redirects.map"),
-];
+// Helper to find first existing file
+function findFile(candidates) {
+  for (const path of candidates) {
+    if (existsSync(path)) {
+      console.log(`[urlAliases] Found: ${path}`);
+      return path;
+    }
+  }
+  console.log(`[urlAliases] No file found in: ${candidates.join(", ")}`);
+  return null;
+}
 
-const microblogAliases = parseRedirectMap(mapLocations[0]) || parseRedirectMap(mapLocations[2]);
-const knownAliases = parseRedirectMap(mapLocations[1]) || parseRedirectMap(mapLocations[3]);
+// Try multiple possible locations for each map type
+const microblogMapPath = findFile([
+  resolve(pkgRoot, "redirects.map"),
+  resolve(pkgRoot, "redirects.map.rmendes"),
+  resolve(__dirname, "../../redirects.map"),
+]);
+
+const knownMapPath = findFile([
+  resolve(pkgRoot, "old-blog-redirects.map"),
+  resolve(pkgRoot, "old-blog-redirects.map.rmendes"),
+  resolve(__dirname, "../../old-blog-redirects.map"),
+]);
+
+const microblogAliases = microblogMapPath ? parseRedirectMap(microblogMapPath) : {};
+const knownAliases = knownMapPath ? parseRedirectMap(knownMapPath) : {};
 
 const allAliases = mergeAliases(microblogAliases, knownAliases);
 
