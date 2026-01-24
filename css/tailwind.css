@@ -293,6 +293,7 @@
   /* Pre/code blocks - prevent overflow on mobile */
   pre {
     @apply overflow-x-auto max-w-full;
+    -webkit-overflow-scrolling: touch;
   }
 
   code {
@@ -313,5 +314,43 @@
   .post-list li {
     content-visibility: auto;
     contain-intrinsic-size: auto 200px;
+  }
+
+  /* Tables - responsive handling */
+  table {
+    @apply w-full;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Ensure truncate works properly in flex containers */
+  .truncate {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap;
+  }
+
+  /* Video embeds - maintain aspect ratio */
+  lite-youtube,
+  iframe[src*="youtube"],
+  iframe[src*="vimeo"] {
+    @apply max-w-full;
+  }
+}
+
+/* Mobile-specific improvements */
+@layer utilities {
+  /* Ensure proper touch scrolling on overflow containers */
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide scrollbar but allow scrolling */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }

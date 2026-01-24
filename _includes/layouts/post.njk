@@ -4,10 +4,10 @@ withBlogSidebar: true
 ---
 <article class="h-entry post">
   {% if title %}
-  <h1 class="p-name text-3xl font-bold text-surface-900 dark:text-surface-100 mb-4">{{ title }}</h1>
+  <h1 class="p-name text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-3 sm:mb-4">{{ title }}</h1>
   {% endif %}
 
-  <div class="post-meta mb-6">
+  <div class="post-meta mb-4 sm:mb-6">
     <time class="dt-published" datetime="{{ date.toISOString() }}">
       {{ date | dateDisplay }}
     </time>

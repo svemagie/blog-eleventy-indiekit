@@ -9,8 +9,8 @@ pagination:
 permalink: "notes/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
 ---
 <div class="h-feed">
-  <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">Notes</h1>
-  <p class="text-surface-600 dark:text-surface-400 mb-8">
+  <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">Notes</h1>
+  <p class="text-surface-600 dark:text-surface-400 mb-6 sm:mb-8">
     Short thoughts, updates, and quick posts.
     <span class="text-sm">({{ collections.notes.length }} total)</span>
   </p>

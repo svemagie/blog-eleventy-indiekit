@@ -4,25 +4,25 @@ withSidebar: true
 ---
 
 {# Hero Section #}
-<section class="mb-12">
-  <div class="flex flex-col md:flex-row gap-8 items-start">
+<section class="mb-8 sm:mb-12">
+  <div class="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
     {# Avatar #}
     <img
       src="{{ site.author.avatar }}"
       alt="{{ site.author.name }}"
-      class="w-32 h-32 rounded-full object-cover shadow-lg"
+      class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover shadow-lg flex-shrink-0"
       loading="eager"
     >
 
     {# Introduction #}
-    <div class="flex-1">
-      <h1 class="text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">
+    <div class="flex-1 min-w-0">
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">
         {{ site.author.name }}
       </h1>
-      <p class="text-xl text-primary-600 dark:text-primary-400 mb-4">
+      <p class="text-lg sm:text-xl text-primary-600 dark:text-primary-400 mb-3 sm:mb-4">
         {{ site.author.title }}
       </p>
-      <p class="text-lg text-surface-700 dark:text-surface-300 mb-6">
+      <p class="text-base sm:text-lg text-surface-700 dark:text-surface-300 mb-4 sm:mb-6">
         {{ site.author.bio }}
       </p>
 
@@ -54,8 +54,8 @@ withSidebar: true
 
 {# Work Experience Timeline - only show if data exists #}
 {% if cv.experience and cv.experience.length %}
-<section class="mb-12">
-  <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-6">Experience</h2>
+<section class="mb-8 sm:mb-12">
+  <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6">Experience</h2>
 
   <div class="timeline">
     {% for job in cv.experience %}
@@ -99,10 +99,10 @@ withSidebar: true
 
 {# Projects Section - only show if data exists #}
 {% if cv.projects and cv.projects.length %}
-<section class="mb-12">
-  <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-6">Projects</h2>
+<section class="mb-8 sm:mb-12">
+  <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6">Projects</h2>
 
-  <div class="grid md:grid-cols-2 gap-4">
+  <div class="grid gap-3 sm:gap-4 md:grid-cols-2">
     {% for project in cv.projects %}
     <article class="p-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
       <h3 class="font-semibold text-surface-900 dark:text-surface-100 mb-1">
@@ -134,10 +134,10 @@ withSidebar: true
 
 {# Skills Section - only show if data exists #}
 {% if cv.skills and (cv.skills | dictsort | length) %}
-<section class="mb-12">
-  <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-6">Skills</h2>
+<section class="mb-8 sm:mb-12">
+  <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6">Skills</h2>
 
-  <div class="grid md:grid-cols-2 gap-6">
+  <div class="grid gap-4 sm:gap-6 md:grid-cols-2">
     {% for category, skills in cv.skills %}
     <div>
       <h3 class="text-sm font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wide mb-3">
@@ -156,7 +156,7 @@ withSidebar: true
 
 {# Education & Languages - only show if data exists #}
 {% if (cv.education and cv.education.length) or (cv.languages and cv.languages.length) %}
-<section class="mb-12 grid md:grid-cols-2 gap-8">
+<section class="mb-8 sm:mb-12 grid gap-6 sm:gap-8 md:grid-cols-2">
   {# Education #}
   {% if cv.education and cv.education.length %}
   <div>
@@ -190,8 +190,8 @@ withSidebar: true
 
 {# Interests - only show if data exists #}
 {% if cv.interests and cv.interests.length %}
-<section class="mb-12">
-  <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-6">Interests</h2>
+<section class="mb-8 sm:mb-12">
+  <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6">Interests</h2>
   <div class="flex flex-wrap gap-2">
     {% for interest in cv.interests %}
     <span class="skill-badge">{{ interest }}</span>

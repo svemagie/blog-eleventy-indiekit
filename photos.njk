@@ -3,7 +3,10 @@ layout: layouts/base.njk
 title: Photos
 permalink: /photos/
 ---
-<h1>Photos</h1>
+<div class="page-header mb-6 sm:mb-8">
+  <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">Photos</h1>
+  <p class="text-surface-600 dark:text-surface-400">Photo posts and images.</p>
+</div>
 
 {% if collections.photos.length > 0 %}
 <ul class="post-list">

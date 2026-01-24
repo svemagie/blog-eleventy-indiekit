@@ -3,7 +3,10 @@ layout: layouts/base.njk
 title: Bookmarks
 permalink: /bookmarks/
 ---
-<h1>Bookmarks</h1>
+<div class="page-header mb-6 sm:mb-8">
+  <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">Bookmarks</h1>
+  <p class="text-surface-600 dark:text-surface-400">Links I've saved for later.</p>
+</div>
 
 {% if collections.bookmarks.length > 0 %}
 <ul class="post-list">
