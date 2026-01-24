@@ -1,0 +1,47 @@
+---
+layout: layouts/base.njk
+title: Likes
+permalink: /likes/
+---
+<div class="page-header mb-8">
+  <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">Likes</h1>
+  <p class="text-surface-600 dark:text-surface-400">Content I've liked across the web.</p>
+</div>
+
+{% if collections.likes.length > 0 %}
+<ul class="space-y-6">
+  {% for post in collections.likes %}
+  <li class="h-entry p-4 bg-surface-100 dark:bg-surface-800 rounded-lg">
+    <div class="flex items-start gap-4">
+      <div class="flex-shrink-0">
+        <svg class="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="post-meta text-sm text-surface-500 dark:text-surface-400 mb-2">
+          <time class="dt-published" datetime="{{ post.date.toISOString() }}">
+            {{ post.date | dateDisplay }}
+          </time>
+        </div>
+        {% if post.data.like_of %}
+        <p class="mb-2">
+          <a class="u-like-of text-primary-600 dark:text-primary-400 hover:underline break-all" href="{{ post.data.like_of }}">
+            {{ post.data.like_of }}
+          </a>
+        </p>
+        {% endif %}
+        {% if post.templateContent %}
+        <div class="e-content prose dark:prose-invert prose-sm max-w-none">
+          {{ post.templateContent | safe }}
+        </div>
+        {% endif %}
+        <a class="u-url text-xs text-surface-400 hover:underline mt-2 inline-block" href="{{ post.url }}">Permalink</a>
+      </div>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="text-surface-600 dark:text-surface-400">No likes yet.</p>
+{% endif %}

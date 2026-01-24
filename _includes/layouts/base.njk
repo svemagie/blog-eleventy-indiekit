@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="{{ site.locale | default('en') }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if title %}{{ title }} - {% endif %}{{ site.name }}</title>
+
+  {# OpenGraph meta tags #}
+  {% set ogTitle = title | default(site.name) %}
+  {% set ogDesc = description | default(content | ogDescription(200)) | default(site.description) %}
+  {% set contentImage = content | extractFirstImage %}
+  <meta property="og:title" content="{{ ogTitle }}">
+  <meta property="og:site_name" content="{{ site.name }}">
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+  <meta property="og:type" content="{% if page.url == '/' %}website{% else %}article{% endif %}">
+  <meta property="og:description" content="{{ ogDesc }}">
+  <meta name="description" content="{{ ogDesc }}">
+  {% if photo %}
+  <meta property="og:image" content="{% if photo.startsWith('http') %}{{ photo }}{% else %}{{ site.url }}{% if not photo.startsWith('/') %}/{% endif %}{{ photo }}{% endif %}">
+  {% elif image %}
+  <meta property="og:image" content="{% if image.startsWith('http') %}{{ image }}{% else %}{{ site.url }}{% if not image.startsWith('/') %}/{% endif %}{{ image }}{% endif %}">
+  {% elif contentImage %}
+  <meta property="og:image" content="{% if contentImage.startsWith('http') %}{{ contentImage }}{% else %}{{ site.url }}{% if not contentImage.startsWith('/') %}/{% endif %}{{ contentImage }}{% endif %}">
+  {% else %}
+  <meta property="og:image" content="{{ site.url }}/images/og-default.png">
+  {% endif %}
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="{{ site.locale | default('en_US') }}">
+
+  {# Twitter Card meta tags #}
+  {% set hasImage = photo or image or contentImage %}
+  <meta name="twitter:card" content="{% if hasImage %}summary_large_image{% else %}summary{% endif %}">
+  <meta name="twitter:title" content="{{ ogTitle }}">
+  <meta name="twitter:description" content="{{ ogDesc }}">
+  {% if photo %}
+  <meta name="twitter:image" content="{% if photo.startsWith('http') %}{{ photo }}{% else %}{{ site.url }}/{{ photo }}{% endif %}">
+  {% elif image %}
+  <meta name="twitter:image" content="{% if image.startsWith('http') %}{{ image }}{% else %}{{ site.url }}/{{ image }}{% endif %}">
+  {% elif contentImage %}
+  <meta name="twitter:image" content="{% if contentImage.startsWith('http') %}{{ contentImage }}{% else %}{{ site.url }}/{{ contentImage }}{% endif %}">
+  {% endif %}
+
+  <link rel="stylesheet" href="/css/style.css?v={{ '/css/style.css' | hash }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.min.js" defer></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>[x-cloak] { display: none !important; }</style>
+  <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+  <link rel="alternate" type="application/rss+xml" href="/feed.xml" title="RSS Feed">
+  <link rel="alternate" type="application/json" href="/feed.json" title="JSON Feed">
+  <link rel="authorization_endpoint" href="{{ site.url }}/auth">
+  <link rel="token_endpoint" href="{{ site.url }}/auth/token">
+  <link rel="micropub" href="{{ site.url }}/micropub">
+  <link rel="webmention" href="https://webmention.io/{{ site.webmentions.domain }}/webmention">
+  <link rel="pingback" href="https://webmention.io/{{ site.webmentions.domain }}/xmlrpc">
+
+  {# IndieAuth rel="me" links for identity verification #}
+  {% for social in site.social %}
+  <link rel="me" href="{{ social.url }}">
+  {% endfor %}
+</head>
+<body>
+  <script>
+    // Apply theme immediately to prevent flash
+    (function() {
+      const theme = localStorage.getItem('theme');
+      if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+  <header class="site-header">
+    <div class="container header-container">
+      <a href="/" class="site-title">{{ site.name }}</a>
+
+      {# Mobile menu button #}
+      <button id="menu-toggle" type="button" class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg class="menu-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+        <svg class="close-icon hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+
+      {# Desktop nav + Theme toggle (visible on desktop) #}
+      <div class="header-actions">
+        <nav class="site-nav" id="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/blog/">Blog</a>
+          <a href="/articles/">Articles</a>
+          <a href="/notes/">Notes</a>
+          <a href="/interactions/">Interactions</a>
+          <a href="/github/">GitHub</a>
+          <a href="/funkwhale/">Listening</a>
+          <a href="/youtube/">YouTube</a>
+        </nav>
+        <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    {# Mobile nav dropdown #}
+    <nav class="mobile-nav hidden" id="mobile-nav">
+      <a href="/">Home</a>
+      <a href="/about/">About</a>
+      <a href="/blog/">Blog</a>
+      <a href="/articles/">Articles</a>
+      <a href="/notes/">Notes</a>
+      <a href="/interactions/">Interactions</a>
+      <a href="/github/">GitHub</a>
+      <a href="/funkwhale/">Listening</a>
+      <a href="/youtube/">YouTube</a>
+    </nav>
+  </header>
+
+  <main class="container py-8">
+    {% if withSidebar %}
+    <div class="layout-with-sidebar">
+      <div class="main-content">
+        {{ content | safe }}
+      </div>
+      <aside class="sidebar">
+        {% include "components/sidebar.njk" %}
+      </aside>
+    </div>
+    {% elif withBlogSidebar %}
+    <div class="layout-with-sidebar">
+      <div class="main-content">
+        {{ content | safe }}
+      </div>
+      <aside class="sidebar blog-sidebar">
+        {% include "components/blog-sidebar.njk" %}
+      </aside>
+    </div>
+    {% else %}
+    {{ content | safe }}
+    {% endif %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="flex flex-wrap justify-center gap-4 mb-4">
+        <a href="/feed.xml" class="inline-flex items-center gap-1 text-primary-600 dark:text-primary-400 hover:underline">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1Z"/></svg>
+          RSS Feed
+        </a>
+        <a href="/feed.json" class="inline-flex items-center gap-1 text-primary-600 dark:text-primary-400 hover:underline">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2m3 12h2v2H8v-2m4-8h2v10h-2V7m4 4h2v6h-2v-6Z"/></svg>
+          JSON Feed
+        </a>
+      </div>
+      <p>Powered by <a href="https://getindiekit.com">Indiekit</a> + <a href="https://11ty.dev">Eleventy</a></p>
+    </div>
+  </footer>
+  <script>
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileNav = document.getElementById('mobile-nav');
+    const menuIcon = menuToggle?.querySelector('.menu-icon');
+    const closeIcon = menuToggle?.querySelector('.close-icon');
+
+    if (menuToggle && mobileNav) {
+      menuToggle.addEventListener('click', () => {
+        const isOpen = !mobileNav.classList.contains('hidden');
+        mobileNav.classList.toggle('hidden');
+        menuIcon?.classList.toggle('hidden');
+        closeIcon?.classList.toggle('hidden');
+        menuToggle.setAttribute('aria-expanded', !isOpen);
+      });
+
+      // Close menu when clicking a link
+      mobileNav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileNav.classList.add('hidden');
+          menuIcon?.classList.remove('hidden');
+          closeIcon?.classList.add('hidden');
+          menuToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      });
+    }
+
+    // Link prefetching on mouseover/touchstart for faster navigation
+    function prefetch(e) {
+      if (e.target.tagName !== 'A') return;
+      if (e.target.origin !== location.origin) return;
+      const removeFragment = (url) => url.split('#')[0];
+      if (removeFragment(location.href) === removeFragment(e.target.href)) return;
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = e.target.href;
+      document.head.appendChild(link);
+    }
+    document.documentElement.addEventListener('mouseover', prefetch, { capture: true, passive: true });
+    document.documentElement.addEventListener('touchstart', prefetch, { capture: true, passive: true });
+  </script>
+</body>
+</html>

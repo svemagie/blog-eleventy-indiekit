@@ -1,0 +1,34 @@
+---
+permalink: /feed.json
+eleventyExcludeFromCollections: true
+---
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "{{ site.name }}",
+  "home_page_url": "{{ site.url }}/",
+  "feed_url": "{{ site.url }}/feed.json",
+  "description": "{{ site.description }}",
+  "language": "{{ site.locale | default('en') }}",
+  "authors": [
+    {
+      "name": "{{ site.author | default('Ricardo Mendes') }}",
+      "url": "{{ site.url }}/"
+    }
+  ],
+  "items": [
+    {%- for post in collections.feed %}
+    {%- set absolutePostUrl = site.url + post.url %}
+    {%- set postImage = post.data.photo or post.data.image or (post.content | extractFirstImage) %}
+    {
+      "id": "{{ absolutePostUrl }}",
+      "url": "{{ absolutePostUrl }}",
+      "title": {{ post.data.title | default(post.content | striptags | truncate(80)) | jsonEncode | safe }},
+      "content_html": {{ post.content | htmlToAbsoluteUrls(absolutePostUrl) | jsonEncode | safe }},
+      "date_published": "{{ post.date | dateToRfc3339 }}"
+      {%- if postImage %},
+      "image": "{{ postImage | url | absoluteUrl(site.url) }}"
+      {%- endif %}
+    }{% if not loop.last %},{% endif %}
+    {%- endfor %}
+  ]
+}

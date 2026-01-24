@@ -1,0 +1,158 @@
+{# Webmentions Component #}
+{# Displays likes, reposts, and replies for a post #}
+
+{% set mentions = webmentions | webmentionsForUrl(page.url) %}
+
+{% if mentions.length %}
+<section class="webmentions mt-8 pt-8 border-t border-surface-200 dark:border-surface-700" id="webmentions">
+  <h2 class="text-xl font-bold text-surface-900 dark:text-surface-100 mb-6">
+    Webmentions ({{ mentions.length }})
+  </h2>
+
+  {# Likes #}
+  {% set likes = mentions | webmentionsByType('likes') %}
+  {% if likes.length %}
+  <div class="webmention-likes mb-6">
+    <h3 class="text-sm font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wide mb-3">
+      {{ likes.length }} Like{% if likes.length != 1 %}s{% endif %}
+    </h3>
+    <div class="avatar-row">
+      {% for like in likes %}
+      <a href="{{ like.author.url }}"
+         class="inline-block"
+         title="{{ like.author.name }}"
+         target="_blank"
+         rel="noopener">
+        <img
+          src="{{ like.author.photo or '/images/default-avatar.png' }}"
+          alt="{{ like.author.name }}"
+          class="w-8 h-8 rounded-full"
+          loading="lazy"
+        >
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Reposts #}
+  {% set reposts = mentions | webmentionsByType('reposts') %}
+  {% if reposts.length %}
+  <div class="webmention-reposts mb-6">
+    <h3 class="text-sm font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wide mb-3">
+      {{ reposts.length }} Repost{% if reposts.length != 1 %}s{% endif %}
+    </h3>
+    <div class="avatar-row">
+      {% for repost in reposts %}
+      <a href="{{ repost.author.url }}"
+         class="inline-block"
+         title="{{ repost.author.name }}"
+         target="_blank"
+         rel="noopener">
+        <img
+          src="{{ repost.author.photo or '/images/default-avatar.png' }}"
+          alt="{{ repost.author.name }}"
+          class="w-8 h-8 rounded-full"
+          loading="lazy"
+        >
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Replies #}
+  {% set replies = mentions | webmentionsByType('replies') %}
+  {% if replies.length %}
+  <div class="webmention-replies">
+    <h3 class="text-sm font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wide mb-4">
+      {{ replies.length }} Repl{% if replies.length != 1 %}ies{% else %}y{% endif %}
+    </h3>
+    <ul class="space-y-4">
+      {% for reply in replies %}
+      <li class="p-4 bg-surface-100 dark:bg-surface-800 rounded-lg">
+        <div class="flex gap-3">
+          <a href="{{ reply.author.url }}" target="_blank" rel="noopener">
+            <img
+              src="{{ reply.author.photo or '/images/default-avatar.png' }}"
+              alt="{{ reply.author.name }}"
+              class="w-10 h-10 rounded-full"
+              loading="lazy"
+            >
+          </a>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-baseline gap-2 mb-1">
+              <a href="{{ reply.author.url }}"
+                 class="font-semibold text-surface-900 dark:text-surface-100 hover:underline"
+                 target="_blank"
+                 rel="noopener">
+                {{ reply.author.name }}
+              </a>
+              <a href="{{ reply.url }}"
+                 class="text-xs text-surface-500 hover:underline"
+                 target="_blank"
+                 rel="noopener">
+                <time datetime="{{ reply.published }}">
+                  {{ reply.published | date("MMM d, yyyy") }}
+                </time>
+              </a>
+            </div>
+            <div class="text-surface-700 dark:text-surface-300 prose dark:prose-invert prose-sm max-w-none">
+              {{ reply.content.html | safe if reply.content.html else reply.content.text }}
+            </div>
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {# Other mentions #}
+  {% set otherMentions = mentions | webmentionsByType('mentions') %}
+  {% if otherMentions.length %}
+  <div class="webmention-mentions mt-6">
+    <h3 class="text-sm font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wide mb-3">
+      {{ otherMentions.length }} Mention{% if otherMentions.length != 1 %}s{% endif %}
+    </h3>
+    <ul class="space-y-2 text-sm">
+      {% for mention in otherMentions %}
+      <li>
+        <a href="{{ mention.url }}"
+           class="text-primary-600 dark:text-primary-400 hover:underline"
+           target="_blank"
+           rel="noopener">
+          {{ mention.author.name }} mentioned this on {{ mention.published | date("MMM d, yyyy") }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</section>
+{% endif %}
+
+{# Webmention send form #}
+<section class="webmention-form mt-8 p-4 bg-surface-100 dark:bg-surface-800 rounded-lg">
+  <h3 class="text-sm font-semibold text-surface-700 dark:text-surface-300 mb-2">
+    Send a Webmention
+  </h3>
+  <p class="text-xs text-surface-600 dark:text-surface-400 mb-3">
+    Have you written a response to this post? Send a webmention by entering your post URL below.
+  </p>
+  <form action="https://webmention.io/{{ site.webmentions.domain }}/webmention" method="post" class="flex gap-2">
+    <input type="hidden" name="target" value="{{ site.url }}{{ page.url }}">
+    <input
+      type="url"
+      name="source"
+      placeholder="https://your-site.com/response"
+      required
+      class="flex-1 px-3 py-2 text-sm bg-white dark:bg-surface-700 border border-surface-300 dark:border-surface-600 rounded focus:outline-none focus:ring-2 focus:ring-primary-500"
+    >
+    <button
+      type="submit"
+      class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded transition-colors">
+      Send
+    </button>
+  </form>
+</section>

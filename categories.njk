@@ -1,0 +1,69 @@
+---
+layout: layouts/base.njk
+withSidebar: true
+pagination:
+  data: collections.categories
+  size: 1
+  alias: category
+permalink: "categories/{{ category | slugify }}/"
+eleventyComputed:
+  title: "{{ category }}"
+---
+<div class="h-feed">
+  <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">{{ category }}</h1>
+  <p class="text-surface-600 dark:text-surface-400 mb-8">
+    Posts tagged with "{{ category }}".
+  </p>
+
+  {% set categoryPosts = [] %}
+  {% for post in collections.posts %}
+    {% if post.data.category %}
+      {% if post.data.category is string %}
+        {% if post.data.category == category %}
+          {% set categoryPosts = (categoryPosts.push(post), categoryPosts) %}
+        {% endif %}
+      {% else %}
+        {% if category in post.data.category %}
+          {% set categoryPosts = (categoryPosts.push(post), categoryPosts) %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {% if categoryPosts.length > 0 %}
+  <p class="text-sm text-surface-500 dark:text-surface-400 mb-4">{{ categoryPosts.length }} post{% if categoryPosts.length != 1 %}s{% endif %}</p>
+  <ul class="post-list">
+    {% for post in categoryPosts %}
+    <li class="h-entry post-card">
+      <div class="post-header">
+        <h2 class="text-xl font-semibold mb-1 flex-1">
+          <a class="p-name u-url text-surface-900 dark:text-surface-100 hover:text-primary-600 dark:hover:text-primary-400" href="{{ post.url }}">
+            {{ post.data.title or post.templateContent | striptags | truncate(60) or "Untitled" }}
+          </a>
+        </h2>
+      </div>
+      <div class="post-meta mt-2">
+        <time class="dt-published" datetime="{{ post.date | isoDate }}">
+          {{ post.date | dateDisplay }}
+        </time>
+        {% set postType = post.inputPath | replace("./content/", "") %}
+        {% set postType = postType.split("/")[0] %}
+        <span class="post-type">{{ postType }}</span>
+      </div>
+      <p class="p-summary text-surface-700 dark:text-surface-300 mt-3">
+        {{ post.templateContent | striptags | truncate(250) }}
+      </p>
+      <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline mt-3 inline-block">
+        View &rarr;
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="text-surface-600 dark:text-surface-400">No posts found with this category.</p>
+  {% endif %}
+
+  <div class="mt-8">
+    <a href="/categories/" class="text-primary-600 dark:text-primary-400 hover:underline">&larr; All categories</a>
+  </div>
+</div>

@@ -1,0 +1,92 @@
+---
+layout: layouts/base.njk
+title: Articles
+withSidebar: true
+pagination:
+  data: collections.articles
+  size: 20
+  alias: paginatedArticles
+permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
+---
+<div class="h-feed">
+  <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">Articles</h1>
+  <p class="text-surface-600 dark:text-surface-400 mb-8">
+    Long-form posts and essays.
+    <span class="text-sm">({{ collections.articles.length }} total)</span>
+  </p>
+
+  {% if paginatedArticles.length > 0 %}
+  <ul class="post-list">
+    {% for post in paginatedArticles %}
+    <li class="h-entry post-card">
+      <div class="post-header">
+        <h2 class="text-xl font-semibold mb-1 flex-1">
+          <a class="p-name u-url text-surface-900 dark:text-surface-100 hover:text-primary-600 dark:hover:text-primary-400" href="{{ post.url }}">
+            {{ post.data.title or "Untitled" }}
+          </a>
+        </h2>
+      </div>
+      <div class="post-meta mt-2">
+        <time class="dt-published" datetime="{{ post.date | isoDate }}">
+          {{ post.date | dateDisplay }}
+        </time>
+        {% if post.data.category %}
+        <span class="post-categories">
+          {% if post.data.category is string %}
+          <span class="p-category">{{ post.data.category }}</span>
+          {% else %}
+          {% for cat in post.data.category %}
+          <span class="p-category">{{ cat }}</span>
+          {% endfor %}
+          {% endif %}
+        </span>
+        {% endif %}
+      </div>
+      <p class="p-summary text-surface-700 dark:text-surface-300 mt-3">
+        {{ post.templateContent | striptags | truncate(250) }}
+      </p>
+      <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline mt-3 inline-block">
+        Read more &rarr;
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+
+  {# Pagination controls #}
+  {% if pagination.pages.length > 1 %}
+  <nav class="pagination" aria-label="Articles pagination">
+    <div class="pagination-info">
+      Page {{ pagination.pageNumber + 1 }} of {{ pagination.pages.length }}
+    </div>
+    <div class="pagination-links">
+      {% if pagination.href.previous %}
+      <a href="{{ pagination.href.previous }}" class="pagination-link" aria-label="Previous page">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        Previous
+      </a>
+      {% else %}
+      <span class="pagination-link disabled">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        Previous
+      </span>
+      {% endif %}
+
+      {% if pagination.href.next %}
+      <a href="{{ pagination.href.next }}" class="pagination-link" aria-label="Next page">
+        Next
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </a>
+      {% else %}
+      <span class="pagination-link disabled">
+        Next
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </span>
+      {% endif %}
+    </div>
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <p class="text-surface-600 dark:text-surface-400">No articles yet.</p>
+  {% endif %}
+</div>

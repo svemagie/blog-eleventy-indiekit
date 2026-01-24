@@ -1,0 +1,27 @@
+---
+layout: layouts/base.njk
+title: Categories
+withSidebar: true
+permalink: categories/
+---
+<div>
+  <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">Categories</h1>
+  <p class="text-surface-600 dark:text-surface-400 mb-8">
+    Browse posts by category.
+    <span class="text-sm">({{ collections.categories.length }} categories)</span>
+  </p>
+
+  {% if collections.categories.length > 0 %}
+  <ul class="flex flex-wrap gap-3">
+    {% for cat in collections.categories %}
+    <li>
+      <a href="/categories/{{ cat | slugify }}/" class="inline-block px-4 py-2 bg-surface-100 dark:bg-surface-800 text-surface-900 dark:text-surface-100 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900 hover:text-primary-700 dark:hover:text-primary-300 transition-colors">
+        {{ cat }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="text-surface-600 dark:text-surface-400">No categories yet.</p>
+  {% endif %}
+</div>

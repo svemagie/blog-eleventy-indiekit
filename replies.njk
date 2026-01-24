@@ -1,0 +1,51 @@
+---
+layout: layouts/base.njk
+title: Replies
+permalink: /replies/
+---
+<div class="page-header mb-8">
+  <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">Replies</h1>
+  <p class="text-surface-600 dark:text-surface-400">My responses to posts across the web.</p>
+</div>
+
+{% if collections.replies.length > 0 %}
+<ul class="space-y-6">
+  {% for post in collections.replies %}
+  <li class="h-entry p-4 bg-surface-100 dark:bg-surface-800 rounded-lg border-l-4 border-primary-500">
+    <div class="flex items-start gap-4">
+      <div class="flex-shrink-0">
+        <svg class="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+        </svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        {% if post.data.title %}
+        <h2 class="p-name text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">
+          <a class="hover:underline" href="{{ post.url }}">{{ post.data.title }}</a>
+        </h2>
+        {% endif %}
+        <div class="post-meta text-sm text-surface-500 dark:text-surface-400 mb-2">
+          <time class="dt-published" datetime="{{ post.date.toISOString() }}">
+            {{ post.date | dateDisplay }}
+          </time>
+        </div>
+        {% if post.data.in_reply_to %}
+        <p class="mb-3 text-sm">
+          <span class="text-surface-500">In reply to:</span>
+          <a class="u-in-reply-to text-primary-600 dark:text-primary-400 hover:underline break-all" href="{{ post.data.in_reply_to }}">
+            {{ post.data.in_reply_to }}
+          </a>
+        </p>
+        {% endif %}
+        <div class="e-content prose dark:prose-invert prose-sm max-w-none">
+          {{ post.templateContent | safe }}
+        </div>
+        <a class="u-url text-xs text-surface-400 hover:underline mt-2 inline-block" href="{{ post.url }}">Permalink</a>
+      </div>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="text-surface-600 dark:text-surface-400">No replies yet.</p>
+{% endif %}

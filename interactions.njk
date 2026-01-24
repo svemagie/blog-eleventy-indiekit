@@ -1,0 +1,105 @@
+---
+layout: layouts/base.njk
+title: Interactions
+permalink: /interactions/
+---
+<div class="page-header mb-8">
+  <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">Interactions</h1>
+  <p class="text-surface-600 dark:text-surface-400">My engagement with content across the IndieWeb.</p>
+</div>
+
+<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+  {# Likes #}
+  <a href="/likes/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
+    <div class="flex items-center gap-4 mb-4">
+      <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
+        <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Likes</h2>
+        <p class="text-sm text-surface-500">{{ collections.likes.length }} item{% if collections.likes.length != 1 %}s{% endif %}</p>
+      </div>
+    </div>
+    <p class="text-surface-600 dark:text-surface-400 text-sm">Content I've appreciated across the web.</p>
+  </a>
+
+  {# Replies #}
+  <a href="/replies/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
+    <div class="flex items-center gap-4 mb-4">
+      <div class="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-full">
+        <svg class="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Replies</h2>
+        <p class="text-sm text-surface-500">{{ collections.replies.length }} item{% if collections.replies.length != 1 %}s{% endif %}</p>
+      </div>
+    </div>
+    <p class="text-surface-600 dark:text-surface-400 text-sm">My responses to posts across the web.</p>
+  </a>
+
+  {# Bookmarks #}
+  <a href="/bookmarks/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
+    <div class="flex items-center gap-4 mb-4">
+      <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-full">
+        <svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Bookmarks</h2>
+        <p class="text-sm text-surface-500">{{ collections.bookmarks.length }} item{% if collections.bookmarks.length != 1 %}s{% endif %}</p>
+      </div>
+    </div>
+    <p class="text-surface-600 dark:text-surface-400 text-sm">Links I've saved for later.</p>
+  </a>
+
+  {# Reposts #}
+  <a href="/reposts/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
+    <div class="flex items-center gap-4 mb-4">
+      <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
+        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Reposts</h2>
+        <p class="text-sm text-surface-500">{{ collections.reposts.length }} item{% if collections.reposts.length != 1 %}s{% endif %}</p>
+      </div>
+    </div>
+    <p class="text-surface-600 dark:text-surface-400 text-sm">Content I've shared from others.</p>
+  </a>
+
+  {# Photos #}
+  <a href="/photos/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
+    <div class="flex items-center gap-4 mb-4">
+      <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+        <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Photos</h2>
+        <p class="text-sm text-surface-500">{{ collections.photos.length }} item{% if collections.photos.length != 1 %}s{% endif %}</p>
+      </div>
+    </div>
+    <p class="text-surface-600 dark:text-surface-400 text-sm">Photo posts and images.</p>
+  </a>
+</div>
+
+<div class="mt-12 p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
+  <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">About IndieWeb Interactions</h2>
+  <p class="text-surface-600 dark:text-surface-400 text-sm mb-4">
+    These pages show different types of IndieWeb interactions I've made. Each type uses specific microformat properties
+    to indicate the relationship to the original content.
+  </p>
+  <ul class="text-sm text-surface-600 dark:text-surface-400 space-y-1">
+    <li><strong>Likes</strong> use <code class="bg-surface-200 dark:bg-surface-700 px-1 rounded">u-like-of</code></li>
+    <li><strong>Replies</strong> use <code class="bg-surface-200 dark:bg-surface-700 px-1 rounded">u-in-reply-to</code></li>
+    <li><strong>Bookmarks</strong> use <code class="bg-surface-200 dark:bg-surface-700 px-1 rounded">u-bookmark-of</code></li>
+    <li><strong>Reposts</strong> use <code class="bg-surface-200 dark:bg-surface-700 px-1 rounded">u-repost-of</code></li>
+  </ul>
+</div>

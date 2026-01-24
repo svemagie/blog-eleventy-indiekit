@@ -1,0 +1,130 @@
+---
+layout: layouts/base.njk
+title: Blog
+withSidebar: true
+pagination:
+  data: collections.posts
+  size: 20
+  alias: paginatedPosts
+permalink: "blog/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
+---
+<div class="h-feed">
+  <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">Blog</h1>
+  <p class="text-surface-600 dark:text-surface-400 mb-8">
+    All posts including articles and notes.
+    <span class="text-sm">({{ collections.posts.length }} total)</span>
+  </p>
+
+  {% if paginatedPosts.length > 0 %}
+  <ul class="post-list">
+    {% for post in paginatedPosts %}
+    <li class="h-entry post-card">
+      {# Article with title #}
+      {% if post.data.title %}
+      <div class="post-header">
+        <h2 class="text-xl font-semibold mb-1">
+          <a class="p-name u-url text-surface-900 dark:text-surface-100 hover:text-primary-600 dark:hover:text-primary-400" href="{{ post.url }}">
+            {{ post.data.title }}
+          </a>
+        </h2>
+        <div class="post-meta">
+          <time class="dt-published" datetime="{{ post.date | isoDate }}">
+            {{ post.date | dateDisplay }}
+          </time>
+          {% if post.data.category %}
+          <span class="post-categories">
+            {% if post.data.category is string %}
+            <span class="p-category">{{ post.data.category }}</span>
+            {% else %}
+            {% for cat in post.data.category %}
+            <span class="p-category">{{ cat }}</span>
+            {% endfor %}
+            {% endif %}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+      <p class="p-summary text-surface-700 dark:text-surface-300 mt-3">
+        {{ post.templateContent | striptags | truncate(250) }}
+      </p>
+      <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline mt-3 inline-block">
+        Read more &rarr;
+      </a>
+
+      {# Note without title #}
+      {% else %}
+      <div class="post-header">
+        <a class="u-url" href="{{ post.url }}">
+          <time class="dt-published text-sm text-primary-600 dark:text-primary-400 font-medium" datetime="{{ post.date | isoDate }}">
+            {{ post.date | dateDisplay }}
+          </time>
+        </a>
+        {% if post.data.category %}
+        <span class="post-categories ml-2">
+          {% if post.data.category is string %}
+          <span class="p-category">{{ post.data.category }}</span>
+          {% else %}
+          {% for cat in post.data.category %}
+          <span class="p-category">{{ cat }}</span>
+          {% endfor %}
+          {% endif %}
+        </span>
+        {% endif %}
+      </div>
+      <div class="e-content prose dark:prose-invert prose-sm mt-3 max-w-none">
+        {{ post.templateContent | safe }}
+      </div>
+      <div class="post-footer mt-3">
+        <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">
+          Permalink
+        </a>
+      </div>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+
+  {# Pagination controls #}
+  {% if pagination.pages.length > 1 %}
+  <nav class="pagination" aria-label="Blog pagination">
+    <div class="pagination-info">
+      Page {{ pagination.pageNumber + 1 }} of {{ pagination.pages.length }}
+    </div>
+    <div class="pagination-links">
+      {% if pagination.href.previous %}
+      <a href="{{ pagination.href.previous }}" class="pagination-link" aria-label="Previous page">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        Previous
+      </a>
+      {% else %}
+      <span class="pagination-link disabled">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        Previous
+      </span>
+      {% endif %}
+
+      {% if pagination.href.next %}
+      <a href="{{ pagination.href.next }}" class="pagination-link" aria-label="Next page">
+        Next
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </a>
+      {% else %}
+      <span class="pagination-link disabled">
+        Next
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </span>
+      {% endif %}
+    </div>
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <p class="text-surface-600 dark:text-surface-400">No posts yet. Create your first post using a Micropub client!</p>
+  <p class="mt-4 text-surface-600 dark:text-surface-400">Some popular Micropub clients:</p>
+  <ul class="list-disc list-inside mt-2 text-surface-700 dark:text-surface-300 space-y-1">
+    <li><a href="https://quill.p3k.io" class="text-primary-600 dark:text-primary-400 hover:underline">Quill</a> - Web-based</li>
+    <li><a href="https://indiepass.app" class="text-primary-600 dark:text-primary-400 hover:underline">IndiePass</a> - Mobile app</li>
+    <li><a href="https://micropublish.net" class="text-primary-600 dark:text-primary-400 hover:underline">Micropublish</a> - Web-based</li>
+  </ul>
+  {% endif %}
+</div>

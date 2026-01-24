@@ -1,0 +1,317 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Accessibility utilities */
+@layer utilities {
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .skip-link {
+    @apply absolute -top-full left-0 z-50 bg-primary-600 text-white px-4 py-2;
+  }
+
+  .skip-link:focus {
+    @apply top-0;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Dark mode body background */
+@layer base {
+  body {
+    @apply bg-white dark:bg-surface-950 text-surface-900 dark:text-surface-100;
+  }
+}
+
+/* Layout styles */
+@layer components {
+  /* Site header */
+  .site-header {
+    @apply bg-white dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 py-4 sticky top-0 z-50;
+  }
+
+  .header-container {
+    @apply flex items-center justify-between;
+  }
+
+  .site-title {
+    @apply text-xl font-bold text-surface-900 dark:text-white no-underline hover:text-primary-600 dark:hover:text-primary-400 transition-colors;
+  }
+
+  /* Header actions (nav + theme toggle) */
+  .header-actions {
+    @apply hidden md:flex items-center gap-4;
+  }
+
+  .site-nav {
+    @apply flex items-center gap-4;
+  }
+
+  .site-nav a {
+    @apply text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 no-underline transition-colors py-2;
+  }
+
+  /* Mobile menu toggle button */
+  .menu-toggle {
+    @apply md:hidden p-2 rounded-lg text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors;
+  }
+
+  /* Mobile navigation dropdown */
+  .mobile-nav {
+    @apply md:hidden border-t border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900;
+  }
+
+  .mobile-nav a {
+    @apply block px-4 py-3 text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-primary-600 dark:hover:text-primary-400 no-underline transition-colors border-b border-surface-100 dark:border-surface-800 last:border-b-0;
+  }
+
+  /* Theme toggle button */
+  .theme-toggle {
+    @apply p-2 rounded-lg text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors;
+  }
+
+  .theme-toggle .sun-icon {
+    @apply hidden;
+  }
+
+  .theme-toggle .moon-icon {
+    @apply block;
+  }
+
+  .dark .theme-toggle .sun-icon {
+    @apply block;
+  }
+
+  .dark .theme-toggle .moon-icon {
+    @apply hidden;
+  }
+
+  /* Container */
+  .container {
+    @apply max-w-5xl mx-auto px-4;
+  }
+
+  /* Site footer */
+  .site-footer {
+    @apply mt-12 py-8 border-t border-surface-200 dark:border-surface-700 text-center text-sm text-surface-500;
+  }
+
+  .site-footer a {
+    @apply text-primary-600 dark:text-primary-400 hover:underline;
+  }
+
+  /* Layout with sidebar - mobile-first with responsive grid */
+  .layout-with-sidebar {
+    @apply grid gap-6 md:gap-8 lg:grid-cols-3;
+  }
+
+  .main-content {
+    @apply lg:col-span-2 min-w-0; /* min-w-0 prevents flex/grid overflow */
+  }
+
+  .sidebar {
+    @apply space-y-6 lg:sticky lg:top-24 lg:self-start;
+  }
+
+  /* Main content area - adjust padding for mobile */
+  main.container {
+    @apply py-6 md:py-8;
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  /* Post list */
+  .post-list {
+    @apply list-none p-0 m-0 space-y-6;
+  }
+
+  .post-list li {
+    @apply pb-6 border-b border-surface-200 dark:border-surface-700 last:border-0;
+  }
+
+  /* Post meta */
+  .post-meta {
+    @apply text-sm text-surface-600 dark:text-surface-400 flex flex-wrap gap-2 items-center;
+  }
+
+  /* Category tags */
+  .p-category {
+    @apply inline-block px-2 py-0.5 text-xs bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 rounded;
+  }
+
+  /* Webmention styles */
+  .webmention-likes .avatar-row {
+    @apply flex flex-wrap gap-1;
+  }
+
+  .webmention-likes img {
+    @apply w-8 h-8 rounded-full;
+  }
+
+  /* GitHub components */
+  .repo-card {
+    @apply p-4 border border-surface-200 dark:border-surface-700 rounded-lg;
+  }
+
+  .repo-meta {
+    @apply flex gap-4 text-sm text-surface-600 dark:text-surface-400 mt-2;
+  }
+
+  /* Timeline for CV */
+  .timeline {
+    @apply relative pl-6 border-l-2 border-primary-500;
+  }
+
+  .timeline-item {
+    @apply relative pb-6 last:pb-0;
+  }
+
+  .timeline-item::before {
+    content: '';
+    @apply absolute -left-[calc(1.5rem+5px)] top-1.5 w-3 h-3 bg-primary-500 rounded-full;
+  }
+
+  /* Skills badges */
+  .skill-badge {
+    @apply inline-block px-3 py-1 text-sm bg-surface-100 dark:bg-surface-800 rounded-full;
+  }
+
+  /* Widget cards */
+  .widget {
+    @apply p-4 bg-surface-100 dark:bg-surface-800 rounded-lg;
+  }
+
+  .widget-title {
+    @apply font-bold text-lg mb-4;
+  }
+
+  /* Post cards */
+  .post-card {
+    @apply p-5 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm;
+  }
+
+  .post-header {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .post-footer {
+    @apply pt-3 border-t border-surface-100 dark:border-surface-700;
+  }
+
+  /* Pagination */
+  .pagination {
+    @apply mt-12 pt-8 border-t border-surface-200 dark:border-surface-700 flex flex-col sm:flex-row items-center justify-between gap-4;
+  }
+
+  .pagination-info {
+    @apply text-sm text-surface-600 dark:text-surface-400;
+  }
+
+  .pagination-links {
+    @apply flex items-center gap-2;
+  }
+
+  .pagination-link {
+    @apply inline-flex items-center gap-1 px-4 py-2 text-sm font-medium bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors;
+  }
+
+  .pagination-link.disabled {
+    @apply opacity-50 cursor-not-allowed hover:bg-surface-100 dark:hover:bg-surface-800;
+  }
+}
+
+/* Focus states */
+@layer base {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary-500;
+  }
+}
+
+/* Video embeds */
+@layer components {
+  .video-embed {
+    @apply relative w-full aspect-video my-4;
+  }
+
+  .video-embed iframe {
+    @apply absolute inset-0 w-full h-full rounded-lg;
+  }
+}
+
+/* Performance: content-visibility for off-screen rendering optimization */
+@layer utilities {
+  .content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+}
+
+/* Apply content-visibility to images and post items for performance */
+@layer base {
+  /* Responsive typography */
+  html {
+    @apply text-base md:text-lg;
+  }
+
+  /* Prevent horizontal overflow */
+  body {
+    @apply overflow-x-hidden;
+  }
+
+  /* Images - prevent overflow and add content-visibility */
+  img {
+    @apply max-w-full h-auto;
+    content-visibility: auto;
+  }
+
+  /* Pre/code blocks - prevent overflow on mobile */
+  pre {
+    @apply overflow-x-auto max-w-full;
+  }
+
+  code {
+    @apply break-words;
+  }
+
+  /* Links in content - break long URLs */
+  .e-content a,
+  .prose a {
+    @apply break-words;
+    word-break: break-word;
+  }
+
+  article {
+    scroll-margin-top: 80px; /* Prevent header overlap when scrolling to anchors */
+  }
+
+  .post-list li {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
+  }
+}
