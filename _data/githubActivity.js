@@ -169,6 +169,51 @@ async function fetchFeaturedFromGitHub(repoList) {
   return featured;
 }
 
+/**
+ * Fetch commits directly from user's recently pushed repos
+ * Fallback when events API doesn't include commit details
+ */
+async function fetchCommitsFromRepos(username, limit = 10) {
+  try {
+    const repos = await fetchFromGitHub(
+      `/users/${username}/repos?sort=pushed&per_page=5`
+    );
+
+    if (!Array.isArray(repos) || repos.length === 0) {
+      return [];
+    }
+
+    const allCommits = [];
+    for (const repo of repos.slice(0, 5)) {
+      try {
+        const repoCommits = await fetchFromGitHub(
+          `/repos/${repo.full_name}/commits?per_page=5`
+        );
+        for (const c of repoCommits) {
+          allCommits.push({
+            sha: c.sha.slice(0, 7),
+            message: truncate(c.commit?.message?.split("\n")[0]),
+            url: c.html_url,
+            repo: repo.full_name,
+            repoUrl: repo.html_url,
+            date: c.commit?.author?.date,
+          });
+        }
+      } catch {
+        // Skip repos we can't access
+      }
+    }
+
+    // Sort by date and limit
+    return allCommits
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, limit);
+  } catch (error) {
+    console.log(`[githubActivity] Could not fetch commits from repos: ${error.message}`);
+    return [];
+  }
+}
+
 export default async function () {
   try {
     console.log("[githubActivity] Fetching GitHub data...");
@@ -208,9 +253,18 @@ export default async function () {
       fetchFeaturedFromGitHub(FALLBACK_FEATURED_REPOS),
     ]);
 
+    // Try to extract commits from events first
+    let commits = extractCommits(events || []);
+
+    // If events API didn't have commits, fetch directly from repos
+    if (commits.length === 0 && GITHUB_USERNAME) {
+      console.log("[githubActivity] Events API returned no commits, fetching from repos");
+      commits = await fetchCommitsFromRepos(GITHUB_USERNAME, 10);
+    }
+
     return {
       stars: formatStarred(starred || []),
-      commits: extractCommits(events || []),
+      commits,
       contributions: extractContributions(events || []),
       featured,
       source: "github",
