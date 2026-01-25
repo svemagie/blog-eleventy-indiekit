@@ -4,322 +4,395 @@ title: News Feed
 permalink: /news/
 withSidebar: true
 ---
-<div class="news-page" x-data="{ viewMode: 'list', filterFeed: 'all' }">
+<div class="news-page" x-data="newsApp()" x-init="init()">
   <header class="mb-6 sm:mb-8">
     <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">News Feed</h1>
     <p class="text-surface-600 dark:text-surface-400">
       Aggregated content from my favorite feeds
     </p>
-    {% if newsActivity.lastUpdated %}
-    <p class="text-xs text-surface-500 mt-2">
-      Last updated: {{ newsActivity.lastUpdated | date("PPpp") }}
+    <p class="text-xs text-surface-500 mt-2" x-show="lastUpdated">
+      Last updated: <span x-text="formatDate(lastUpdated, 'full')"></span>
+      <button @click="refresh()" class="ml-2 text-primary-600 hover:text-primary-700 dark:text-primary-400" :disabled="loading">
+        <svg class="w-3 h-3 inline" :class="{ 'animate-spin': loading }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </button>
     </p>
-    {% endif %}
   </header>
 
-  {# View Mode and Filter Controls #}
-  <div class="flex flex-wrap gap-4 mb-6 sm:mb-8 items-center justify-between">
-    {# View Mode Buttons #}
-    <div class="flex gap-2">
-      <button
-        @click="viewMode = 'list'"
-        :class="viewMode === 'list' ? 'bg-primary-600 text-white' : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'"
-        class="px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-        title="List view"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-        <span class="hidden sm:inline">List</span>
-      </button>
-      <button
-        @click="viewMode = 'card'"
-        :class="viewMode === 'card' ? 'bg-primary-600 text-white' : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'"
-        class="px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-        title="Card view"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/>
-        </svg>
-        <span class="hidden sm:inline">Cards</span>
-      </button>
-      <button
-        @click="viewMode = 'full'"
-        :class="viewMode === 'full' ? 'bg-primary-600 text-white' : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'"
-        class="px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-        title="Expanded view"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
-        </svg>
-        <span class="hidden sm:inline">Expanded</span>
-      </button>
-    </div>
-
-    {# Feed Filter Dropdown #}
-    {% if newsActivity.feeds.length > 1 %}
-    <div class="relative">
-      <select
-        x-model="filterFeed"
-        class="appearance-none bg-surface-100 dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg px-4 py-2 pr-8 text-sm text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
-      >
-        <option value="all">All Sources ({{ newsActivity.feeds.length }})</option>
-        {% for feed in newsActivity.feeds %}
-        <option value="{{ feed.id }}">{{ feed.title }}</option>
-        {% endfor %}
-      </select>
-      <svg class="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-surface-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-      </svg>
-    </div>
-    {% endif %}
+  {# Loading State #}
+  <div x-show="loading && items.length === 0" class="text-center py-12">
+    <svg class="w-8 h-8 mx-auto text-primary-600 animate-spin mb-4" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <p class="text-surface-600 dark:text-surface-400">Loading news...</p>
   </div>
 
-  {# Stats Bar #}
-  {% if newsActivity.status %}
-  <div class="flex flex-wrap gap-4 mb-6 p-4 bg-surface-50 dark:bg-surface-800/50 rounded-lg text-sm">
-    <div class="flex items-center gap-2">
-      <span class="text-surface-500">Feeds:</span>
-      <span class="font-medium text-surface-900 dark:text-surface-100">{{ newsActivity.status.stats.feedsCount }}</span>
-    </div>
-    <div class="flex items-center gap-2">
-      <span class="text-surface-500">Items:</span>
-      <span class="font-medium text-surface-900 dark:text-surface-100">{{ newsActivity.status.stats.itemsCount }}</span>
-    </div>
-    {% if newsActivity.status.status == 'syncing' %}
-    <div class="flex items-center gap-2 text-orange-600 dark:text-orange-400">
-      <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      Syncing...
-    </div>
-    {% endif %}
+  {# Error State #}
+  <div x-show="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+    <p class="text-red-700 dark:text-red-400" x-text="error"></p>
+    <button @click="refresh()" class="mt-2 text-sm text-red-600 hover:text-red-700 underline">Try again</button>
   </div>
-  {% endif %}
 
-  {# Items List #}
-  {% if newsActivity.items.length %}
-  <div class="news-items">
-    {# List View #}
-    <div x-show="viewMode === 'list'" class="space-y-3">
-      {% for item in newsActivity.items %}
-      <article
-        x-show="filterFeed === 'all' || filterFeed === '{{ item.feedId }}'"
-        class="flex items-start gap-4 p-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-primary-400 dark:hover:border-primary-600 transition-colors"
-      >
-        {% if item.imageUrl %}
-        <img
-          src="{{ item.imageUrl }}"
-          alt=""
-          class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover flex-shrink-0"
-          loading="lazy"
+  {# Main Content - shown when we have items #}
+  <template x-if="items.length > 0">
+    <div>
+      {# View Mode and Filter Controls #}
+      <div class="flex flex-wrap gap-4 mb-6 sm:mb-8 items-center justify-between">
+        {# View Mode Buttons #}
+        <div class="flex gap-2">
+          <button
+            @click="viewMode = 'list'"
+            :class="viewMode === 'list' ? 'bg-primary-600 text-white' : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'"
+            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+            title="List view"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+            <span class="hidden sm:inline">List</span>
+          </button>
+          <button
+            @click="viewMode = 'card'"
+            :class="viewMode === 'card' ? 'bg-primary-600 text-white' : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'"
+            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+            title="Card view"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/>
+            </svg>
+            <span class="hidden sm:inline">Cards</span>
+          </button>
+          <button
+            @click="viewMode = 'full'"
+            :class="viewMode === 'full' ? 'bg-primary-600 text-white' : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'"
+            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+            title="Expanded view"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+            </svg>
+            <span class="hidden sm:inline">Expanded</span>
+          </button>
+        </div>
+
+        {# Feed Filter Dropdown #}
+        <div class="relative" x-show="feeds.length > 1">
+          <select
+            x-model="filterFeed"
+            class="appearance-none bg-surface-100 dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg px-4 py-2 pr-8 text-sm text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="all">All Sources (<span x-text="feeds.length"></span>)</option>
+            <template x-for="feed in feeds" :key="feed.id">
+              <option :value="feed.id" x-text="feed.title"></option>
+            </template>
+          </select>
+          <svg class="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-surface-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+      </div>
+
+      {# Stats Bar #}
+      <div class="flex flex-wrap gap-4 mb-6 p-4 bg-surface-50 dark:bg-surface-800/50 rounded-lg text-sm">
+        <div class="flex items-center gap-2">
+          <span class="text-surface-500">Feeds:</span>
+          <span class="font-medium text-surface-900 dark:text-surface-100" x-text="status?.stats?.feedsCount || feeds.length"></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-surface-500">Items:</span>
+          <span class="font-medium text-surface-900 dark:text-surface-100" x-text="status?.stats?.itemsCount || items.length"></span>
+        </div>
+        <div x-show="status?.status === 'syncing'" class="flex items-center gap-2 text-orange-600 dark:text-orange-400">
+          <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Syncing...
+        </div>
+        <div x-show="loading && items.length > 0" class="flex items-center gap-2 text-primary-600 dark:text-primary-400 ml-auto">
+          <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Refreshing...
+        </div>
+      </div>
+
+      {# Items List #}
+      <div class="news-items">
+        {# List View #}
+        <div x-show="viewMode === 'list'" class="space-y-3">
+          <template x-for="item in filteredItems" :key="item.id">
+            <article class="flex items-start gap-4 p-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
+              <img
+                x-show="item.imageUrl"
+                :src="item.imageUrl"
+                alt=""
+                class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover flex-shrink-0"
+                loading="lazy"
+              >
+              <div class="flex-1 min-w-0">
+                <h2 class="font-semibold text-surface-900 dark:text-surface-100 mb-1">
+                  <a
+                    :href="item.link"
+                    class="hover:text-primary-600 dark:hover:text-primary-400"
+                    target="_blank"
+                    rel="noopener"
+                    x-text="item.title"
+                  ></a>
+                </h2>
+                <p x-show="item.description" class="text-sm text-surface-600 dark:text-surface-400 line-clamp-2 mb-2" x-text="item.description"></p>
+                <div class="flex flex-wrap items-center gap-2 text-xs text-surface-500">
+                  <a
+                    :href="item.sourceUrl || getFeedUrl(item.feedId) || item.link"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 bg-surface-100 dark:bg-surface-700 rounded-full hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors"
+                    target="_blank"
+                    rel="noopener"
+                    :title="item.sourceTitle || item.feedTitle"
+                    x-text="truncate(item.sourceTitle || item.feedTitle, 25)"
+                  ></a>
+                  <span x-show="item.author" x-text="'by ' + item.author"></span>
+                  <time :datetime="item.pubDate" x-text="formatDate(item.pubDate)"></time>
+                  <span class="hidden sm:inline" x-show="item.categories?.length">
+                    <template x-for="cat in item.categories.slice(0, 3)" :key="cat">
+                      <span class="text-primary-600 dark:text-primary-400" x-text="'#' + cat"></span>
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </article>
+          </template>
+        </div>
+
+        {# Card View #}
+        <div x-show="viewMode === 'card'" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <template x-for="item in filteredItems" :key="item.id">
+            <article class="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden hover:shadow-lg transition-shadow">
+              <div x-show="item.imageUrl" class="aspect-video bg-surface-100 dark:bg-surface-700">
+                <img
+                  :src="item.imageUrl"
+                  alt=""
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                >
+              </div>
+              <div class="p-4">
+                <h2 class="font-semibold text-surface-900 dark:text-surface-100 mb-2 line-clamp-2">
+                  <a
+                    :href="item.link"
+                    class="hover:text-primary-600 dark:hover:text-primary-400"
+                    target="_blank"
+                    rel="noopener"
+                    x-text="item.title"
+                  ></a>
+                </h2>
+                <p x-show="item.description" class="text-sm text-surface-600 dark:text-surface-400 line-clamp-3 mb-3" x-text="item.description"></p>
+                <div class="flex items-center justify-between text-xs text-surface-500">
+                  <span class="truncate max-w-[60%]" x-text="truncate(item.sourceTitle || item.feedTitle, 20)"></span>
+                  <time :datetime="item.pubDate" x-text="formatDate(item.pubDate)"></time>
+                </div>
+              </div>
+            </article>
+          </template>
+        </div>
+
+        {# Full/Expanded View #}
+        <div x-show="viewMode === 'full'" class="space-y-6">
+          <template x-for="item in filteredItems" :key="item.id">
+            <article class="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden">
+              <div x-show="item.imageUrl" class="aspect-[3/1] bg-surface-100 dark:bg-surface-700">
+                <img
+                  :src="item.imageUrl"
+                  alt=""
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                >
+              </div>
+              <div class="p-6">
+                {# Meta bar #}
+                <div class="flex flex-wrap items-center gap-3 mb-4 text-sm">
+                  <a
+                    :href="item.sourceUrl || getFeedUrl(item.feedId) || item.link"
+                    class="inline-flex items-center gap-2 px-3 py-1 bg-surface-100 dark:bg-surface-700 rounded-full hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    <span class="font-medium text-surface-700 dark:text-surface-300" x-text="item.sourceTitle || item.feedTitle"></span>
+                  </a>
+                  <span x-show="item.author" class="text-surface-600 dark:text-surface-400" x-text="'by ' + item.author"></span>
+                  <time :datetime="item.pubDate" class="text-surface-500" x-text="formatDate(item.pubDate, 'long')"></time>
+                </div>
+
+                <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4">
+                  <a
+                    :href="item.link"
+                    class="hover:text-primary-600 dark:hover:text-primary-400"
+                    target="_blank"
+                    rel="noopener"
+                    x-text="item.title"
+                  ></a>
+                </h2>
+
+                <p x-show="item.description" class="text-surface-600 dark:text-surface-400 mb-4 leading-relaxed" x-text="item.description"></p>
+
+                <div class="flex flex-wrap items-center gap-3">
+                  <a
+                    :href="item.link"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Read More
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                  </a>
+                  <div x-show="item.categories?.length" class="flex flex-wrap gap-2">
+                    <template x-for="cat in item.categories" :key="cat">
+                      <span class="px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full" x-text="cat"></span>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </template>
+        </div>
+      </div>
+
+      {# Pagination #}
+      <div x-show="pagination && pagination.totalPages > 1" class="flex justify-center gap-2 mt-8">
+        <button
+          @click="loadPage(pagination.page - 1)"
+          :disabled="!pagination.hasPrev || loading"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700"
         >
-        {% endif %}
-
-        <div class="flex-1 min-w-0">
-          <h2 class="font-semibold text-surface-900 dark:text-surface-100 mb-1">
-            <a
-              href="{{ item.link }}"
-              class="hover:text-primary-600 dark:hover:text-primary-400"
-              target="_blank"
-              rel="noopener"
-            >{{ item.title }}</a>
-          </h2>
-
-          {% if item.description %}
-          <p class="text-sm text-surface-600 dark:text-surface-400 line-clamp-2 mb-2">
-            {{ item.description }}
-          </p>
-          {% endif %}
-
-          <div class="flex flex-wrap items-center gap-2 text-xs text-surface-500">
-            {# Use sourceTitle for aggregators, fall back to feedTitle for direct feeds #}
-            {% set displayTitle = item.sourceTitle or item.feedTitle %}
-            {% set displayUrl = item.sourceUrl or (item.feedInfo and item.feedInfo.siteUrl) %}
-            {% if displayTitle %}
-            <a
-              href="{{ displayUrl or item.link }}"
-              class="inline-flex items-center gap-1 px-2 py-0.5 bg-surface-100 dark:bg-surface-700 rounded-full hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors"
-              target="_blank"
-              rel="noopener"
-              title="{{ displayTitle }}"
-            >
-              {% if item.feedInfo and item.feedInfo.imageUrl %}
-              <img src="{{ item.feedInfo.imageUrl }}" alt="" class="w-3 h-3 rounded-sm">
-              {% endif %}
-              {{ displayTitle | truncate(25) }}
-            </a>
-            {% endif %}
-
-            {% if item.author %}
-            <span>by {{ item.author }}</span>
-            {% endif %}
-
-            {% if item.pubDate %}
-            <time datetime="{{ item.pubDate }}">{{ item.pubDate | date("PP") }}</time>
-            {% endif %}
-
-            {% if item.categories.length %}
-            <span class="hidden sm:inline">
-              {% for cat in item.categories | head(3) %}
-              <span class="text-primary-600 dark:text-primary-400">#{{ cat }}</span>
-              {% endfor %}
-            </span>
-            {% endif %}
-          </div>
-        </div>
-      </article>
-      {% endfor %}
+          Previous
+        </button>
+        <span class="px-4 py-2 text-sm text-surface-600 dark:text-surface-400">
+          Page <span x-text="pagination.page"></span> of <span x-text="pagination.totalPages"></span>
+        </span>
+        <button
+          @click="loadPage(pagination.page + 1)"
+          :disabled="!pagination.hasNext || loading"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700"
+        >
+          Next
+        </button>
+      </div>
     </div>
+  </template>
 
-    {# Card View #}
-    <div x-show="viewMode === 'card'" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {% for item in newsActivity.items %}
-      <article
-        x-show="filterFeed === 'all' || filterFeed === '{{ item.feedId }}'"
-        class="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden hover:shadow-lg transition-shadow"
-      >
-        {% if item.imageUrl %}
-        <div class="aspect-video bg-surface-100 dark:bg-surface-700">
-          <img
-            src="{{ item.imageUrl }}"
-            alt=""
-            class="w-full h-full object-cover"
-            loading="lazy"
-          >
-        </div>
-        {% endif %}
-
-        <div class="p-4">
-          <h2 class="font-semibold text-surface-900 dark:text-surface-100 mb-2 line-clamp-2">
-            <a
-              href="{{ item.link }}"
-              class="hover:text-primary-600 dark:hover:text-primary-400"
-              target="_blank"
-              rel="noopener"
-            >{{ item.title }}</a>
-          </h2>
-
-          {% if item.description %}
-          <p class="text-sm text-surface-600 dark:text-surface-400 line-clamp-3 mb-3">
-            {{ item.description }}
-          </p>
-          {% endif %}
-
-          <div class="flex items-center justify-between text-xs text-surface-500">
-            <span class="truncate max-w-[60%]">
-              {# Use sourceTitle for aggregators, fall back to feedTitle for direct feeds #}
-              {% if item.sourceTitle %}{{ item.sourceTitle | truncate(20) }}{% elif item.feedTitle %}{{ item.feedTitle | truncate(20) }}{% endif %}
-            </span>
-            {% if item.pubDate %}
-            <time datetime="{{ item.pubDate }}">{{ item.pubDate | date("PP") }}</time>
-            {% endif %}
-          </div>
-        </div>
-      </article>
-      {% endfor %}
-    </div>
-
-    {# Full/Expanded View #}
-    <div x-show="viewMode === 'full'" class="space-y-6">
-      {% for item in newsActivity.items %}
-      <article
-        x-show="filterFeed === 'all' || filterFeed === '{{ item.feedId }}'"
-        class="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden"
-      >
-        {% if item.imageUrl %}
-        <div class="aspect-[3/1] bg-surface-100 dark:bg-surface-700">
-          <img
-            src="{{ item.imageUrl }}"
-            alt=""
-            class="w-full h-full object-cover"
-            loading="lazy"
-          >
-        </div>
-        {% endif %}
-
-        <div class="p-6">
-          {# Meta bar #}
-          <div class="flex flex-wrap items-center gap-3 mb-4 text-sm">
-            {# Source link - use sourceTitle/Url for aggregators, feedInfo for direct feeds #}
-            {% set displayTitle = item.sourceTitle or item.feedTitle %}
-            {% set displayUrl = item.sourceUrl or (item.feedInfo and item.feedInfo.siteUrl) %}
-            {% if displayTitle %}
-            <a
-              href="{{ displayUrl or item.link }}"
-              class="inline-flex items-center gap-2 px-3 py-1 bg-surface-100 dark:bg-surface-700 rounded-full hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors"
-              target="_blank"
-              rel="noopener"
-            >
-              {% if item.feedInfo and item.feedInfo.imageUrl %}
-              <img src="{{ item.feedInfo.imageUrl }}" alt="" class="w-4 h-4 rounded">
-              {% endif %}
-              <span class="font-medium text-surface-700 dark:text-surface-300">{{ displayTitle }}</span>
-            </a>
-            {% endif %}
-
-            {% if item.author %}
-            <span class="text-surface-600 dark:text-surface-400">by {{ item.author }}</span>
-            {% endif %}
-
-            {% if item.pubDate %}
-            <time datetime="{{ item.pubDate }}" class="text-surface-500">
-              {{ item.pubDate | date("PPP") }}
-            </time>
-            {% endif %}
-          </div>
-
-          <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4">
-            <a
-              href="{{ item.link }}"
-              class="hover:text-primary-600 dark:hover:text-primary-400"
-              target="_blank"
-              rel="noopener"
-            >{{ item.title }}</a>
-          </h2>
-
-          {% if item.description %}
-          <p class="text-surface-600 dark:text-surface-400 mb-4 leading-relaxed">
-            {{ item.description }}
-          </p>
-          {% endif %}
-
-          <div class="flex flex-wrap items-center gap-3">
-            <a
-              href="{{ item.link }}"
-              class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors"
-              target="_blank"
-              rel="noopener"
-            >
-              Read More
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-              </svg>
-            </a>
-
-            {% if item.categories.length %}
-            <div class="flex flex-wrap gap-2">
-              {% for cat in item.categories %}
-              <span class="px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full">
-                {{ cat }}
-              </span>
-              {% endfor %}
-            </div>
-            {% endif %}
-          </div>
-        </div>
-      </article>
-      {% endfor %}
-    </div>
-  </div>
-  {% else %}
-  <div class="text-center py-12">
+  {# Empty State #}
+  <div x-show="!loading && items.length === 0 && !error" class="text-center py-12">
     <svg class="w-16 h-16 mx-auto text-surface-300 dark:text-surface-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
     </svg>
     <p class="text-surface-600 dark:text-surface-400 text-lg">No news items yet.</p>
     <p class="text-surface-500 text-sm mt-2">Add some RSS feeds to get started.</p>
   </div>
-  {% endif %}
 </div>
+
+<script>
+function newsApp() {
+  return {
+    items: [],
+    feeds: [],
+    status: null,
+    pagination: null,
+    loading: true,
+    error: null,
+    viewMode: 'list',
+    filterFeed: 'all',
+    lastUpdated: null,
+    refreshInterval: null,
+
+    async init() {
+      await this.fetchData();
+      // Auto-refresh every 5 minutes
+      this.refreshInterval = setInterval(() => this.fetchData(true), 5 * 60 * 1000);
+    },
+
+    async fetchData(silent = false) {
+      if (!silent) this.loading = true;
+      this.error = null;
+
+      try {
+        const [itemsRes, feedsRes, statusRes] = await Promise.all([
+          fetch('/rssapi/api/items?limit=50').then(r => r.json()),
+          fetch('/rssapi/api/feeds').then(r => r.json()),
+          fetch('/rssapi/api/status').then(r => r.json())
+        ]);
+
+        this.items = itemsRes.items || [];
+        this.pagination = itemsRes.pagination || null;
+        this.feeds = feedsRes.feeds || [];
+        this.status = statusRes;
+        this.lastUpdated = statusRes?.lastSync || new Date().toISOString();
+      } catch (err) {
+        this.error = 'Failed to load news: ' + err.message;
+        console.error('News fetch error:', err);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadPage(page) {
+      if (page < 1 || page > this.pagination?.totalPages) return;
+      this.loading = true;
+
+      try {
+        const res = await fetch(`/rssapi/api/items?limit=50&page=${page}`).then(r => r.json());
+        this.items = res.items || [];
+        this.pagination = res.pagination || null;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        this.error = 'Failed to load page: ' + err.message;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async refresh() {
+      await this.fetchData();
+    },
+
+    get filteredItems() {
+      if (this.filterFeed === 'all') return this.items;
+      return this.items.filter(item => item.feedId === this.filterFeed);
+    },
+
+    getFeedUrl(feedId) {
+      const feed = this.feeds.find(f => f.id === feedId);
+      return feed?.siteUrl || null;
+    },
+
+    formatDate(dateStr, format = 'short') {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return '';
+
+      if (format === 'full') {
+        return date.toLocaleString(undefined, {
+          year: 'numeric', month: 'short', day: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+      }
+      if (format === 'long') {
+        return date.toLocaleDateString(undefined, {
+          year: 'numeric', month: 'long', day: 'numeric'
+        });
+      }
+      return date.toLocaleDateString(undefined, {
+        month: 'short', day: 'numeric'
+      });
+    },
+
+    truncate(str, len) {
+      if (!str) return '';
+      return str.length > len ? str.slice(0, len) + '...' : str;
+    }
+  };
+}
+</script>
