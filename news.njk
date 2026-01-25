@@ -134,13 +134,22 @@ withSidebar: true
           {% endif %}
 
           <div class="flex flex-wrap items-center gap-2 text-xs text-surface-500">
-            {% if item.feedTitle %}
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-surface-100 dark:bg-surface-700 rounded-full">
+            {# Use sourceTitle for aggregators, fall back to feedTitle for direct feeds #}
+            {% set displayTitle = item.sourceTitle or item.feedTitle %}
+            {% set displayUrl = item.sourceUrl or (item.feedInfo and item.feedInfo.siteUrl) %}
+            {% if displayTitle %}
+            <a
+              href="{{ displayUrl or item.link }}"
+              class="inline-flex items-center gap-1 px-2 py-0.5 bg-surface-100 dark:bg-surface-700 rounded-full hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors"
+              target="_blank"
+              rel="noopener"
+              title="{{ displayTitle }}"
+            >
               {% if item.feedInfo and item.feedInfo.imageUrl %}
               <img src="{{ item.feedInfo.imageUrl }}" alt="" class="w-3 h-3 rounded-sm">
               {% endif %}
-              {{ item.feedTitle }}
-            </span>
+              {{ displayTitle | truncate(25) }}
+            </a>
             {% endif %}
 
             {% if item.author %}
@@ -200,7 +209,8 @@ withSidebar: true
 
           <div class="flex items-center justify-between text-xs text-surface-500">
             <span class="truncate max-w-[60%]">
-              {% if item.feedTitle %}{{ item.feedTitle }}{% endif %}
+              {# Use sourceTitle for aggregators, fall back to feedTitle for direct feeds #}
+              {% if item.sourceTitle %}{{ item.sourceTitle | truncate(20) }}{% elif item.feedTitle %}{{ item.feedTitle | truncate(20) }}{% endif %}
             </span>
             {% if item.pubDate %}
             <time datetime="{{ item.pubDate }}">{{ item.pubDate | date("PP") }}</time>
@@ -232,17 +242,20 @@ withSidebar: true
         <div class="p-6">
           {# Meta bar #}
           <div class="flex flex-wrap items-center gap-3 mb-4 text-sm">
-            {% if item.feedInfo %}
+            {# Source link - use sourceTitle/Url for aggregators, feedInfo for direct feeds #}
+            {% set displayTitle = item.sourceTitle or item.feedTitle %}
+            {% set displayUrl = item.sourceUrl or (item.feedInfo and item.feedInfo.siteUrl) %}
+            {% if displayTitle %}
             <a
-              href="{{ item.feedInfo.siteUrl }}"
+              href="{{ displayUrl or item.link }}"
               class="inline-flex items-center gap-2 px-3 py-1 bg-surface-100 dark:bg-surface-700 rounded-full hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors"
               target="_blank"
               rel="noopener"
             >
-              {% if item.feedInfo.imageUrl %}
+              {% if item.feedInfo and item.feedInfo.imageUrl %}
               <img src="{{ item.feedInfo.imageUrl }}" alt="" class="w-4 h-4 rounded">
               {% endif %}
-              <span class="font-medium text-surface-700 dark:text-surface-300">{{ item.feedTitle }}</span>
+              <span class="font-medium text-surface-700 dark:text-surface-300">{{ displayTitle }}</span>
             </a>
             {% endif %}
 
