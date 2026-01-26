@@ -5,101 +5,390 @@ permalink: /interactions/
 ---
 <div class="page-header mb-6 sm:mb-8">
   <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">Interactions</h1>
-  <p class="text-surface-600 dark:text-surface-400">My engagement with content across the IndieWeb.</p>
+  <p class="text-surface-600 dark:text-surface-400">Activity across the IndieWeb - both my engagement and responses to my content.</p>
 </div>
 
-<div class="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-  {# Likes #}
-  <a href="/likes/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
-    <div class="flex items-center gap-4 mb-4">
-      <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
-        <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-        </svg>
-      </div>
-      <div>
-        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Likes</h2>
-        <p class="text-sm text-surface-500">{{ collections.likes.length }} item{% if collections.likes.length != 1 %}s{% endif %}</p>
-      </div>
-    </div>
-    <p class="text-surface-600 dark:text-surface-400 text-sm">Content I've appreciated across the web.</p>
-  </a>
+{# Tab navigation for Outbound/Inbound #}
+<div x-data="interactionsApp()" x-init="init()">
+  {# Tab buttons #}
+  <div class="flex border-b border-surface-200 dark:border-surface-700 mb-6">
+    <button
+      @click="activeTab = 'outbound'"
+      :class="activeTab === 'outbound' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+      class="px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors">
+      My Activity
+      <span class="ml-1 text-xs text-surface-400">(outbound)</span>
+    </button>
+    <button
+      @click="activeTab = 'inbound'"
+      :class="activeTab === 'inbound' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+      class="px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors">
+      Received
+      <span class="ml-1 text-xs text-surface-400">(inbound)</span>
+      <span x-show="totalInbound > 0" x-text="totalInbound" class="ml-1 px-1.5 py-0.5 text-xs bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full"></span>
+    </button>
+  </div>
 
-  {# Replies #}
-  <a href="/replies/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
-    <div class="flex items-center gap-4 mb-4">
-      <div class="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-full">
-        <svg class="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
-        </svg>
-      </div>
-      <div>
-        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Replies</h2>
-        <p class="text-sm text-surface-500">{{ collections.replies.length }} item{% if collections.replies.length != 1 %}s{% endif %}</p>
-      </div>
-    </div>
-    <p class="text-surface-600 dark:text-surface-400 text-sm">My responses to posts across the web.</p>
-  </a>
+  {# ===== OUTBOUND TAB - My Activity ===== #}
+  <div x-show="activeTab === 'outbound'" x-transition>
+    <p class="text-surface-600 dark:text-surface-400 text-sm mb-6">Content I've interacted with across the web.</p>
 
-  {# Bookmarks #}
-  <a href="/bookmarks/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
-    <div class="flex items-center gap-4 mb-4">
-      <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-full">
-        <svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
-        </svg>
-      </div>
-      <div>
-        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Bookmarks</h2>
-        <p class="text-sm text-surface-500">{{ collections.bookmarks.length }} item{% if collections.bookmarks.length != 1 %}s{% endif %}</p>
-      </div>
-    </div>
-    <p class="text-surface-600 dark:text-surface-400 text-sm">Links I've saved for later.</p>
-  </a>
+    <div class="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {# Likes #}
+      <a href="/likes/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
+            <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Likes</h2>
+            <p class="text-sm text-surface-500">{{ collections.likes.length }} item{% if collections.likes.length != 1 %}s{% endif %}</p>
+          </div>
+        </div>
+        <p class="text-surface-600 dark:text-surface-400 text-sm">Content I've appreciated across the web.</p>
+      </a>
 
-  {# Reposts #}
-  <a href="/reposts/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
-    <div class="flex items-center gap-4 mb-4">
-      <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
-        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      {# Replies #}
+      <a href="/replies/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-full">
+            <svg class="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Replies</h2>
+            <p class="text-sm text-surface-500">{{ collections.replies.length }} item{% if collections.replies.length != 1 %}s{% endif %}</p>
+          </div>
+        </div>
+        <p class="text-surface-600 dark:text-surface-400 text-sm">My responses to posts across the web.</p>
+      </a>
+
+      {# Bookmarks #}
+      <a href="/bookmarks/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-full">
+            <svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Bookmarks</h2>
+            <p class="text-sm text-surface-500">{{ collections.bookmarks.length }} item{% if collections.bookmarks.length != 1 %}s{% endif %}</p>
+          </div>
+        </div>
+        <p class="text-surface-600 dark:text-surface-400 text-sm">Links I've saved for later.</p>
+      </a>
+
+      {# Reposts #}
+      <a href="/reposts/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
+            <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Reposts</h2>
+            <p class="text-sm text-surface-500">{{ collections.reposts.length }} item{% if collections.reposts.length != 1 %}s{% endif %}</p>
+          </div>
+        </div>
+        <p class="text-surface-600 dark:text-surface-400 text-sm">Content I've shared from others.</p>
+      </a>
+
+      {# Photos #}
+      <a href="/photos/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+            <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Photos</h2>
+            <p class="text-sm text-surface-500">{{ collections.photos.length }} item{% if collections.photos.length != 1 %}s{% endif %}</p>
+          </div>
+        </div>
+        <p class="text-surface-600 dark:text-surface-400 text-sm">Photo posts and images.</p>
+      </a>
+    </div>
+
+    <div class="mt-12 p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">About IndieWeb Interactions</h2>
+      <p class="text-surface-600 dark:text-surface-400 text-sm mb-4">
+        These pages show different types of IndieWeb interactions I've made. Each type uses specific microformat properties
+        to indicate the relationship to the original content.
+      </p>
+      <ul class="text-sm text-surface-600 dark:text-surface-400 space-y-1">
+        <li><strong>Likes</strong> use <code class="bg-surface-200 dark:bg-surface-700 px-1 rounded">u-like-of</code></li>
+        <li><strong>Replies</strong> use <code class="bg-surface-200 dark:bg-surface-700 px-1 rounded">u-in-reply-to</code></li>
+        <li><strong>Bookmarks</strong> use <code class="bg-surface-200 dark:bg-surface-700 px-1 rounded">u-bookmark-of</code></li>
+        <li><strong>Reposts</strong> use <code class="bg-surface-200 dark:bg-surface-700 px-1 rounded">u-repost-of</code></li>
+      </ul>
+    </div>
+  </div>
+
+  {# ===== INBOUND TAB - Received Webmentions ===== #}
+  <div x-show="activeTab === 'inbound'" x-transition>
+    <div class="flex items-center justify-between mb-6">
+      <p class="text-surface-600 dark:text-surface-400 text-sm">Webmentions and interactions others have made with my content.</p>
+      <button
+        @click="fetchWebmentions()"
+        :disabled="loading"
+        class="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 rounded-lg transition-colors disabled:opacity-50">
+        <svg class="w-4 h-4" :class="loading ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
         </svg>
+        <span x-text="loading ? 'Loading...' : 'Refresh'"></span>
+      </button>
+    </div>
+
+    {# Loading state #}
+    <div x-show="loading && !webmentions.length" class="text-center py-12">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+      <p class="mt-4 text-surface-500">Loading webmentions...</p>
+    </div>
+
+    {# Error state #}
+    <div x-show="error" class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 mb-6">
+      <p x-text="error"></p>
+    </div>
+
+    {# Filter by type #}
+    <div x-show="!loading || webmentions.length" class="flex flex-wrap gap-2 mb-6">
+      <button
+        @click="filterType = 'all'"
+        :class="filterType === 'all' ? 'bg-primary-500 text-white' : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300'"
+        class="px-3 py-1.5 text-sm rounded-full transition-colors">
+        All <span x-text="'(' + totalInbound + ')'" class="text-xs opacity-75"></span>
+      </button>
+      <button
+        @click="filterType = 'like-of'"
+        :class="filterType === 'like-of' ? 'bg-red-500 text-white' : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300'"
+        class="px-3 py-1.5 text-sm rounded-full transition-colors">
+        ❤️ Likes <span x-text="'(' + likes.length + ')'" class="text-xs opacity-75"></span>
+      </button>
+      <button
+        @click="filterType = 'repost-of'"
+        :class="filterType === 'repost-of' ? 'bg-green-500 text-white' : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300'"
+        class="px-3 py-1.5 text-sm rounded-full transition-colors">
+        🔄 Reposts <span x-text="'(' + reposts.length + ')'" class="text-xs opacity-75"></span>
+      </button>
+      <button
+        @click="filterType = 'in-reply-to'"
+        :class="filterType === 'in-reply-to' ? 'bg-primary-500 text-white' : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300'"
+        class="px-3 py-1.5 text-sm rounded-full transition-colors">
+        💬 Replies <span x-text="'(' + replies.length + ')'" class="text-xs opacity-75"></span>
+      </button>
+      <button
+        @click="filterType = 'mention-of'"
+        :class="filterType === 'mention-of' ? 'bg-yellow-500 text-white' : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300'"
+        class="px-3 py-1.5 text-sm rounded-full transition-colors">
+        📣 Mentions <span x-text="'(' + mentions.length + ')'" class="text-xs opacity-75"></span>
+      </button>
+    </div>
+
+    {# Webmentions list #}
+    <div x-show="!loading || webmentions.length" class="space-y-4">
+      <template x-for="wm in filteredWebmentions" :key="wm['wm-id']">
+        <div class="p-4 bg-surface-100 dark:bg-surface-800 rounded-lg">
+          <div class="flex gap-3">
+            {# Author avatar #}
+            <a :href="wm.author?.url || '#'" target="_blank" rel="noopener" class="flex-shrink-0">
+              <img
+                :src="wm.author?.photo || '/images/default-avatar.png'"
+                :alt="wm.author?.name || 'Anonymous'"
+                class="w-10 h-10 rounded-full"
+                loading="lazy"
+                onerror="this.src='/images/default-avatar.png'"
+              >
+            </a>
+
+            <div class="flex-1 min-w-0">
+              {# Header with author, type badge, and date #}
+              <div class="flex flex-wrap items-center gap-2 mb-1">
+                <a :href="wm.author?.url || '#'" target="_blank" rel="noopener" class="font-semibold text-surface-900 dark:text-surface-100 hover:underline" x-text="wm.author?.name || 'Anonymous'"></a>
+
+                {# Type badge #}
+                <span x-show="wm['wm-property'] === 'like-of'" class="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full">
+                  ❤️ liked
+                </span>
+                <span x-show="wm['wm-property'] === 'repost-of'" class="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">
+                  🔄 reposted
+                </span>
+                <span x-show="wm['wm-property'] === 'in-reply-to'" class="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full">
+                  💬 replied
+                </span>
+                <span x-show="wm['wm-property'] === 'mention-of'" class="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full">
+                  📣 mentioned
+                </span>
+                <span x-show="wm['wm-property'] === 'bookmark-of'" class="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full">
+                  🔖 bookmarked
+                </span>
+
+                <a :href="wm.url || '#'" target="_blank" rel="noopener" class="text-xs text-surface-500 hover:underline">
+                  <time :datetime="wm.published || wm['wm-received']" x-text="formatDate(wm.published || wm['wm-received'])"></time>
+                </a>
+              </div>
+
+              {# Content (for replies) #}
+              <div x-show="wm.content?.text" class="text-surface-700 dark:text-surface-300 text-sm mt-2" x-text="truncateText(wm.content?.text, 280)"></div>
+
+              {# Target URL - which of my posts this is about #}
+              <div class="mt-2 text-xs text-surface-500">
+                <span>on </span>
+                <a :href="wm['wm-target']" class="text-primary-600 dark:text-primary-400 hover:underline" x-text="formatTargetUrl(wm['wm-target'])"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      {# Empty state #}
+      <div x-show="!loading && filteredWebmentions.length === 0" class="text-center py-12 text-surface-500">
+        <p>No webmentions found for this filter.</p>
       </div>
-      <div>
-        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Reposts</h2>
-        <p class="text-sm text-surface-500">{{ collections.reposts.length }} item{% if collections.reposts.length != 1 %}s{% endif %}</p>
+
+      {# Pagination / Load more #}
+      <div x-show="hasMore" class="text-center pt-4">
+        <button
+          @click="loadMore()"
+          :disabled="loadingMore"
+          class="px-4 py-2 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 rounded-lg text-sm transition-colors disabled:opacity-50">
+          <span x-text="loadingMore ? 'Loading...' : 'Load More'"></span>
+        </button>
       </div>
     </div>
-    <p class="text-surface-600 dark:text-surface-400 text-sm">Content I've shared from others.</p>
-  </a>
 
-  {# Photos #}
-  <a href="/photos/" class="block p-6 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors group">
-    <div class="flex items-center gap-4 mb-4">
-      <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
-        <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-        </svg>
-      </div>
-      <div>
-        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">Photos</h2>
-        <p class="text-sm text-surface-500">{{ collections.photos.length }} item{% if collections.photos.length != 1 %}s{% endif %}</p>
-      </div>
+    {# Info box #}
+    <div class="mt-12 p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">About Webmentions</h2>
+      <p class="text-surface-600 dark:text-surface-400 text-sm mb-4">
+        Webmentions are a W3C standard for cross-site communication. When someone likes, reposts, or replies to my content
+        from their own site (or via Bluesky/Mastodon bridges), I receive a webmention notification.
+      </p>
+      <ul class="text-sm text-surface-600 dark:text-surface-400 space-y-1">
+        <li><strong>Likes</strong> - Someone appreciated this post</li>
+        <li><strong>Reposts</strong> - Someone shared this post</li>
+        <li><strong>Replies</strong> - Someone responded to this post</li>
+        <li><strong>Mentions</strong> - Someone linked to this post</li>
+      </ul>
     </div>
-    <p class="text-surface-600 dark:text-surface-400 text-sm">Photo posts and images.</p>
-  </a>
+  </div>
 </div>
 
-<div class="mt-12 p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
-  <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">About IndieWeb Interactions</h2>
-  <p class="text-surface-600 dark:text-surface-400 text-sm mb-4">
-    These pages show different types of IndieWeb interactions I've made. Each type uses specific microformat properties
-    to indicate the relationship to the original content.
-  </p>
-  <ul class="text-sm text-surface-600 dark:text-surface-400 space-y-1">
-    <li><strong>Likes</strong> use <code class="bg-surface-200 dark:bg-surface-700 px-1 rounded">u-like-of</code></li>
-    <li><strong>Replies</strong> use <code class="bg-surface-200 dark:bg-surface-700 px-1 rounded">u-in-reply-to</code></li>
-    <li><strong>Bookmarks</strong> use <code class="bg-surface-200 dark:bg-surface-700 px-1 rounded">u-bookmark-of</code></li>
-    <li><strong>Reposts</strong> use <code class="bg-surface-200 dark:bg-surface-700 px-1 rounded">u-repost-of</code></li>
-  </ul>
-</div>
+<script>
+function interactionsApp() {
+  return {
+    activeTab: 'inbound',
+    loading: false,
+    loadingMore: false,
+    error: null,
+    webmentions: [],
+    filterType: 'all',
+    page: 0,
+    perPage: 50,
+    hasMore: true,
+
+    get likes() {
+      return this.webmentions.filter(wm => wm['wm-property'] === 'like-of');
+    },
+
+    get reposts() {
+      return this.webmentions.filter(wm => wm['wm-property'] === 'repost-of');
+    },
+
+    get replies() {
+      return this.webmentions.filter(wm => wm['wm-property'] === 'in-reply-to');
+    },
+
+    get mentions() {
+      return this.webmentions.filter(wm => wm['wm-property'] === 'mention-of');
+    },
+
+    get totalInbound() {
+      return this.webmentions.length;
+    },
+
+    get filteredWebmentions() {
+      if (this.filterType === 'all') return this.webmentions;
+      return this.webmentions.filter(wm => wm['wm-property'] === this.filterType);
+    },
+
+    async init() {
+      await this.fetchWebmentions();
+    },
+
+    async fetchWebmentions(reset = true) {
+      if (reset) {
+        this.page = 0;
+        this.webmentions = [];
+        this.hasMore = true;
+      }
+
+      this.loading = true;
+      this.error = null;
+
+      try {
+        const domain = '{{ site.webmentions.domain }}';
+        const url = `https://webmention.io/api/mentions.jf2?domain=${domain}&per-page=${this.perPage}&page=${this.page}&sort-by=published&sort-dir=down`;
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        const newMentions = data.children || [];
+
+        if (reset) {
+          this.webmentions = newMentions;
+        } else {
+          this.webmentions = [...this.webmentions, ...newMentions];
+        }
+
+        this.hasMore = newMentions.length === this.perPage;
+      } catch (err) {
+        this.error = `Failed to load webmentions: ${err.message}`;
+        console.error('[Interactions]', err);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadMore() {
+      this.loadingMore = true;
+      this.page++;
+      await this.fetchWebmentions(false);
+      this.loadingMore = false;
+    },
+
+    formatDate(dateStr) {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    },
+
+    truncateText(text, maxLen = 280) {
+      if (!text) return '';
+      if (text.length <= maxLen) return text;
+      return text.slice(0, maxLen).trim() + '...';
+    },
+
+    formatTargetUrl(url) {
+      if (!url) return '';
+      try {
+        const u = new URL(url);
+        // Return just the pathname, trimmed
+        let path = u.pathname;
+        if (path.length > 50) {
+          path = path.slice(0, 47) + '...';
+        }
+        return path || '/';
+      } catch {
+        return url;
+      }
+    }
+  };
+}
+</script>
