@@ -121,6 +121,7 @@ export default function (eleventyConfig) {
   // Copy static assets to output
   eleventyConfig.addPassthroughCopy("css");
   eleventyConfig.addPassthroughCopy("images");
+  eleventyConfig.addPassthroughCopy("js");
 
   // Watch for content changes
   eleventyConfig.addWatchTarget("./content/");

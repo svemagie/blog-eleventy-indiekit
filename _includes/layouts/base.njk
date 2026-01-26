@@ -218,5 +218,7 @@
     document.documentElement.addEventListener('mouseover', prefetch, { capture: true, passive: true });
     document.documentElement.addEventListener('touchstart', prefetch, { capture: true, passive: true });
   </script>
+  {# Client-side webmention fetcher - supplements build-time cache with real-time data #}
+  <script src="/js/webmentions.js" defer></script>
 </body>
 </html>

@@ -1,8 +1,18 @@
 {# Webmentions Component #}
 {# Displays likes, reposts, and replies for a post #}
 {# Also checks legacy URLs from micro.blog and old blog for historical webmentions #}
+{# Client-side JS supplements build-time data with real-time fetches #}
 
 {% set mentions = webmentions | webmentionsForUrl(page.url, urlAliases) %}
+{% set absoluteUrl = site.url + page.url %}
+{% set buildTimestamp = "now" | date("x") %}
+
+{# Data container for client-side JS to fetch new webmentions #}
+<div data-webmentions
+     data-target="{{ absoluteUrl }}"
+     data-domain="{{ site.webmentions.domain }}"
+     data-buildtime="{{ buildTimestamp }}"
+     class="hidden"></div>
 
 {% if mentions.length %}
 <section class="webmentions mt-8 pt-8 border-t border-surface-200 dark:border-surface-700" id="webmentions">
