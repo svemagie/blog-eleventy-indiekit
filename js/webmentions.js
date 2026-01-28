@@ -86,13 +86,14 @@
     // Create section if it doesn't exist
     if (!row) {
       const section = createAvatarSection(type);
-      const webmentionsSection = document.getElementById('webmentions');
+      let webmentionsSection = document.getElementById('webmentions');
+      if (!webmentionsSection) {
+        createWebmentionsSection();
+        webmentionsSection = document.getElementById('webmentions');
+      }
       if (webmentionsSection) {
         webmentionsSection.appendChild(section);
         row = section.querySelector('.avatar-row');
-      } else {
-        createWebmentionsSection();
-        row = document.querySelector(selector);
       }
     }
 
@@ -126,13 +127,14 @@
     // Create section if it doesn't exist
     if (!list) {
       const section = createReplySection();
-      const webmentionsSection = document.getElementById('webmentions');
+      let webmentionsSection = document.getElementById('webmentions');
+      if (!webmentionsSection) {
+        createWebmentionsSection();
+        webmentionsSection = document.getElementById('webmentions');
+      }
       if (webmentionsSection) {
         webmentionsSection.appendChild(section);
         list = section.querySelector('ul');
-      } else {
-        createWebmentionsSection();
-        list = document.querySelector(selector);
       }
     }
 
@@ -220,13 +222,14 @@
 
     if (!list) {
       const section = createMentionSection();
-      const webmentionsSection = document.getElementById('webmentions');
+      let webmentionsSection = document.getElementById('webmentions');
+      if (!webmentionsSection) {
+        createWebmentionsSection();
+        webmentionsSection = document.getElementById('webmentions');
+      }
       if (webmentionsSection) {
         webmentionsSection.appendChild(section);
         list = section.querySelector('ul');
-      } else {
-        createWebmentionsSection();
-        list = document.querySelector(selector);
       }
     }
 
