@@ -19,8 +19,10 @@ permalink: /photos/
     </div>
     {# Render photo(s) from frontmatter #}
     {% if post.data.photo %}
+      <!-- DEBUG: photo type={{ post.data.photo | dump | safe }} -->
       <div class="photo-gallery">
         {% for img in post.data.photo %}
+          <!-- DEBUG: img={{ img | dump | safe }} url={{ img.url }} -->
           {% set photoUrl = img.url %}
           {% if photoUrl and photoUrl[0] != '/' and 'http' not in photoUrl %}
             {% set photoUrl = '/' + photoUrl %}
