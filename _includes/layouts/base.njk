@@ -9,18 +9,25 @@
   {% set ogTitle = title | default(site.name) %}
   {% set ogDesc = description | default(content | ogDescription(200)) | default(site.description) %}
   {% set contentImage = content | extractFirstImage %}
+  {# Normalize photo - could be array for multi-photo posts #}
+  {% set ogPhoto = photo %}
+  {% if ogPhoto %}
+    {% if ogPhoto[0] and (ogPhoto[0] | length) > 10 %}
+      {% set ogPhoto = ogPhoto[0] %}
+    {% endif %}
+  {% endif %}
   <meta property="og:title" content="{{ ogTitle }}">
   <meta property="og:site_name" content="{{ site.name }}">
   <meta property="og:url" content="{{ site.url }}{{ page.url }}">
   <meta property="og:type" content="{% if page.url == '/' %}website{% else %}article{% endif %}">
   <meta property="og:description" content="{{ ogDesc }}">
   <meta name="description" content="{{ ogDesc }}">
-  {% if photo %}
-  <meta property="og:image" content="{% if photo.startsWith('http') %}{{ photo }}{% else %}{{ site.url }}{% if not photo.startsWith('/') %}/{% endif %}{{ photo }}{% endif %}">
-  {% elif image %}
-  <meta property="og:image" content="{% if image.startsWith('http') %}{{ image }}{% else %}{{ site.url }}{% if not image.startsWith('/') %}/{% endif %}{{ image }}{% endif %}">
-  {% elif contentImage %}
-  <meta property="og:image" content="{% if contentImage.startsWith('http') %}{{ contentImage }}{% else %}{{ site.url }}{% if not contentImage.startsWith('/') %}/{% endif %}{{ contentImage }}{% endif %}">
+  {% if ogPhoto and ogPhoto != "" and (ogPhoto | length) > 10 %}
+  <meta property="og:image" content="{% if 'http' in ogPhoto %}{{ ogPhoto }}{% else %}{{ site.url }}{% if ogPhoto[0] != '/' %}/{% endif %}{{ ogPhoto }}{% endif %}">
+  {% elif image and image != "" and (image | length) > 10 %}
+  <meta property="og:image" content="{% if 'http' in image %}{{ image }}{% else %}{{ site.url }}{% if image[0] != '/' %}/{% endif %}{{ image }}{% endif %}">
+  {% elif contentImage and contentImage != "" and (contentImage | length) > 10 %}
+  <meta property="og:image" content="{% if 'http' in contentImage %}{{ contentImage }}{% else %}{{ site.url }}{% if contentImage[0] != '/' %}/{% endif %}{{ contentImage }}{% endif %}">
   {% else %}
   <meta property="og:image" content="{{ site.url }}/images/og-default.png">
   {% endif %}
@@ -29,16 +36,16 @@
   <meta property="og:locale" content="{{ site.locale | default('en_US') }}">
 
   {# Twitter Card meta tags #}
-  {% set hasImage = photo or image or contentImage %}
+  {% set hasImage = (ogPhoto and ogPhoto != "" and (ogPhoto | length) > 10) or (image and image != "" and (image | length) > 10) or (contentImage and contentImage != "" and (contentImage | length) > 10) %}
   <meta name="twitter:card" content="{% if hasImage %}summary_large_image{% else %}summary{% endif %}">
   <meta name="twitter:title" content="{{ ogTitle }}">
   <meta name="twitter:description" content="{{ ogDesc }}">
-  {% if photo %}
-  <meta name="twitter:image" content="{% if photo.startsWith('http') %}{{ photo }}{% else %}{{ site.url }}/{{ photo }}{% endif %}">
-  {% elif image %}
-  <meta name="twitter:image" content="{% if image.startsWith('http') %}{{ image }}{% else %}{{ site.url }}/{{ image }}{% endif %}">
-  {% elif contentImage %}
-  <meta name="twitter:image" content="{% if contentImage.startsWith('http') %}{{ contentImage }}{% else %}{{ site.url }}/{{ contentImage }}{% endif %}">
+  {% if ogPhoto and ogPhoto != "" and (ogPhoto | length) > 10 %}
+  <meta name="twitter:image" content="{% if 'http' in ogPhoto %}{{ ogPhoto }}{% else %}{{ site.url }}/{{ ogPhoto }}{% endif %}">
+  {% elif image and image != "" and (image | length) > 10 %}
+  <meta name="twitter:image" content="{% if 'http' in image %}{{ image }}{% else %}{{ site.url }}/{{ image }}{% endif %}">
+  {% elif contentImage and contentImage != "" and (contentImage | length) > 10 %}
+  <meta name="twitter:image" content="{% if 'http' in contentImage %}{{ contentImage }}{% else %}{{ site.url }}/{{ contentImage }}{% endif %}">
   {% endif %}
 
   {# Favicon #}
