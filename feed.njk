@@ -20,7 +20,7 @@ eleventyExcludeFromCollections: true
       <guid isPermaLink="true">{{ absolutePostUrl }}</guid>
       <pubDate>{{ post.date | dateToRfc822 }}</pubDate>
       <description>{{ post.content | htmlToAbsoluteUrls(absolutePostUrl) | escape }}</description>
-      {%- if postImage %}
+      {%- if postImage and postImage != "" %}
       {%- set imageUrl = postImage | url | absoluteUrl(site.url) %}
       <enclosure url="{{ imageUrl }}" type="image/jpeg" length="0"/>
       <media:content url="{{ imageUrl }}" medium="image"/>

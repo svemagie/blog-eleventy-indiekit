@@ -25,7 +25,7 @@ eleventyExcludeFromCollections: true
       "title": {{ post.data.title | default(post.content | striptags | truncate(80)) | jsonEncode | safe }},
       "content_html": {{ post.content | htmlToAbsoluteUrls(absolutePostUrl) | jsonEncode | safe }},
       "date_published": "{{ post.date | dateToRfc3339 }}"
-      {%- if postImage %},
+      {%- if postImage and postImage != "" %},
       "image": "{{ postImage | url | absoluteUrl(site.url) }}"
       {%- endif %}
     }{% if not loop.last %},{% endif %}
