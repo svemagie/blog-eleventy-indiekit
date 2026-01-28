@@ -1,6 +1,6 @@
 /**
  * Client-side webmention fetcher
- * Supplements build-time cached webmentions with real-time data from webmention.io
+ * Supplements build-time cached webmentions with real-time data from proxy API
  */
 
 (function () {
@@ -18,7 +18,8 @@
   if (sessionStorage.getItem(cacheKey)) return;
   sessionStorage.setItem(cacheKey, '1');
 
-  const apiUrl = `https://webmention.io/api/mentions.jf2?target=${encodeURIComponent(target)}&per-page=100`;
+  // Use server-side proxy to keep webmention.io token secure
+  const apiUrl = `/webmentions-api/api/mentions?target=${encodeURIComponent(target)}&per-page=100`;
 
   fetch(apiUrl)
     .then((res) => res.json())
