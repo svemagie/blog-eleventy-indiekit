@@ -21,24 +21,33 @@
   // Use server-side proxy to keep webmention.io token secure
   const apiUrl = `/webmentions-api/api/mentions?target=${encodeURIComponent(target)}&per-page=100`;
 
+  // Check if build-time webmentions section exists
+  const hasBuildTimeSection = document.getElementById('webmentions') !== null;
+
   fetch(apiUrl)
     .then((res) => res.json())
     .then((data) => {
       if (!data.children || !data.children.length) return;
 
-      // Filter to webmentions received after build time
-      const newMentions = data.children.filter((wm) => {
-        const wmTime = new Date(wm['wm-received']).getTime();
-        return wmTime > buildTime;
-      });
+      let mentionsToShow;
+      if (hasBuildTimeSection) {
+        // Build-time section exists - only show NEW webmentions to avoid duplicates
+        mentionsToShow = data.children.filter((wm) => {
+          const wmTime = new Date(wm['wm-received']).getTime();
+          return wmTime > buildTime;
+        });
+      } else {
+        // No build-time section - show ALL webmentions from API
+        mentionsToShow = data.children;
+      }
 
-      if (!newMentions.length) return;
+      if (!mentionsToShow.length) return;
 
       // Group by type
-      const likes = newMentions.filter((m) => m['wm-property'] === 'like-of');
-      const reposts = newMentions.filter((m) => m['wm-property'] === 'repost-of');
-      const replies = newMentions.filter((m) => m['wm-property'] === 'in-reply-to');
-      const mentions = newMentions.filter((m) => m['wm-property'] === 'mention-of');
+      const likes = mentionsToShow.filter((m) => m['wm-property'] === 'like-of');
+      const reposts = mentionsToShow.filter((m) => m['wm-property'] === 'repost-of');
+      const replies = mentionsToShow.filter((m) => m['wm-property'] === 'in-reply-to');
+      const mentions = mentionsToShow.filter((m) => m['wm-property'] === 'mention-of');
 
       // Append new likes
       if (likes.length) {
