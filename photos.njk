@@ -21,8 +21,9 @@ permalink: /photos/
     {% if post.data.photo %}
       <div class="photo-gallery">
         {% for img in post.data.photo %}
+          {% set photoUrl = img.url if img.url.startsWith('/') or img.url.startsWith('http') else '/' + img.url %}
           <a href="{{ post.url }}" class="photo-link">
-            <img src="{{ img.url }}" alt="{{ img.alt | default('Photo') }}" class="u-photo" loading="lazy">
+            <img src="{{ photoUrl }}" alt="{{ img.alt | default('Photo') }}" class="u-photo" loading="lazy">
           </a>
         {% endfor %}
       </div>
