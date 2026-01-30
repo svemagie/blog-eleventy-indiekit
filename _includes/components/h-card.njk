@@ -2,10 +2,10 @@
 {# See: https://microformats.org/wiki/h-card #}
 
 <div class="h-card p-author" itemscope itemtype="http://schema.org/Person">
-  {# Avatar #}
-  <a href="{{ site.author.url }}" class="u-url u-uid hidden" rel="me" itemprop="url">
+  {# Avatar - visible for h-card validation #}
+  <a href="{{ site.author.url }}" class="u-url u-uid" rel="me" itemprop="url">
     <img
-      class="u-photo hidden"
+      class="u-photo w-16 h-16 rounded-full object-cover"
       src="{{ site.author.avatar }}"
       alt="{{ site.author.name }}"
       loading="lazy"
@@ -13,32 +13,84 @@
     >
   </a>
 
-  {# Name and identity #}
+  {# Name #}
   <span class="p-name font-semibold text-surface-900 dark:text-surface-100" itemprop="name">
     {{ site.author.name }}
   </span>
 
-  {# Title/role #}
+  {# Pronouns #}
+  {% if site.author.pronoun %}
+  <span class="p-pronoun text-surface-500 dark:text-surface-400 text-sm">({{ site.author.pronoun }})</span>
+  {% endif %}
+
+  {# Job title #}
   {% if site.author.title %}
   <span class="p-job-title text-surface-600 dark:text-surface-400 text-sm" itemprop="jobTitle">
     {{ site.author.title }}
   </span>
   {% endif %}
 
-  {# Location #}
-  {% if site.author.location %}
-  <span class="p-locality hidden" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-    <span itemprop="addressLocality">{{ site.author.location }}</span>
+  {# Organization #}
+  {% if site.author.org %}
+  <span class="p-org text-surface-600 dark:text-surface-400 text-sm" itemprop="worksFor">
+    @ {{ site.author.org }}
   </span>
   {% endif %}
 
+  {# Bio / Note #}
+  {% if site.author.bio %}
+  <p class="p-note text-surface-700 dark:text-surface-300 text-sm mt-2" itemprop="description">
+    {{ site.author.bio }}
+  </p>
+  {% endif %}
+
+  {# Location - structured address #}
+  <div class="p-adr h-adr text-surface-500 dark:text-surface-400 text-sm mt-1" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+    {% if site.author.locality %}
+    <span class="p-locality" itemprop="addressLocality">{{ site.author.locality }}</span>{% if site.author.region or site.author.country %}, {% endif %}
+    {% endif %}
+    {% if site.author.region %}
+    <span class="p-region" itemprop="addressRegion">{{ site.author.region }}</span>{% if site.author.country %}, {% endif %}
+    {% endif %}
+    {% if site.author.country %}
+    <span class="p-country-name" itemprop="addressCountry">{{ site.author.country }}</span>
+    {% endif %}
+    {# Fallback to legacy location field if structured fields not set #}
+    {% if not site.author.locality and not site.author.region and not site.author.country and site.author.location %}
+    <span class="p-locality">{{ site.author.location }}</span>
+    {% endif %}
+  </div>
+
+  {# Email #}
+  {% if site.author.email %}
+  <a href="mailto:{{ site.author.email }}" class="u-email text-primary-600 dark:text-primary-400 text-sm hover:underline" itemprop="email">
+    {{ site.author.email }}
+  </a>
+  {% endif %}
+
+  {# PGP Key #}
+  {% if site.author.keyUrl %}
+  <a href="{{ site.author.keyUrl }}" class="u-key text-surface-500 dark:text-surface-400 text-sm hover:underline" rel="pgpkey">
+    🔐 PGP Key
+  </a>
+  {% endif %}
+
+  {# Categories / Skills #}
+  {% if site.author.categories and site.author.categories.length %}
+  <div class="mt-2 flex flex-wrap gap-1">
+    {% for category in site.author.categories %}
+    <span class="p-category text-xs px-2 py-0.5 bg-surface-100 dark:bg-surface-800 rounded">{{ category }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   {# Social links with rel="me" #}
-  <nav class="flex flex-wrap gap-3 mt-2" aria-label="Social links">
+  <nav class="flex flex-wrap gap-3 mt-3" aria-label="Social links">
     {% for link in site.social %}
     <a
       href="{{ link.url }}"
       rel="{{ link.rel }} noopener"
-      class="text-surface-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+      class="u-url text-surface-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
       aria-label="{{ link.name }}"
       target="_blank">
       {% if link.icon == "github" %}

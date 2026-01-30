@@ -54,6 +54,13 @@ export default {
     title: process.env.AUTHOR_TITLE || "",
     bio: process.env.AUTHOR_BIO || "Welcome to my IndieWeb blog.",
     location: process.env.AUTHOR_LOCATION || "",
+    locality: process.env.AUTHOR_LOCALITY || "",
+    region: process.env.AUTHOR_REGION || "",
+    country: process.env.AUTHOR_COUNTRY || "",
+    org: process.env.AUTHOR_ORG || "",
+    pronoun: process.env.AUTHOR_PRONOUN || "",
+    categories: process.env.AUTHOR_CATEGORIES?.split(",").map(s => s.trim()) || [],
+    keyUrl: process.env.AUTHOR_KEY_URL || "",
     email: process.env.AUTHOR_EMAIL || "",
   },
 
