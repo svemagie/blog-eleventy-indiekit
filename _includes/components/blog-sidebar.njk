@@ -1,22 +1,28 @@
 {# Blog Sidebar - Shown on individual post pages #}
 {# Contains: Author compact card, Related posts, Categories, Recent posts #}
 
-{# Author Compact Card #}
+{# Author Compact Card - h-card microformat (compact version) #}
 <div class="widget">
-  <div class="h-card flex items-center gap-3">
-    <img
-      src="{{ site.author.avatar }}"
-      alt="{{ site.author.name }}"
-      class="u-photo w-12 h-12 rounded-full object-cover"
-      loading="lazy"
-    >
+  <div class="h-card p-author flex items-center gap-3">
+    <a href="{{ site.author.url }}" class="u-url u-uid" rel="me">
+      <img
+        src="{{ site.author.avatar }}"
+        alt="{{ site.author.name }}"
+        class="u-photo w-12 h-12 rounded-full object-cover"
+        loading="lazy"
+      >
+    </a>
     <div>
       <a href="{{ site.author.url }}" class="u-url p-name font-medium text-surface-900 dark:text-surface-100 hover:text-primary-600 dark:hover:text-primary-400">
         {{ site.author.name }}
       </a>
       <p class="p-job-title text-xs text-surface-500">{{ site.author.title }}</p>
+      {% if site.author.locality %}
+      <p class="p-locality text-xs text-surface-500">{{ site.author.locality }}{% if site.author.country %}, <span class="p-country-name">{{ site.author.country }}</span>{% endif %}</p>
+      {% endif %}
     </div>
   </div>
+  <p class="p-note text-sm text-surface-600 dark:text-surface-400 mt-2 hidden">{{ site.author.bio }}</p>
 </div>
 
 {# Post Navigation Widget - Previous/Next #}
