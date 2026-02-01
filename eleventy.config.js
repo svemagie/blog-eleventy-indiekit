@@ -340,11 +340,12 @@ export default function (eleventyConfig) {
   });
 
   // Pages collection - root-level slash pages (about, now, uses, etc.)
-  // These are stored in content/pages/ and output to /{slug}/
+  // These are stored directly in content/ root (not in subdirectories)
+  // Created via Indiekit's page post type with path: "{slug}.md"
   eleventyConfig.addCollection("pages", function (collectionApi) {
     return collectionApi
-      .getFilteredByGlob("content/pages/**/*.md")
-      .sort((a, b) => (a.data.title || "").localeCompare(b.data.title || ""));
+      .getFilteredByGlob("content/*.md")
+      .sort((a, b) => (a.data.title || a.data.name || "").localeCompare(b.data.title || b.data.name || ""));
   });
 
   // All content combined for homepage feed
