@@ -150,6 +150,35 @@
     @apply hidden;
   }
 
+  /* Mobile theme toggle */
+  .mobile-theme-toggle {
+    @apply flex items-center justify-between w-full px-4 py-3 text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-primary-600 dark:hover:text-primary-400 transition-colors bg-transparent border-none text-base text-left cursor-pointer border-t border-surface-200 dark:border-surface-700;
+  }
+
+  .mobile-theme-toggle .theme-label {
+    @apply font-normal;
+  }
+
+  .mobile-theme-toggle .theme-icons {
+    @apply flex items-center;
+  }
+
+  .mobile-theme-toggle .sun-icon {
+    @apply hidden;
+  }
+
+  .mobile-theme-toggle .moon-icon {
+    @apply block;
+  }
+
+  .dark .mobile-theme-toggle .sun-icon {
+    @apply block;
+  }
+
+  .dark .mobile-theme-toggle .moon-icon {
+    @apply hidden;
+  }
+
   /* Container */
   .container {
     @apply max-w-5xl mx-auto px-4;
