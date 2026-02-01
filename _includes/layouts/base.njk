@@ -112,7 +112,21 @@
           <a href="/">Home</a>
           <a href="/about/">About</a>
           <a href="/now/">Now</a>
-          <a href="/slashes/" title="All slash pages">/</a>
+          {# Slash pages dropdown - dynamically populated from collections.pages #}
+          <div class="nav-dropdown" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+            <a href="/slashes/" class="nav-dropdown-trigger">
+              /
+              <svg class="w-3 h-3 ml-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </a>
+            <div class="nav-dropdown-menu" x-show="open" x-transition x-cloak>
+              <a href="/slashes/">All Pages</a>
+              {% for item in collections.pages %}
+              <a href="{{ item.url }}">/{{ item.fileSlug }}</a>
+              {% endfor %}
+            </div>
+          </div>
           {# Blog dropdown #}
           <div class="nav-dropdown" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
             <a href="/blog/" class="nav-dropdown-trigger">
@@ -163,11 +177,25 @@
     </div>
 
     {# Mobile nav dropdown #}
-    <nav class="mobile-nav hidden" id="mobile-nav" x-data="{ blogOpen: false, activityOpen: false }">
+    <nav class="mobile-nav hidden" id="mobile-nav" x-data="{ blogOpen: false, activityOpen: false, slashOpen: false }">
       <a href="/">Home</a>
       <a href="/about/">About</a>
       <a href="/now/">Now</a>
-      <a href="/slashes/" title="All slash pages">/</a>
+      {# Slash pages section - dynamically populated #}
+      <div class="mobile-nav-section">
+        <button type="button" class="mobile-nav-toggle" @click="slashOpen = !slashOpen">
+          /
+          <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': slashOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="mobile-nav-submenu" x-show="slashOpen" x-collapse>
+          <a href="/slashes/">All Pages</a>
+          {% for item in collections.pages %}
+          <a href="{{ item.url }}">/{{ item.fileSlug }}</a>
+          {% endfor %}
+        </div>
+      </div>
       {# Blog section #}
       <div class="mobile-nav-section">
         <button type="button" class="mobile-nav-toggle" @click="blogOpen = !blogOpen">
