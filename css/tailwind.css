@@ -195,15 +195,15 @@
 
   /* Layout with sidebar - mobile-first with responsive grid */
   .layout-with-sidebar {
-    @apply grid gap-6 md:gap-8 lg:grid-cols-3;
+    @apply grid grid-cols-1 gap-6 md:gap-8 lg:grid-cols-3;
   }
 
   .main-content {
-    @apply lg:col-span-2 min-w-0; /* min-w-0 prevents flex/grid overflow */
+    @apply lg:col-span-2 min-w-0 overflow-x-hidden; /* min-w-0 + overflow-x-hidden prevents layout breaking */
   }
 
   .sidebar {
-    @apply space-y-6 lg:sticky lg:top-24 lg:self-start;
+    @apply space-y-6 lg:sticky lg:top-24 lg:self-start overflow-hidden;
   }
 
   /* Main content area - adjust padding for mobile */
@@ -272,7 +272,7 @@
 
   /* Widget cards */
   .widget {
-    @apply p-4 bg-surface-100 dark:bg-surface-800 rounded-lg;
+    @apply p-4 bg-surface-100 dark:bg-surface-800 rounded-lg overflow-hidden;
   }
 
   .widget-title {
@@ -281,7 +281,7 @@
 
   /* Post cards */
   .post-card {
-    @apply p-5 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm;
+    @apply p-5 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden;
   }
 
   .post-header {
@@ -411,6 +411,13 @@
   .prose a {
     @apply break-words;
     word-break: break-word;
+  }
+
+  /* Content containers - prevent horizontal overflow */
+  .e-content,
+  .prose {
+    @apply overflow-x-hidden;
+    max-width: 100%;
   }
 
   article {
