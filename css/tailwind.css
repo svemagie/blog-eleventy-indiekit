@@ -90,6 +90,10 @@
     @apply block px-4 py-2 text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700 hover:text-primary-600 dark:hover:text-primary-400 no-underline;
   }
 
+  .nav-dropdown-divider {
+    @apply my-2 border-t border-surface-200 dark:border-surface-700;
+  }
+
   /* Mobile menu toggle button */
   .menu-toggle {
     @apply md:hidden p-2 rounded-lg text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors;
@@ -119,6 +123,10 @@
 
   .mobile-nav-submenu a {
     @apply pl-8 py-2 text-sm border-b-0;
+  }
+
+  .mobile-nav-divider {
+    @apply my-2 mx-4 border-t border-surface-200 dark:border-surface-700;
   }
 
   /* Theme toggle button */

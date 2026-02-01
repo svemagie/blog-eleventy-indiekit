@@ -112,7 +112,7 @@
           <a href="/">Home</a>
           <a href="/about/">About</a>
           <a href="/now/">Now</a>
-          {# Slash pages dropdown - dynamically populated from collections.pages #}
+          {# Slash pages dropdown - all root pages in one menu #}
           <div class="nav-dropdown" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
             <a href="/slashes/" class="nav-dropdown-trigger">
               /
@@ -125,6 +125,12 @@
               {% for item in collections.pages %}
               <a href="{{ item.url }}">/{{ item.fileSlug }}</a>
               {% endfor %}
+              <div class="nav-dropdown-divider"></div>
+              <a href="/github/">/github</a>
+              <a href="/listening/">/listening</a>
+              <a href="/funkwhale/">/funkwhale</a>
+              <a href="/youtube/">/youtube</a>
+              <a href="/news/">/news</a>
             </div>
           </div>
           {# Blog dropdown #}
@@ -147,22 +153,6 @@
             </div>
           </div>
           <a href="/interactions/">Interactions</a>
-          <a href="/news/">News</a>
-          {# Activity dropdown #}
-          <div class="nav-dropdown" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-            <button type="button" class="nav-dropdown-trigger">
-              Activity
-              <svg class="w-3 h-3 ml-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
-            </button>
-            <div class="nav-dropdown-menu" x-show="open" x-transition x-cloak>
-              <a href="/github/">GitHub</a>
-              <a href="/listening/">Listening</a>
-              <a href="/funkwhale/">Funkwhale</a>
-              <a href="/youtube/">YouTube</a>
-            </div>
-          </div>
         </nav>
         <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
           <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -177,11 +167,11 @@
     </div>
 
     {# Mobile nav dropdown #}
-    <nav class="mobile-nav hidden" id="mobile-nav" x-data="{ blogOpen: false, activityOpen: false, slashOpen: false }">
+    <nav class="mobile-nav hidden" id="mobile-nav" x-data="{ blogOpen: false, slashOpen: false }">
       <a href="/">Home</a>
       <a href="/about/">About</a>
       <a href="/now/">Now</a>
-      {# Slash pages section - dynamically populated #}
+      {# Slash pages section - all root pages in one menu #}
       <div class="mobile-nav-section">
         <button type="button" class="mobile-nav-toggle" @click="slashOpen = !slashOpen">
           /
@@ -194,6 +184,12 @@
           {% for item in collections.pages %}
           <a href="{{ item.url }}">/{{ item.fileSlug }}</a>
           {% endfor %}
+          <div class="mobile-nav-divider"></div>
+          <a href="/github/">/github</a>
+          <a href="/listening/">/listening</a>
+          <a href="/funkwhale/">/funkwhale</a>
+          <a href="/youtube/">/youtube</a>
+          <a href="/news/">/news</a>
         </div>
       </div>
       {# Blog section #}
@@ -216,22 +212,6 @@
         </div>
       </div>
       <a href="/interactions/">Interactions</a>
-      <a href="/news/">News</a>
-      {# Activity section #}
-      <div class="mobile-nav-section">
-        <button type="button" class="mobile-nav-toggle" @click="activityOpen = !activityOpen">
-          Activity
-          <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': activityOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-          </svg>
-        </button>
-        <div class="mobile-nav-submenu" x-show="activityOpen" x-collapse>
-          <a href="/github/">GitHub</a>
-          <a href="/listening/">Listening</a>
-          <a href="/funkwhale/">Funkwhale</a>
-          <a href="/youtube/">YouTube</a>
-        </div>
-      </div>
     </nav>
   </header>
 
