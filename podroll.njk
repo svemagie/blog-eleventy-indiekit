@@ -53,8 +53,8 @@ permalink: /podroll/
             class="w-full sm:w-auto appearance-none bg-surface-100 dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg px-4 py-2 pr-10 text-sm text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="all">All Podcasts</option>
-            <template x-for="podcast in uniquePodcasts" :key="podcast">
-              <option :value="podcast" x-text="podcast"></option>
+            <template x-for="source in sortedSources" :key="source.title">
+              <option :value="source.title" x-text="source.title"></option>
             </template>
           </select>
           <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-surface-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,6 +248,8 @@ function podrollApp() {
 
     async init() {
       await this.fetchData();
+      // Re-fetch from API when podcast filter changes
+      this.$watch('filterPodcast', () => this.fetchEpisodes());
       // Auto-refresh every 5 minutes
       this.refreshInterval = setInterval(() => this.fetchData(true), 5 * 60 * 1000);
     },
@@ -265,7 +267,7 @@ function podrollApp() {
 
         this.episodes = episodesRes.items || [];
         this.hasMore = episodesRes.hasMore || false;
-        this.offset = episodesRes.offset || 0;
+        this.offset = 0;
         this.sources = sourcesRes.items || [];
         this.status = statusRes;
       } catch (err) {
@@ -276,12 +278,36 @@ function podrollApp() {
       }
     },
 
+    async fetchEpisodes() {
+      this.loading = true;
+      this.error = null;
+      this.offset = 0;
+
+      try {
+        let url = `/podrollapi/api/episodes?limit=${this.limit}`;
+        if (this.filterPodcast !== 'all') {
+          url += `&source=${encodeURIComponent(this.filterPodcast)}`;
+        }
+        const res = await fetch(url).then(r => r.json());
+        this.episodes = res.items || [];
+        this.hasMore = res.hasMore || false;
+      } catch (err) {
+        this.error = 'Failed to load episodes: ' + err.message;
+      } finally {
+        this.loading = false;
+      }
+    },
+
     async loadMore() {
       this.loadingMore = true;
       const newOffset = this.offset + this.limit;
 
       try {
-        const res = await fetch(`/podrollapi/api/episodes?limit=${this.limit}&offset=${newOffset}`).then(r => r.json());
+        let url = `/podrollapi/api/episodes?limit=${this.limit}&offset=${newOffset}`;
+        if (this.filterPodcast !== 'all') {
+          url += `&source=${encodeURIComponent(this.filterPodcast)}`;
+        }
+        const res = await fetch(url).then(r => r.json());
         this.episodes = [...this.episodes, ...(res.items || [])];
         this.hasMore = res.hasMore || false;
         this.offset = newOffset;
@@ -293,20 +319,16 @@ function podrollApp() {
     },
 
     async refresh() {
+      this.filterPodcast = 'all';
       await this.fetchData();
     },
 
     get filteredEpisodes() {
-      if (this.filterPodcast === 'all') return this.episodes;
-      return this.episodes.filter(ep => ep.podcast?.title === this.filterPodcast);
+      return this.episodes;
     },
 
-    get uniquePodcasts() {
-      const podcasts = new Set();
-      this.episodes.forEach(ep => {
-        if (ep.podcast?.title) podcasts.add(ep.podcast.title);
-      });
-      return Array.from(podcasts).sort();
+    get sortedSources() {
+      return [...this.sources].sort((a, b) => a.title.localeCompare(b.title));
     },
 
     formatDate(dateStr, format = 'short') {
