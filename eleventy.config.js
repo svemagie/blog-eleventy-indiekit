@@ -21,8 +21,16 @@ export default function (eleventyConfig) {
   // Ignore output directory (prevents re-processing generated files via symlink)
   eleventyConfig.ignores.add("_site");
   eleventyConfig.ignores.add("_site/**");
+  eleventyConfig.ignores.add("/app/data/site");
+  eleventyConfig.ignores.add("/app/data/site/**");
   eleventyConfig.ignores.add("node_modules");
   eleventyConfig.ignores.add("node_modules/**");
+
+  // Configure watch targets to exclude output directory
+  eleventyConfig.watchIgnores.add("_site");
+  eleventyConfig.watchIgnores.add("_site/**");
+  eleventyConfig.watchIgnores.add("/app/data/site");
+  eleventyConfig.watchIgnores.add("/app/data/site/**");
 
   // Configure markdown-it with linkify enabled (auto-convert URLs to links)
   const md = markdownIt({
