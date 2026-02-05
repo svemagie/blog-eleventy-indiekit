@@ -404,8 +404,9 @@ export default function (eleventyConfig) {
       .slice(0, 5);
   });
 
-  // Pagefind indexing after each build
-  eleventyConfig.on("eleventy.after", ({ dir, runMode }) => {
+  // Pagefind indexing + WebSub hub notification after each build
+  eleventyConfig.on("eleventy.after", async ({ dir, runMode }) => {
+    // Pagefind indexing
     try {
       console.log(`[pagefind] Indexing ${dir.output} (${runMode})...`);
       execFileSync("npx", ["pagefind", "--site", dir.output, "--glob", "**/*.html"], {
@@ -415,6 +416,25 @@ export default function (eleventyConfig) {
       console.log("[pagefind] Indexing complete");
     } catch (err) {
       console.error("[pagefind] Indexing failed:", err.message);
+    }
+
+    // WebSub hub notification — notify subscribers of feed updates
+    const hubUrl = "https://websubhub.com/hub";
+    const feedUrls = [
+      `${siteUrl}/feed.xml`,
+      `${siteUrl}/feed.json`,
+    ];
+    for (const feedUrl of feedUrls) {
+      try {
+        const res = await fetch(hubUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `hub.mode=publish&hub.url=${encodeURIComponent(feedUrl)}`,
+        });
+        console.log(`[websub] Notified hub for ${feedUrl}: ${res.status}`);
+      } catch (err) {
+        console.error(`[websub] Hub notification failed for ${feedUrl}:`, err.message);
+      }
     }
   });
 

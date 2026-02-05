@@ -7,6 +7,12 @@ eleventyExcludeFromCollections: true
   "title": "{{ site.name }}",
   "home_page_url": "{{ site.url }}/",
   "feed_url": "{{ site.url }}/feed.json",
+  "hubs": [
+    {
+      "type": "WebSub",
+      "url": "https://websubhub.com/hub"
+    }
+  ],
   "description": "{{ site.description }}",
   "language": "{{ site.locale | default('en') }}",
   "authors": [
