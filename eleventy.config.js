@@ -421,6 +421,7 @@ export default function (eleventyConfig) {
     // WebSub hub notification — notify subscribers of feed updates
     const hubUrl = "https://websubhub.com/hub";
     const feedUrls = [
+      siteUrl,
       `${siteUrl}/feed.xml`,
       `${siteUrl}/feed.json`,
     ];
