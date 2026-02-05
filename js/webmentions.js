@@ -19,14 +19,31 @@
   sessionStorage.setItem(cacheKey, '1');
 
   // Use server-side proxy to keep webmention.io token secure
-  const apiUrl = `/webmentions-api/api/mentions?target=${encodeURIComponent(target)}&per-page=100`;
+  // Fetch both with and without trailing slash since webmention.io
+  // stores targets inconsistently (Bridgy sends different formats)
+  const targetWithSlash = target.endsWith('/') ? target : target + '/';
+  const targetWithoutSlash = target.endsWith('/') ? target.slice(0, -1) : target;
+  const apiUrl1 = `/webmentions-api/api/mentions?target=${encodeURIComponent(targetWithSlash)}&per-page=100`;
+  const apiUrl2 = `/webmentions-api/api/mentions?target=${encodeURIComponent(targetWithoutSlash)}&per-page=100`;
 
   // Check if build-time webmentions section exists
   const hasBuildTimeSection = document.getElementById('webmentions') !== null;
 
-  fetch(apiUrl)
-    .then((res) => res.json())
-    .then((data) => {
+  Promise.all([
+    fetch(apiUrl1).then((res) => res.json()).catch(() => ({ children: [] })),
+    fetch(apiUrl2).then((res) => res.json()).catch(() => ({ children: [] })),
+  ])
+    .then(([data1, data2]) => {
+      // Merge and deduplicate by wm-id
+      const seen = new Set();
+      const allChildren = [];
+      for (const wm of [...(data1.children || []), ...(data2.children || [])]) {
+        if (!seen.has(wm['wm-id'])) {
+          seen.add(wm['wm-id']);
+          allChildren.push(wm);
+        }
+      }
+      const data = { children: allChildren };
       if (!data.children || !data.children.length) return;
 
       let mentionsToShow;
