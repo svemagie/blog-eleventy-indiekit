@@ -13,11 +13,6 @@
 
   if (!target || !domain) return;
 
-  // Rate limit: only fetch once per page load
-  const cacheKey = `wm-fetched-${target}`;
-  if (sessionStorage.getItem(cacheKey)) return;
-  sessionStorage.setItem(cacheKey, '1');
-
   // Use server-side proxy to keep webmention.io token secure
   // Fetch both with and without trailing slash since webmention.io
   // stores targets inconsistently (Bridgy sends different formats)
@@ -29,6 +24,92 @@
   // Check if build-time webmentions section exists
   const hasBuildTimeSection = document.getElementById('webmentions') !== null;
 
+  // Cache API responses in sessionStorage (5 min TTL) so webmentions
+  // persist across page refreshes without re-fetching every time
+  const cacheKey = `wm-data-${target}`;
+  const cacheTTL = 5 * 60 * 1000; // 5 minutes
+
+  function getCachedData() {
+    try {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (!cached) return null;
+      const parsed = JSON.parse(cached);
+      if (Date.now() - parsed.ts > cacheTTL) {
+        sessionStorage.removeItem(cacheKey);
+        return null;
+      }
+      return parsed.children;
+    } catch {
+      return null;
+    }
+  }
+
+  function setCachedData(children) {
+    try {
+      sessionStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), children: children }));
+    } catch {
+      // sessionStorage full or unavailable - no problem
+    }
+  }
+
+  function processWebmentions(allChildren) {
+    if (!allChildren || !allChildren.length) return;
+
+    let mentionsToShow;
+    if (hasBuildTimeSection) {
+      // Build-time section exists - only show NEW webmentions to avoid duplicates
+      mentionsToShow = allChildren.filter((wm) => {
+        const wmTime = new Date(wm['wm-received']).getTime();
+        return wmTime > buildTime;
+      });
+    } else {
+      // No build-time section - show ALL webmentions from API
+      mentionsToShow = allChildren;
+    }
+
+    if (!mentionsToShow.length) return;
+
+    // Group by type
+    const likes = mentionsToShow.filter((m) => m['wm-property'] === 'like-of');
+    const reposts = mentionsToShow.filter((m) => m['wm-property'] === 'repost-of');
+    const replies = mentionsToShow.filter((m) => m['wm-property'] === 'in-reply-to');
+    const mentions = mentionsToShow.filter((m) => m['wm-property'] === 'mention-of');
+
+    // Append new likes
+    if (likes.length) {
+      appendAvatars('.webmention-likes .avatar-row', likes, 'likes');
+      updateCount('.webmention-likes h3', likes.length);
+    }
+
+    // Append new reposts
+    if (reposts.length) {
+      appendAvatars('.webmention-reposts .avatar-row', reposts, 'reposts');
+      updateCount('.webmention-reposts h3', reposts.length);
+    }
+
+    // Append new replies
+    if (replies.length) {
+      appendReplies('.webmention-replies ul', replies);
+      updateCount('.webmention-replies h3', replies.length);
+    }
+
+    // Append new mentions
+    if (mentions.length) {
+      appendMentions('.webmention-mentions ul', mentions);
+      updateCount('.webmention-mentions h3', mentions.length);
+    }
+
+    // Update total count in main header
+    updateTotalCount(mentionsToShow.length);
+  }
+
+  // Try cached data first (renders instantly on refresh)
+  const cached = getCachedData();
+  if (cached) {
+    processWebmentions(cached);
+  }
+
+  // Always fetch fresh data (updates cache for next refresh)
   Promise.all([
     fetch(apiUrl1).then((res) => res.json()).catch(() => ({ children: [] })),
     fetch(apiUrl2).then((res) => res.json()).catch(() => ({ children: [] })),
@@ -43,55 +124,14 @@
           allChildren.push(wm);
         }
       }
-      const data = { children: allChildren };
-      if (!data.children || !data.children.length) return;
 
-      let mentionsToShow;
-      if (hasBuildTimeSection) {
-        // Build-time section exists - only show NEW webmentions to avoid duplicates
-        mentionsToShow = data.children.filter((wm) => {
-          const wmTime = new Date(wm['wm-received']).getTime();
-          return wmTime > buildTime;
-        });
-      } else {
-        // No build-time section - show ALL webmentions from API
-        mentionsToShow = data.children;
+      // Cache the merged results
+      setCachedData(allChildren);
+
+      // Only render if we didn't already render from cache
+      if (!cached) {
+        processWebmentions(allChildren);
       }
-
-      if (!mentionsToShow.length) return;
-
-      // Group by type
-      const likes = mentionsToShow.filter((m) => m['wm-property'] === 'like-of');
-      const reposts = mentionsToShow.filter((m) => m['wm-property'] === 'repost-of');
-      const replies = mentionsToShow.filter((m) => m['wm-property'] === 'in-reply-to');
-      const mentions = mentionsToShow.filter((m) => m['wm-property'] === 'mention-of');
-
-      // Append new likes
-      if (likes.length) {
-        appendAvatars('.webmention-likes .avatar-row', likes, 'likes');
-        updateCount('.webmention-likes h3', likes.length);
-      }
-
-      // Append new reposts
-      if (reposts.length) {
-        appendAvatars('.webmention-reposts .avatar-row', reposts, 'reposts');
-        updateCount('.webmention-reposts h3', reposts.length);
-      }
-
-      // Append new replies
-      if (replies.length) {
-        appendReplies('.webmention-replies ul', replies);
-        updateCount('.webmention-replies h3', replies.length);
-      }
-
-      // Append new mentions
-      if (mentions.length) {
-        appendMentions('.webmention-mentions ul', mentions);
-        updateCount('.webmention-mentions h3', mentions.length);
-      }
-
-      // Update total count in main header
-      updateTotalCount(mentionsToShow.length);
     })
     .catch((err) => {
       console.debug('[Webmentions] Error fetching:', err.message);
