@@ -32,7 +32,7 @@
   }
 
   function dispatch(loggedIn) {
-    document.dispatchEvent(new CustomEvent('indiekit:auth', { detail: { loggedIn: loggedIn } }));
+    window.dispatchEvent(new CustomEvent('indiekit:auth', { detail: { loggedIn: loggedIn } }));
     if (loggedIn) {
       document.body.setAttribute('data-indiekit-auth', 'true');
     } else {
