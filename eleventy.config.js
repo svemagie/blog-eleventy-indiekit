@@ -26,6 +26,8 @@ export default function (eleventyConfig) {
   eleventyConfig.ignores.add("/app/data/site/**");
   eleventyConfig.ignores.add("node_modules");
   eleventyConfig.ignores.add("node_modules/**");
+  eleventyConfig.ignores.add("CLAUDE.md");
+  eleventyConfig.ignores.add("README.md");
 
   // Ignore Pagefind output directory
   eleventyConfig.ignores.add("_pagefind");
