@@ -79,7 +79,7 @@
   <link rel="{{ social.rel }}" href="{{ social.url }}">
   {% endfor %}
 </head>
-<body>
+<body{% if pagefindIgnore %} data-pagefind-ignore="all"{% endif %}>
   <script>
     // Apply theme immediately to prevent flash
     (function() {
@@ -155,6 +155,11 @@
           </div>
           <a href="/interactions/">Interactions</a>
         </nav>
+        <a href="/search/" aria-label="Search" title="Search" class="p-2 rounded-lg text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+        </a>
         <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
           <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"/>
@@ -214,6 +219,7 @@
         </div>
       </div>
       <a href="/interactions/">Interactions</a>
+      <a href="/search/">Search</a>
       {# Mobile theme toggle #}
       <button type="button" class="mobile-theme-toggle" aria-label="Toggle dark mode">
         <span class="theme-label">Theme</span>
@@ -230,13 +236,13 @@
     </nav>
   </header>
 
-  <main class="container py-8">
+  <main class="container py-8" data-pagefind-body>
     {% if withSidebar %}
     <div class="layout-with-sidebar">
       <div class="main-content">
         {{ content | safe }}
       </div>
-      <aside class="sidebar">
+      <aside class="sidebar" data-pagefind-ignore>
         {% include "components/sidebar.njk" %}
       </aside>
     </div>
@@ -245,7 +251,7 @@
       <div class="main-content">
         {{ content | safe }}
       </div>
-      <aside class="sidebar blog-sidebar">
+      <aside class="sidebar blog-sidebar" data-pagefind-ignore>
         {% include "components/blog-sidebar.njk" %}
       </aside>
     </div>

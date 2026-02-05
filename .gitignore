@@ -3,6 +3,7 @@ node_modules/
 
 # Build output
 _site/
+_pagefind/
 css/style.css
 
 # Cache

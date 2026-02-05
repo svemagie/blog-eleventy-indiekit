@@ -6,6 +6,7 @@ import sitemap from "@quasibit/eleventy-plugin-sitemap";
 import markdownIt from "markdown-it";
 import { minify } from "html-minifier-terser";
 import { createHash } from "crypto";
+import { execFileSync } from "child_process";
 import { readFileSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -26,11 +27,17 @@ export default function (eleventyConfig) {
   eleventyConfig.ignores.add("node_modules");
   eleventyConfig.ignores.add("node_modules/**");
 
+  // Ignore Pagefind output directory
+  eleventyConfig.ignores.add("_pagefind");
+  eleventyConfig.ignores.add("_pagefind/**");
+
   // Configure watch targets to exclude output directory
   eleventyConfig.watchIgnores.add("_site");
   eleventyConfig.watchIgnores.add("_site/**");
   eleventyConfig.watchIgnores.add("/app/data/site");
   eleventyConfig.watchIgnores.add("/app/data/site/**");
+  eleventyConfig.watchIgnores.add("_pagefind");
+  eleventyConfig.watchIgnores.add("_pagefind/**");
 
   // Configure markdown-it with linkify enabled (auto-convert URLs to links)
   const md = markdownIt({
@@ -393,6 +400,20 @@ export default function (eleventyConfig) {
       .getFilteredByGlob("content/posts/**/*.md")
       .sort((a, b) => b.date - a.date)
       .slice(0, 5);
+  });
+
+  // Pagefind indexing after each build
+  eleventyConfig.on("eleventy.after", ({ dir, runMode }) => {
+    try {
+      console.log(`[pagefind] Indexing ${dir.output} (${runMode})...`);
+      execFileSync("npx", ["pagefind", "--site", dir.output, "--glob", "**/*.html"], {
+        stdio: "inherit",
+        timeout: 60000,
+      });
+      console.log("[pagefind] Indexing complete");
+    } catch (err) {
+      console.error("[pagefind] Indexing failed:", err.message);
+    }
   });
 
   return {

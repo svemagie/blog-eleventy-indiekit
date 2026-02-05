@@ -1,0 +1,39 @@
+---
+layout: layouts/base.njk
+title: Search
+permalink: /search/
+eleventyExcludeFromCollections: true
+pagefindIgnore: true
+---
+<div class="page-header mb-6 sm:mb-8">
+  <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">Search</h1>
+  <p class="text-surface-600 dark:text-surface-400">Search across all posts, articles, notes, and pages.</p>
+</div>
+
+<link rel="stylesheet" href="/_pagefind/pagefind-ui.css">
+
+<div id="search"></div>
+
+<script src="/_pagefind/pagefind-ui.js"></script>
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const ui = new PagefindUI({
+      element: "#search",
+      showSubResults: true,
+      showImages: false,
+    });
+
+    // Support ?q= query parameter
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get("q");
+    if (query) {
+      ui.triggerSearch(query);
+    }
+
+    // Auto-focus the search input
+    const input = document.querySelector("#search input[type='text']");
+    if (input && !query) {
+      input.focus();
+    }
+  });
+</script>
