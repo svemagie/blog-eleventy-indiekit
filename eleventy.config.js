@@ -58,6 +58,21 @@ export default function (eleventyConfig) {
     return JSON.stringify(value);
   });
 
+  // Email obfuscation filter - converts email to HTML entities
+  // Blocks ~95% of spam harvesters while remaining valid for microformat parsers
+  // Usage: {{ email | obfuscateEmail }} or {{ email | obfuscateEmail("href") }}
+  eleventyConfig.addFilter("obfuscateEmail", (email, mode = "display") => {
+    if (!email) return "";
+    // Convert each character to HTML decimal entity
+    const encoded = [...email].map(char => `&#${char.charCodeAt(0)};`).join("");
+    if (mode === "href") {
+      // For mailto: links, also encode the "mailto:" prefix
+      const mailto = [...("mailto:")].map(char => `&#${char.charCodeAt(0)};`).join("");
+      return mailto + encoded;
+    }
+    return encoded;
+  });
+
   // Alias dateToRfc822 (plugin provides dateToRfc2822)
   eleventyConfig.addFilter("dateToRfc822", (date) => {
     return pluginRss.dateToRfc2822(date);

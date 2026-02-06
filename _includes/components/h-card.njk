@@ -56,8 +56,9 @@
   {# Email and PGP Key #}
   <div class="mt-2 flex flex-wrap gap-3 text-sm">
     {% if site.author.email %}
-    <a href="mailto:{{ site.author.email }}" class="u-email text-primary-600 dark:text-primary-400 hover:underline" itemprop="email">
-      ✉️ {{ site.author.email }}
+    {# Email obfuscated as HTML entities to deter spam harvesters while keeping valid for microformat parsers #}
+    <a href="{{ site.author.email | obfuscateEmail('href') }}" class="u-email text-primary-600 dark:text-primary-400 hover:underline" itemprop="email">
+      ✉️ {{ site.author.email | obfuscateEmail }}
     </a>
     {% endif %}
     {% if site.author.keyUrl %}
