@@ -26,7 +26,7 @@
   </div>
   {# Hidden but present for microformat completeness #}
   <p class="p-note hidden">{{ site.author.bio }}</p>
-  {% if site.author.email %}<data class="u-email hidden" value="{{ site.author.email | obfuscateEmail }}"></data>{% endif %}
+  {% if site.author.email %}<data class="u-email hidden" value="{{ site.author.email }}"></data>{% endif %}
   {% if site.author.org %}<data class="p-org hidden" value="{{ site.author.org }}"></data>{% endif %}
 </div>
 
