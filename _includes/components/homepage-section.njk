@@ -1,0 +1,30 @@
+{# Homepage Section Dispatcher — maps section.type to the right partial #}
+{% if section.type == "recent-posts" %}
+  {% include "components/sections/recent-posts.njk" %}
+{% elif section.type == "custom-html" %}
+  {% include "components/sections/custom-html.njk" %}
+{% elif section.type == "cv-experience" %}
+  {% include "components/sections/cv-experience.njk" ignore missing %}
+{% elif section.type == "cv-projects" %}
+  {% include "components/sections/cv-projects.njk" ignore missing %}
+{% elif section.type == "cv-skills" %}
+  {% include "components/sections/cv-skills.njk" ignore missing %}
+{% elif section.type == "cv-education" %}
+  {% include "components/sections/cv-education.njk" ignore missing %}
+{% elif section.type == "cv-interests" %}
+  {% include "components/sections/cv-interests.njk" ignore missing %}
+{% elif section.type == "blogroll" %}
+  {% include "components/sections/blogroll.njk" ignore missing %}
+{% elif section.type == "podroll" %}
+  {% include "components/sections/podroll.njk" ignore missing %}
+{% elif section.type == "github-activity" %}
+  {% include "components/sections/github-activity.njk" ignore missing %}
+{% elif section.type == "youtube" %}
+  {% include "components/sections/youtube.njk" ignore missing %}
+{% elif section.type == "funkwhale" %}
+  {% include "components/sections/funkwhale.njk" ignore missing %}
+{% elif section.type == "lastfm" %}
+  {% include "components/sections/lastfm.njk" ignore missing %}
+{% else %}
+  <!-- Unknown section type: {{ section.type }} -->
+{% endif %}

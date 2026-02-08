@@ -270,7 +270,7 @@
   </header>
 
   <main class="container py-8" data-pagefind-body>
-    {% if withSidebar %}
+    {% if withSidebar and not (homepageConfig and homepageConfig.sections) %}
     <div class="layout-with-sidebar">
       <div class="main-content">
         {{ content | safe }}
@@ -279,6 +279,9 @@
         {% include "components/sidebar.njk" %}
       </aside>
     </div>
+    {% elif withSidebar and homepageConfig and homepageConfig.sections %}
+    {# Homepage builder controls its own layout and sidebar #}
+    {{ content | safe }}
     {% elif withBlogSidebar %}
     <div class="layout-with-sidebar">
       <div class="main-content">
