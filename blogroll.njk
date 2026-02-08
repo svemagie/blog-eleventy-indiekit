@@ -1,0 +1,377 @@
+---
+layout: layouts/base.njk
+title: Blogroll
+permalink: /blogroll/
+---
+<div class="blogroll-page" x-data="blogrollApp()" x-init="init()">
+  <header class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">
+      <svg class="w-8 h-8 inline-block mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+      </svg>
+      Blogroll
+    </h1>
+    <p class="text-surface-600 dark:text-surface-400">
+      Blogs I follow - <span x-text="blogs.length" class="font-medium"></span> feeds
+    </p>
+    <p class="text-xs text-surface-500 mt-2" x-show="status?.lastSync">
+      Last synced: <span x-text="formatDate(status?.lastSync, 'full')"></span>
+    </p>
+  </header>
+
+  {# Tab Navigation #}
+  <div class="mb-6 border-b border-surface-200 dark:border-surface-700">
+    <nav class="flex gap-4" aria-label="Tabs">
+      <button
+        @click="activeTab = 'items'"
+        :class="activeTab === 'items' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+        class="pb-3 px-1 border-b-2 font-medium text-sm transition-colors"
+      >
+        Recent Posts
+      </button>
+      <button
+        @click="activeTab = 'blogs'"
+        :class="activeTab === 'blogs' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+        class="pb-3 px-1 border-b-2 font-medium text-sm transition-colors"
+      >
+        All Blogs
+      </button>
+    </nav>
+  </div>
+
+  <div class="layout-with-sidebar">
+    {# Main Content #}
+    <div class="main-content">
+      {# Loading State #}
+      <div x-show="loading && items.length === 0" class="text-center py-12">
+        <svg class="w-8 h-8 mx-auto text-primary-600 animate-spin mb-4" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p class="text-surface-600 dark:text-surface-400">Loading...</p>
+      </div>
+
+      {# Error State #}
+      <div x-show="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+        <p class="text-red-700 dark:text-red-400" x-text="error"></p>
+        <button @click="fetchData()" class="mt-2 text-sm text-red-600 hover:text-red-700 underline">Try again</button>
+      </div>
+
+      {# Category Filter (visible on both tabs) #}
+      <div x-show="categories.length > 0 && !loading" class="mb-6">
+        <div class="relative">
+          <select
+            x-model="filterCategory"
+            @change="fetchData()"
+            class="w-full sm:w-auto appearance-none bg-surface-100 dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg px-4 py-2 pr-10 text-sm text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="">All Categories</option>
+            <template x-for="cat in categories" :key="cat.name">
+              <option :value="cat.name" x-text="`${cat.name} (${cat.count})`"></option>
+            </template>
+          </select>
+          <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-surface-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+      </div>
+
+      {# Recent Posts Tab #}
+      <div x-show="activeTab === 'items'" class="space-y-4">
+        <template x-for="item in items" :key="item.id">
+          <article class="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 sm:p-6 hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
+            <div class="flex items-start gap-4">
+              <div class="flex-1 min-w-0">
+                <h2 class="font-semibold text-lg text-surface-900 dark:text-surface-100 mb-1">
+                  <a :href="item.url" class="hover:text-primary-600 dark:hover:text-primary-400" target="_blank" rel="noopener" x-text="item.title"></a>
+                </h2>
+                <div class="flex flex-wrap items-center gap-2 text-sm text-surface-500 mb-3">
+                  <a
+                    :href="item.blog?.siteUrl || '#'"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                      <circle cx="6.18" cy="17.82" r="2.18"/>
+                      <path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/>
+                    </svg>
+                    <span x-text="item.blog?.title || 'Unknown'"></span>
+                  </a>
+                  <time :datetime="item.published" x-text="formatDate(item.published)"></time>
+                </div>
+                <p x-show="item.summary" class="text-sm text-surface-600 dark:text-surface-400 line-clamp-3" x-text="item.summary"></p>
+              </div>
+              <img
+                x-show="item.photo && item.photo[0]"
+                :src="item.photo?.[0]"
+                class="w-24 h-24 rounded-lg object-cover flex-shrink-0 hidden sm:block"
+                loading="lazy"
+              />
+            </div>
+
+            {# Actions #}
+            <div class="flex flex-wrap items-center gap-3 mt-4 pt-4 border-t border-surface-200 dark:border-surface-700">
+              <a
+                :href="item.url"
+                class="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400"
+                target="_blank"
+                rel="noopener"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+                Read Post
+              </a>
+              <a
+                x-show="item.blog?.siteUrl"
+                :href="item.blog?.siteUrl"
+                class="inline-flex items-center gap-2 text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300"
+                target="_blank"
+                rel="noopener"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                </svg>
+                Visit Blog
+              </a>
+            </div>
+          </article>
+        </template>
+
+        {# Load More #}
+        <div x-show="hasMore" class="text-center mt-8">
+          <button
+            @click="loadMore()"
+            :disabled="loadingMore"
+            class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          >
+            <span x-show="!loadingMore">Load More</span>
+            <span x-show="loadingMore" class="flex items-center gap-2">
+              <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Loading...
+            </span>
+          </button>
+        </div>
+
+        {# Empty State for Items #}
+        <div x-show="!loading && items.length === 0 && activeTab === 'items' && !error" class="text-center py-12">
+          <svg class="w-16 h-16 mx-auto text-surface-300 dark:text-surface-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+          </svg>
+          <p class="text-surface-600 dark:text-surface-400 text-lg">No posts yet.</p>
+          <p class="text-surface-500 text-sm mt-2">Posts will appear once blogs are synced.</p>
+        </div>
+      </div>
+
+      {# All Blogs Tab #}
+      <div x-show="activeTab === 'blogs'" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <template x-for="blog in blogs" :key="blog.id">
+          <a
+            :href="blog.siteUrl || blog.feedUrl"
+            class="block bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 hover:border-primary-400 dark:hover:border-primary-600 transition-colors group"
+            target="_blank"
+            rel="noopener"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <img x-show="blog.photo" :src="blog.photo" class="w-10 h-10 object-cover" loading="lazy" />
+                <span x-show="!blog.photo" class="text-white text-sm font-bold" x-text="blog.title?.charAt(0)?.toUpperCase()"></span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-surface-900 dark:text-surface-100 truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" x-text="blog.title"></h3>
+                <p x-show="blog.category" class="text-xs text-surface-500 truncate" x-text="blog.category"></p>
+              </div>
+            </div>
+            <p x-show="blog.description" class="text-sm text-surface-600 dark:text-surface-400 line-clamp-2 mb-3" x-text="blog.description"></p>
+            <div class="flex items-center gap-3 text-xs text-surface-500">
+              <span x-text="`${blog.itemCount || 0} posts`"></span>
+              <span :class="blog.status === 'active' ? 'text-green-500' : 'text-red-500'">
+                <span x-show="blog.status === 'active'" class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                  Active
+                </span>
+                <span x-show="blog.status === 'error'" class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                  Error
+                </span>
+              </span>
+            </div>
+          </a>
+        </template>
+      </div>
+
+      {# Empty State for Blogs #}
+      <div x-show="!loading && blogs.length === 0 && activeTab === 'blogs' && !error" class="text-center py-12">
+        <svg class="w-16 h-16 mx-auto text-surface-300 dark:text-surface-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+        </svg>
+        <p class="text-surface-600 dark:text-surface-400 text-lg">No blogs yet.</p>
+        <p class="text-surface-500 text-sm mt-2">Add blogs via the admin dashboard.</p>
+      </div>
+    </div>
+
+    {# Sidebar #}
+    <aside class="sidebar">
+      {# Categories Widget #}
+      <div class="widget">
+        <h3 class="widget-title flex items-center gap-2">
+          <svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
+            <circle cx="6.18" cy="17.82" r="2.18"/>
+            <path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/>
+          </svg>
+          Categories
+        </h3>
+
+        <ul class="space-y-1 mt-4">
+          <li>
+            <button
+              @click="filterCategory = ''; fetchData()"
+              :class="filterCategory === '' ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'hover:bg-surface-100 dark:hover:bg-surface-700'"
+              class="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
+            >
+              All Blogs <span class="text-surface-500" x-text="`(${blogs.length})`"></span>
+            </button>
+          </li>
+          <template x-for="cat in categories" :key="cat.name">
+            <li>
+              <button
+                @click="filterCategory = cat.name; fetchData()"
+                :class="filterCategory === cat.name ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'hover:bg-surface-100 dark:hover:bg-surface-700'"
+                class="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
+              >
+                <span x-text="cat.name"></span>
+                <span class="text-surface-500" x-text="`(${cat.count})`"></span>
+              </button>
+            </li>
+          </template>
+        </ul>
+
+        <div x-show="categories.length === 0 && !loading" class="text-sm text-surface-500 text-center py-4">
+          No categories yet.
+        </div>
+      </div>
+
+      {# OPML Download Widget #}
+      <div class="widget">
+        <h3 class="widget-title">Subscribe</h3>
+        <p class="text-sm text-surface-600 dark:text-surface-400 mb-4">
+          Import this blogroll into your feed reader.
+        </p>
+        <a
+          href="/blogrollapi/api/opml"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 rounded-lg text-sm transition-colors"
+          download="blogroll.opml"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download OPML
+        </a>
+      </div>
+
+      {# Stats Widget #}
+      <div class="widget" x-show="status">
+        <h3 class="widget-title">Stats</h3>
+        <div class="grid grid-cols-2 gap-3 text-center">
+          <div class="p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
+            <span class="text-2xl font-bold text-primary-600 dark:text-primary-400 block" x-text="status?.blogs?.count || 0"></span>
+            <span class="text-xs text-surface-500 uppercase">Blogs</span>
+          </div>
+          <div class="p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
+            <span class="text-2xl font-bold text-primary-600 dark:text-primary-400 block" x-text="status?.items?.count || 0"></span>
+            <span class="text-xs text-surface-500 uppercase">Posts</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+function blogrollApp() {
+  return {
+    items: [],
+    blogs: [],
+    categories: [],
+    status: null,
+    loading: true,
+    loadingMore: false,
+    error: null,
+    activeTab: 'items',
+    filterCategory: '',
+    offset: 0,
+    limit: 20,
+    hasMore: false,
+
+    async init() {
+      await this.fetchData();
+    },
+
+    async fetchData() {
+      this.loading = true;
+      this.error = null;
+      this.offset = 0;
+
+      try {
+        const catParam = this.filterCategory ? `&category=${encodeURIComponent(this.filterCategory)}` : '';
+
+        const [itemsRes, blogsRes, catsRes, statusRes] = await Promise.all([
+          fetch(`/blogrollapi/api/items?limit=${this.limit}${catParam}`).then(r => r.json()),
+          fetch(`/blogrollapi/api/blogs?limit=100${catParam}`).then(r => r.json()),
+          fetch('/blogrollapi/api/categories').then(r => r.json()),
+          fetch('/blogrollapi/api/status').then(r => r.json())
+        ]);
+
+        this.items = itemsRes.items || [];
+        this.hasMore = itemsRes.hasMore || false;
+        this.blogs = blogsRes.items || [];
+        this.categories = catsRes.items || [];
+        this.status = statusRes;
+      } catch (err) {
+        this.error = 'Failed to load blogroll: ' + err.message;
+        console.error('Blogroll fetch error:', err);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadMore() {
+      this.loadingMore = true;
+      const newOffset = this.offset + this.limit;
+
+      try {
+        const catParam = this.filterCategory ? `&category=${encodeURIComponent(this.filterCategory)}` : '';
+        const res = await fetch(`/blogrollapi/api/items?limit=${this.limit}&offset=${newOffset}${catParam}`).then(r => r.json());
+
+        this.items = [...this.items, ...(res.items || [])];
+        this.hasMore = res.hasMore || false;
+        this.offset = newOffset;
+      } catch (err) {
+        console.error('Load more error:', err);
+      } finally {
+        this.loadingMore = false;
+      }
+    },
+
+    formatDate(dateStr, format = 'short') {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return '';
+
+      if (format === 'full') {
+        return date.toLocaleString(undefined, {
+          year: 'numeric', month: 'short', day: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+      }
+      return date.toLocaleDateString(undefined, {
+        month: 'short', day: 'numeric', year: 'numeric'
+      });
+    }
+  };
+}
+</script>
