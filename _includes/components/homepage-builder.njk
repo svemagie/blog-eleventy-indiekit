@@ -1,0 +1,41 @@
+{#
+  Homepage Builder - renders configured sections from homepageConfig
+  Used when indiekit-endpoint-homepage plugin is installed and configured
+#}
+
+{% if homepageConfig.hero and homepageConfig.hero.enabled %}
+  {% include "components/sections/hero.njk" %}
+{% endif %}
+
+<div class="homepage-sections">
+  {% for section in homepageConfig.sections %}
+    {% if section.type == "hero" %}
+      {# Hero is handled above #}
+    {% elif section.type == "recent-posts" %}
+      {% include "components/sections/recent-posts.njk" %}
+    {% elif section.type == "custom-html" %}
+      {% include "components/sections/custom-html.njk" %}
+    {% elif section.type == "cv-experience" %}
+      {% include "components/sections/cv-experience.njk" ignore missing %}
+    {% elif section.type == "cv-projects" %}
+      {% include "components/sections/cv-projects.njk" ignore missing %}
+    {% elif section.type == "cv-skills" %}
+      {% include "components/sections/cv-skills.njk" ignore missing %}
+    {% elif section.type == "blogroll" %}
+      {% include "components/sections/blogroll.njk" ignore missing %}
+    {% elif section.type == "podroll" %}
+      {% include "components/sections/podroll.njk" ignore missing %}
+    {% elif section.type == "github-activity" %}
+      {% include "components/sections/github-activity.njk" ignore missing %}
+    {% elif section.type == "youtube" %}
+      {% include "components/sections/youtube.njk" ignore missing %}
+    {% elif section.type == "funkwhale" %}
+      {% include "components/sections/funkwhale.njk" ignore missing %}
+    {% elif section.type == "lastfm" %}
+      {% include "components/sections/lastfm.njk" ignore missing %}
+    {% else %}
+      {# Unknown section type - log warning #}
+      <!-- Unknown section type: {{ section.type }} -->
+    {% endif %}
+  {% endfor %}
+</div>

@@ -69,12 +69,9 @@ withSidebar: true
       (cv.projects and cv.projects.length) or
       (cv.skills and (cv.skills | dictsort | length)) %}
 
-{# --- Tier 1: Plugin-driven layout (future) --- #}
+{# --- Tier 1: Plugin-driven layout --- #}
 {% if homepageConfig and homepageConfig.sections %}
-{# Reserved for indiekit-endpoint-homepage plugin — will render configured sections here #}
-<section class="mb-8 sm:mb-12">
-  <p class="text-surface-500 text-center">Homepage plugin layout will render here.</p>
-</section>
+  {% include "components/homepage-builder.njk" %}
 
 {# --- Tier 2: CV-based layout --- #}
 {% elif hasCvData %}
