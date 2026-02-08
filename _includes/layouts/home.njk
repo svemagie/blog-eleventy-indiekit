@@ -3,7 +3,13 @@ layout: layouts/base.njk
 withSidebar: true
 ---
 
-{# Hero Section #}
+{# Homepage content — three-tier fallback: #}
+{# 1. Plugin config (homepageConfig) — homepage builder controls everything #}
+{# 2. CV data — show experience/projects/skills with default hero #}
+{# 3. Default — show recent posts and activity with default hero #}
+
+{# Default hero — only shown for Tier 2 and Tier 3 (plugin controls its own hero) #}
+{% if not (homepageConfig and homepageConfig.sections) %}
 <section class="mb-8 sm:mb-12">
   <div class="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
     {# Avatar #}
@@ -59,11 +65,7 @@ withSidebar: true
     </div>
   </div>
 </section>
-
-{# Homepage content — three-tier fallback: #}
-{# 1. Plugin config (homepageConfig) — Phase 3, future #}
-{# 2. CV data — show experience/projects/skills #}
-{# 3. Default — show recent posts and activity #}
+{% endif %}
 
 {% set hasCvData = (cv.experience and cv.experience.length) or
       (cv.projects and cv.projects.length) or
