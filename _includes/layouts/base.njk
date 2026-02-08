@@ -114,7 +114,9 @@
         <nav class="site-nav" id="site-nav">
           <a href="/">Home</a>
           <a href="/about/">About</a>
+          {% if collections.pages | selectattr("url", "equalto", "/now/") | list | length %}
           <a href="/now/">Now</a>
+          {% endif %}
           {# Slash pages dropdown - all root pages in one menu #}
           <div class="nav-dropdown" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
             <a href="/slashes/" class="nav-dropdown-trigger">
@@ -128,13 +130,24 @@
               {% for item in collections.pages %}
               <a href="{{ item.url }}">/{{ item.fileSlug }}</a>
               {% endfor %}
+              {# Plugin pages — only show when their data source is configured #}
+              {% set hasPluginPages = (funkwhaleActivity and funkwhaleActivity.source == "indiekit") or
+                    (githubActivity and githubActivity.source != "error") or
+                    (lastfmActivity and lastfmActivity.source == "indiekit") or
+                    (newsActivity and newsActivity.source == "indiekit") or
+                    (youtubeChannel and youtubeChannel.source == "indiekit") or
+                    (blogrollStatus and blogrollStatus.source == "indiekit") or
+                    (podrollStatus and podrollStatus.source == "indiekit") %}
+              {% if hasPluginPages %}
               <div class="nav-dropdown-divider"></div>
-              <a href="/funkwhale/">/funkwhale</a>
-              <a href="/github/">/github</a>
-              <a href="/listening/">/listening</a>
-              <a href="/news/">/news</a>
-              <a href="/podroll/">/podroll</a>
-              <a href="/youtube/">/youtube</a>
+              {% if blogrollStatus and blogrollStatus.source == "indiekit" %}<a href="/blogroll/">/blogroll</a>{% endif %}
+              {% if funkwhaleActivity and funkwhaleActivity.source == "indiekit" %}<a href="/funkwhale/">/funkwhale</a>{% endif %}
+              {% if githubActivity and githubActivity.source != "error" %}<a href="/github/">/github</a>{% endif %}
+              {% if lastfmActivity and lastfmActivity.source == "indiekit" %}<a href="/listening/">/listening</a>{% endif %}
+              {% if newsActivity and newsActivity.source == "indiekit" %}<a href="/news/">/news</a>{% endif %}
+              {% if podrollStatus and podrollStatus.source == "indiekit" %}<a href="/podroll/">/podroll</a>{% endif %}
+              {% if youtubeChannel and youtubeChannel.source == "indiekit" %}<a href="/youtube/">/youtube</a>{% endif %}
+              {% endif %}
             </div>
           </div>
           {# Blog dropdown #}
@@ -147,13 +160,9 @@
             </a>
             <div class="nav-dropdown-menu" x-show="open" x-transition x-cloak>
               <a href="/blog/">All Posts</a>
-              <a href="/articles/">Articles</a>
-              <a href="/notes/">Notes</a>
-              <a href="/photos/">Photos</a>
-              <a href="/bookmarks/">Bookmarks</a>
-              <a href="/likes/">Likes</a>
-              <a href="/replies/">Replies</a>
-              <a href="/reposts/">Reposts</a>
+              {% for pt in enabledPostTypes %}
+              <a href="{{ pt.path }}">{{ pt.label }}</a>
+              {% endfor %}
             </div>
           </div>
           <a href="/interactions/">Interactions</a>
@@ -191,7 +200,9 @@
     <nav class="mobile-nav hidden" id="mobile-nav" x-data="{ blogOpen: false, slashOpen: false }">
       <a href="/">Home</a>
       <a href="/about/">About</a>
+      {% if collections.pages | selectattr("url", "equalto", "/now/") | list | length %}
       <a href="/now/">Now</a>
+      {% endif %}
       {# Slash pages section - all root pages in one menu #}
       <div class="mobile-nav-section">
         <button type="button" class="mobile-nav-toggle" @click="slashOpen = !slashOpen">
@@ -205,13 +216,17 @@
           {% for item in collections.pages %}
           <a href="{{ item.url }}">/{{ item.fileSlug }}</a>
           {% endfor %}
+          {# Plugin pages — only show when configured #}
+          {% if hasPluginPages %}
           <div class="mobile-nav-divider"></div>
-          <a href="/funkwhale/">/funkwhale</a>
-          <a href="/github/">/github</a>
-          <a href="/listening/">/listening</a>
-          <a href="/news/">/news</a>
-          <a href="/podroll/">/podroll</a>
-          <a href="/youtube/">/youtube</a>
+          {% if blogrollStatus and blogrollStatus.source == "indiekit" %}<a href="/blogroll/">/blogroll</a>{% endif %}
+          {% if funkwhaleActivity and funkwhaleActivity.source == "indiekit" %}<a href="/funkwhale/">/funkwhale</a>{% endif %}
+          {% if githubActivity and githubActivity.source != "error" %}<a href="/github/">/github</a>{% endif %}
+          {% if lastfmActivity and lastfmActivity.source == "indiekit" %}<a href="/listening/">/listening</a>{% endif %}
+          {% if newsActivity and newsActivity.source == "indiekit" %}<a href="/news/">/news</a>{% endif %}
+          {% if podrollStatus and podrollStatus.source == "indiekit" %}<a href="/podroll/">/podroll</a>{% endif %}
+          {% if youtubeChannel and youtubeChannel.source == "indiekit" %}<a href="/youtube/">/youtube</a>{% endif %}
+          {% endif %}
         </div>
       </div>
       {# Blog section #}
@@ -224,13 +239,9 @@
         </button>
         <div class="mobile-nav-submenu" x-show="blogOpen" x-collapse>
           <a href="/blog/">All Posts</a>
-          <a href="/articles/">Articles</a>
-          <a href="/notes/">Notes</a>
-          <a href="/photos/">Photos</a>
-          <a href="/bookmarks/">Bookmarks</a>
-          <a href="/likes/">Likes</a>
-          <a href="/replies/">Replies</a>
-          <a href="/reposts/">Reposts</a>
+          {% for pt in enabledPostTypes %}
+          <a href="{{ pt.path }}">{{ pt.label }}</a>
+          {% endfor %}
         </div>
       </div>
       <a href="/interactions/">Interactions</a>

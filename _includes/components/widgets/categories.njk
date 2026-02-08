@@ -1,0 +1,13 @@
+{# Categories/Tags Widget #}
+{% if categories and categories.length %}
+<div class="widget">
+  <h3 class="widget-title">Categories</h3>
+  <div class="flex flex-wrap gap-2">
+    {% for category in categories %}
+    <a href="/categories/{{ category | slugify }}/" class="p-category">
+      {{ category }}
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}

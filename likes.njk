@@ -6,6 +6,7 @@ pagination:
   data: collections.likes
   size: 20
   alias: paginatedLikes
+  generatePageOnEmptyData: true
 permalink: "likes/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
 ---
 <div class="h-feed">
@@ -98,6 +99,7 @@ permalink: "likes/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumbe
   {% endif %}
 
   {% else %}
-  <p class="text-surface-600 dark:text-surface-400">No likes yet.</p>
+  {% set postType = "like" %}
+  {% include "components/empty-collection.njk" %}
   {% endif %}
 </div>

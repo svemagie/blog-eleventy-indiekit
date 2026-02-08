@@ -1,0 +1,21 @@
+{# Recent Posts Widget (for non-blog pages) #}
+{% if recentPosts and recentPosts.length %}
+<div class="widget">
+  <h3 class="widget-title">Recent Posts</h3>
+  <ul class="space-y-2">
+    {% for post in recentPosts | head(5) %}
+    <li>
+      <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">
+        {{ post.data.title or post.data.name or "Untitled" }}
+      </a>
+      <time class="text-xs text-surface-500 block" datetime="{{ post.data.published }}">
+        {{ post.data.published | date("MMM d, yyyy") }}
+      </time>
+    </li>
+    {% endfor %}
+  </ul>
+  <a href="/posts/" class="text-sm text-primary-600 dark:text-primary-400 hover:underline mt-3 block">
+    View all posts
+  </a>
+</div>
+{% endif %}

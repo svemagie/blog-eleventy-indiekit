@@ -6,6 +6,7 @@ pagination:
   data: collections.notes
   size: 20
   alias: paginatedNotes
+  generatePageOnEmptyData: true
 permalink: "notes/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
 ---
 <div class="h-feed">
@@ -84,6 +85,7 @@ permalink: "notes/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumbe
   {% endif %}
 
   {% else %}
-  <p class="text-surface-600 dark:text-surface-400">No notes yet.</p>
+  {% set postType = "note" %}
+  {% include "components/empty-collection.njk" %}
   {% endif %}
 </div>

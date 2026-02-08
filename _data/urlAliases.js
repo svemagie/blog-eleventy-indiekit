@@ -4,9 +4,9 @@
  * Maps new URLs to their old URLs so webmentions from previous
  * URL structures can be displayed on current pages.
  *
- * Sources:
- * - redirects.map.rmendes (micro.blog: /YYYY/MM/DD/slug.html → /notes/...)
- * - old-blog-redirects.map.rmendes (Known/WP: /YYYY/slug → /content/...)
+ * Place redirect map files in the parent directory of this theme:
+ * - redirects.map (e.g., micro.blog: /YYYY/MM/DD/slug.html → /notes/...)
+ * - old-blog-redirects.map (e.g., Known/WP: /YYYY/slug → /content/...)
  */
 
 import { readFileSync, existsSync } from "fs";
@@ -94,13 +94,11 @@ function findFile(candidates) {
 // Try multiple possible locations for each map type
 const microblogMapPath = findFile([
   resolve(pkgRoot, "redirects.map"),
-  resolve(pkgRoot, "redirects.map.rmendes"),
   resolve(__dirname, "../../redirects.map"),
 ]);
 
 const knownMapPath = findFile([
   resolve(pkgRoot, "old-blog-redirects.map"),
-  resolve(pkgRoot, "old-blog-redirects.map.rmendes"),
   resolve(__dirname, "../../old-blog-redirects.map"),
 ]);
 

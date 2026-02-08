@@ -6,6 +6,7 @@ pagination:
   data: collections.replies
   size: 20
   alias: paginatedReplies
+  generatePageOnEmptyData: true
 permalink: "replies/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
 ---
 <div class="h-feed">
@@ -102,6 +103,7 @@ permalink: "replies/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNum
   {% endif %}
 
   {% else %}
-  <p class="text-surface-600 dark:text-surface-400">No replies yet.</p>
+  {% set postType = "reply" %}
+  {% include "components/empty-collection.njk" %}
   {% endif %}
 </div>

@@ -6,6 +6,7 @@ pagination:
   data: collections.reposts
   size: 20
   alias: paginatedReposts
+  generatePageOnEmptyData: true
 permalink: "reposts/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
 ---
 <div class="h-feed">
@@ -104,6 +105,7 @@ permalink: "reposts/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNum
   {% endif %}
 
   {% else %}
-  <p class="text-surface-600 dark:text-surface-400">No reposts yet.</p>
+  {% set postType = "repost" %}
+  {% include "components/empty-collection.njk" %}
   {% endif %}
 </div>

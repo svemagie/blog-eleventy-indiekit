@@ -17,7 +17,7 @@ eleventyExcludeFromCollections: true
   "language": "{{ site.locale | default('en') }}",
   "authors": [
     {
-      "name": "{{ site.author | default('Ricardo Mendes') }}",
+      "name": "{{ site.author.name | default(site.name) }}",
       "url": "{{ site.url }}/"
     }
   ],

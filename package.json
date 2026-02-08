@@ -1,7 +1,7 @@
 {
-  "name": "rmendes-eleventy-site",
+  "name": "indiekit-eleventy-theme",
   "version": "1.0.0",
-  "description": "Personal website powered by Indiekit and Eleventy",
+  "description": "Eleventy theme for Indiekit — IndieWeb-ready personal website",
   "type": "module",
   "scripts": {
     "build": "eleventy",

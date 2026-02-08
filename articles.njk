@@ -6,6 +6,7 @@ pagination:
   data: collections.articles
   size: 20
   alias: paginatedArticles
+  generatePageOnEmptyData: true
 permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
 ---
 <div class="h-feed">
@@ -87,6 +88,7 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
   {% endif %}
 
   {% else %}
-  <p class="text-surface-600 dark:text-surface-400">No articles yet.</p>
+  {% set postType = "article" %}
+  {% include "components/empty-collection.njk" %}
   {% endif %}
 </div>

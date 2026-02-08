@@ -1,0 +1,71 @@
+{# Funkwhale Now Playing Widget #}
+{% if funkwhaleActivity and (funkwhaleActivity.nowPlaying or funkwhaleActivity.stats) %}
+<div class="widget">
+  <h3 class="widget-title flex items-center gap-2">
+    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+    </svg>
+    Listening
+  </h3>
+
+  {# Now Playing / Recently Played #}
+  {% if funkwhaleActivity.nowPlaying and funkwhaleActivity.nowPlaying.track %}
+  <div class="{% if funkwhaleActivity.nowPlaying.status == 'now-playing' %}bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800{% else %}bg-surface-50 dark:bg-surface-800{% endif %} rounded-lg p-3 mb-3">
+    {% if funkwhaleActivity.nowPlaying.status == 'now-playing' %}
+    <div class="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 mb-2">
+      <span class="flex gap-0.5 items-end h-2.5">
+        <span class="w-0.5 bg-green-500 animate-pulse" style="height: 30%;"></span>
+        <span class="w-0.5 bg-green-500 animate-pulse" style="height: 70%; animation-delay: 0.2s;"></span>
+        <span class="w-0.5 bg-green-500 animate-pulse" style="height: 50%; animation-delay: 0.4s;"></span>
+      </span>
+      Now Playing
+    </div>
+    {% elif funkwhaleActivity.nowPlaying.status == 'recently-played' %}
+    <div class="text-xs text-surface-500 mb-2">Recently Played</div>
+    {% endif %}
+
+    <div class="flex items-center gap-3">
+      {% if funkwhaleActivity.nowPlaying.coverUrl %}
+      <img src="{{ funkwhaleActivity.nowPlaying.coverUrl }}" alt="" class="w-12 h-12 rounded object-cover flex-shrink-0" loading="lazy" eleventy:ignore>
+      {% endif %}
+      <div class="min-w-0 flex-1">
+        <p class="font-medium text-sm text-surface-900 dark:text-surface-100 truncate">
+          {% if funkwhaleActivity.nowPlaying.trackUrl %}
+          <a href="{{ funkwhaleActivity.nowPlaying.trackUrl }}" class="hover:text-primary-600 dark:hover:text-primary-400" target="_blank" rel="noopener">
+            {{ funkwhaleActivity.nowPlaying.track }}
+          </a>
+          {% else %}
+          {{ funkwhaleActivity.nowPlaying.track }}
+          {% endif %}
+        </p>
+        <p class="text-xs text-surface-600 dark:text-surface-400 truncate">{{ funkwhaleActivity.nowPlaying.artist }}</p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {# Quick Stats #}
+  {% if funkwhaleActivity.stats and funkwhaleActivity.stats.summary %}
+  {% set stats = funkwhaleActivity.stats.summary.all %}
+  <div class="grid grid-cols-3 gap-2 text-center mb-3">
+    <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded">
+      <span class="text-lg font-bold text-primary-600 dark:text-primary-400 block">{{ stats.totalPlays or 0 }}</span>
+      <span class="text-[10px] text-surface-500 uppercase">plays</span>
+    </div>
+    <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded">
+      <span class="text-lg font-bold text-primary-600 dark:text-primary-400 block">{{ stats.uniqueArtists or 0 }}</span>
+      <span class="text-[10px] text-surface-500 uppercase">artists</span>
+    </div>
+    <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded">
+      <span class="text-lg font-bold text-primary-600 dark:text-primary-400 block">{{ stats.totalDurationFormatted or '0m' }}</span>
+      <span class="text-[10px] text-surface-500 uppercase">listened</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <a href="/listening/" class="text-sm text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1">
+    View full listening history
+    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </a>
+</div>
+{% endif %}

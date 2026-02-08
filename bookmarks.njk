@@ -6,6 +6,7 @@ pagination:
   data: collections.bookmarks
   size: 20
   alias: paginatedBookmarks
+  generatePageOnEmptyData: true
 permalink: "bookmarks/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
 ---
 <div class="h-feed">
@@ -100,6 +101,7 @@ permalink: "bookmarks/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageN
   {% endif %}
 
   {% else %}
-  <p class="text-surface-600 dark:text-surface-400">No bookmarks yet.</p>
+  {% set postType = "bookmark" %}
+  {% include "components/empty-collection.njk" %}
   {% endif %}
 </div>

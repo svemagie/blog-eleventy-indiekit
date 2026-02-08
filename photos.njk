@@ -6,6 +6,7 @@ pagination:
   data: collections.photos
   size: 20
   alias: paginatedPhotos
+  generatePageOnEmptyData: true
 permalink: "photos/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
 ---
 <div class="h-feed">
@@ -92,6 +93,7 @@ permalink: "photos/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumb
   {% endif %}
 
   {% else %}
-  <p class="text-surface-600 dark:text-surface-400">No photos yet.</p>
+  {% set postType = "photo" %}
+  {% include "components/empty-collection.njk" %}
   {% endif %}
 </div>
