@@ -9,13 +9,15 @@
  */
 
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const CONTENT_DIR = process.env.CONTENT_DIR || "/data/content";
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default function () {
   try {
-    const configPath = resolve(CONTENT_DIR, ".indiekit", "homepage.json");
+    // Resolve via the content/ symlink relative to the Eleventy project
+    const configPath = resolve(__dirname, "..", "content", ".indiekit", "homepage.json");
     const raw = readFileSync(configPath, "utf8");
     const config = JSON.parse(raw);
     console.log("[homepageConfig] Loaded plugin config");
