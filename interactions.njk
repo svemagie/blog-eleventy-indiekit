@@ -151,13 +151,28 @@ permalink: /interactions/
       <p class="mt-4 text-surface-500">Loading webmentions...</p>
     </div>
 
-    {# Error state #}
-    <div x-show="error" class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 mb-6">
+    {# Setup required state — shown when webmentions proxy is not configured #}
+    <div x-show="notConfigured" class="p-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg mb-6">
+      <h3 class="text-lg font-semibold text-amber-800 dark:text-amber-200 mb-3">Webmentions Not Configured</h3>
+      <p class="text-amber-700 dark:text-amber-300 text-sm mb-4">
+        To receive inbound webmentions, you need to set up the webmentions proxy plugin
+        (<code class="bg-amber-100 dark:bg-amber-900/40 px-1 rounded">@rmdes/indiekit-endpoint-webmentions-proxy</code>).
+      </p>
+      <ol class="text-sm text-amber-700 dark:text-amber-300 space-y-2 list-decimal list-inside">
+        <li>Register your domain at <a href="https://webmention.io" target="_blank" rel="noopener" class="underline font-medium">webmention.io</a> and get your API token</li>
+        <li>Set the <code class="bg-amber-100 dark:bg-amber-900/40 px-1 rounded">WEBMENTION_IO_TOKEN</code> environment variable</li>
+        <li>Ensure the webmentions proxy plugin is installed and configured in your Indiekit config</li>
+        <li>Restart Indiekit to apply the changes</li>
+      </ol>
+    </div>
+
+    {# Error state — only shown for real errors, not missing config #}
+    <div x-show="error && !notConfigured" class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 mb-6">
       <p x-text="error"></p>
     </div>
 
     {# Filter by type #}
-    <div x-show="!loading || webmentions.length" class="flex flex-wrap gap-2 mb-6">
+    <div x-show="!notConfigured && (!loading || webmentions.length)" class="flex flex-wrap gap-2 mb-6">
       <button
         @click="filterType = 'all'"
         :class="filterType === 'all' ? 'bg-primary-500 text-white' : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300'"
@@ -191,7 +206,7 @@ permalink: /interactions/
     </div>
 
     {# Webmentions list #}
-    <div x-show="!loading || webmentions.length" class="space-y-4">
+    <div x-show="!notConfigured && (!loading || webmentions.length)" class="space-y-4">
       <template x-for="wm in paginatedWebmentions" :key="wm['wm-id']">
         <div class="p-4 bg-surface-100 dark:bg-surface-800 rounded-lg">
           <div class="flex gap-3">
@@ -286,6 +301,7 @@ function interactionsApp() {
     loading: false,
     loadingMore: false,
     error: null,
+    notConfigured: false,
     webmentions: [],
     filterType: 'all',
     page: 0,
@@ -325,8 +341,10 @@ function interactionsApp() {
 
     async init() {
       await this.fetchWebmentions();
-      // Auto-refresh every 5 minutes
-      this.refreshInterval = setInterval(() => this.fetchWebmentions(true), 5 * 60 * 1000);
+      // Auto-refresh every 5 minutes (skip if not configured)
+      if (!this.notConfigured) {
+        this.refreshInterval = setInterval(() => this.fetchWebmentions(true), 5 * 60 * 1000);
+      }
     },
 
     async fetchWebmentions(silent = false) {
@@ -344,9 +362,14 @@ function interactionsApp() {
 
         const response = await fetch(url);
         if (!response.ok) {
+          if (response.status === 404) {
+            this.notConfigured = true;
+            return;
+          }
           const data = await response.json().catch(() => ({}));
           throw new Error(data.message || `HTTP ${response.status}`);
         }
+        this.notConfigured = false;
 
         const data = await response.json();
         const newMentions = data.children || [];
