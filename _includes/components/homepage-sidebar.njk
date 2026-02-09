@@ -28,6 +28,19 @@
           });
         </script>
       </div>
+    {% elif widget.type == "custom-html" %}
+      {# Custom content widget #}
+      {% set wConfig = widget.config or {} %}
+      <div class="sidebar-widget">
+        {% if wConfig.title %}
+        <h3 class="text-sm font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wide mb-3">{{ wConfig.title }}</h3>
+        {% endif %}
+        {% if wConfig.content %}
+        <div class="prose dark:prose-invert prose-sm max-w-none">
+          {{ wConfig.content | safe }}
+        </div>
+        {% endif %}
+      </div>
     {% else %}
       <!-- Unknown widget type: {{ widget.type }} -->
     {% endif %}
