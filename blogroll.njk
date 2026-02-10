@@ -19,23 +19,26 @@ permalink: /blogroll/
     </p>
   </header>
 
-  {# Tab Navigation #}
+  {# Tab Navigation - All Blogs first, then one tab per category #}
   <div class="mb-6 border-b border-surface-200 dark:border-surface-700">
-    <nav class="flex gap-4" aria-label="Tabs">
+    <nav class="flex gap-1 overflow-x-auto -mb-px" aria-label="Tabs">
       <button
-        @click="activeTab = 'items'"
-        :class="activeTab === 'items' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
-        class="pb-3 px-1 border-b-2 font-medium text-sm transition-colors"
-      >
-        Recent Posts
-      </button>
-      <button
-        @click="activeTab = 'blogs'"
+        @click="switchTab('blogs')"
         :class="activeTab === 'blogs' ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
-        class="pb-3 px-1 border-b-2 font-medium text-sm transition-colors"
+        class="pb-3 px-3 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex-shrink-0"
       >
         All Blogs
       </button>
+      <template x-for="cat in categories" :key="cat.name">
+        <button
+          @click="switchTab('category:' + cat.name)"
+          :class="activeTab === 'category:' + cat.name ? 'border-primary-500 text-primary-600 dark:text-primary-400' : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+          class="pb-3 px-3 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex-shrink-0"
+        >
+          <span x-text="cat.name"></span>
+          <span class="text-xs opacity-60 ml-1" x-text="`(${cat.count})`"></span>
+        </button>
+      </template>
     </nav>
   </div>
 
@@ -43,7 +46,7 @@ permalink: /blogroll/
     {# Main Content #}
     <div class="main-content">
       {# Loading State #}
-      <div x-show="loading && items.length === 0" class="text-center py-12">
+      <div x-show="loading" class="text-center py-12">
         <svg class="w-8 h-8 mx-auto text-primary-600 animate-spin mb-4" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -57,34 +60,72 @@ permalink: /blogroll/
         <button @click="fetchData()" class="mt-2 text-sm text-red-600 hover:text-red-700 underline">Try again</button>
       </div>
 
-      {# Category Filter (visible on both tabs) #}
-      <div x-show="categories.length > 0 && !loading" class="mb-6">
-        <div class="relative">
-          <select
-            x-model="filterCategory"
-            @change="fetchData()"
-            class="w-full sm:w-auto appearance-none bg-surface-100 dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg px-4 py-2 pr-10 text-sm text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
+      {# All Blogs Tab #}
+      <div x-show="activeTab === 'blogs' && !loading" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <template x-for="blog in blogs" :key="blog.id">
+          <a
+            :href="blog.siteUrl || blog.feedUrl"
+            class="block bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 hover:border-primary-400 dark:hover:border-primary-600 transition-colors group"
+            target="_blank"
+            rel="noopener"
           >
-            <option value="">All Categories</option>
-            <template x-for="cat in categories" :key="cat.name">
-              <option :value="cat.name" x-text="`${cat.name} (${cat.count})`"></option>
-            </template>
-          </select>
-          <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-surface-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-          </svg>
-        </div>
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <img x-show="blog.photo" :src="blog.photo" class="w-10 h-10 object-cover" loading="lazy" />
+                <span x-show="!blog.photo" class="text-white text-sm font-bold" x-text="blog.title?.charAt(0)?.toUpperCase()"></span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-surface-900 dark:text-surface-100 truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" x-text="blog.title"></h3>
+                <p x-show="blog.category" class="text-xs text-surface-500 truncate" x-text="blog.category"></p>
+              </div>
+            </div>
+            <p x-show="blog.description" class="text-sm text-surface-600 dark:text-surface-400 line-clamp-2 mb-3" x-text="blog.description"></p>
+            <div class="flex items-center gap-3 text-xs text-surface-500">
+              <span x-text="`${blog.itemCount || 0} posts`"></span>
+              <span :class="blog.status === 'active' ? 'text-green-500' : 'text-red-500'">
+                <span x-show="blog.status === 'active'" class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                  Active
+                </span>
+                <span x-show="blog.status === 'error'" class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                  Error
+                </span>
+              </span>
+            </div>
+          </a>
+        </template>
       </div>
 
-      {# Recent Posts Tab #}
-      <div x-show="activeTab === 'items'" class="space-y-4">
-        <template x-for="item in items" :key="item.id">
+      {# Empty State for Blogs #}
+      <div x-show="!loading && blogs.length === 0 && activeTab === 'blogs' && !error" class="text-center py-12">
+        <svg class="w-16 h-16 mx-auto text-surface-300 dark:text-surface-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+        </svg>
+        <p class="text-surface-600 dark:text-surface-400 text-lg">No blogs yet.</p>
+        <p class="text-surface-500 text-sm mt-2">Add blogs via the admin dashboard.</p>
+      </div>
+
+      {# Category Items Tab (one for each category) #}
+      <div x-show="activeTab.startsWith('category:') && !loading" class="space-y-4">
+        <template x-for="item in categoryItems" :key="item.id">
           <article class="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 sm:p-6 hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
             <div class="flex items-start gap-4">
               <div class="flex-1 min-w-0">
-                <h2 class="font-semibold text-lg text-surface-900 dark:text-surface-100 mb-1">
-                  <a :href="item.url" class="hover:text-primary-600 dark:hover:text-primary-400" target="_blank" rel="noopener" x-text="item.title"></a>
-                </h2>
+                <div class="flex items-center gap-2 mb-1">
+                  <h2 class="font-semibold text-lg text-surface-900 dark:text-surface-100">
+                    <a :href="item.url" class="hover:text-primary-600 dark:hover:text-primary-400" target="_blank" rel="noopener" x-text="item.title"></a>
+                  </h2>
+                  <span
+                    x-show="item.isFuture"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-xs font-medium flex-shrink-0"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Upcoming
+                  </span>
+                </div>
                 <div class="flex flex-wrap items-center gap-2 text-sm text-surface-500 mb-3">
                   <a
                     :href="item.blog?.siteUrl || '#'"
@@ -140,9 +181,9 @@ permalink: /blogroll/
         </template>
 
         {# Load More #}
-        <div x-show="hasMore" class="text-center mt-8">
+        <div x-show="categoryHasMore" class="text-center mt-8">
           <button
-            @click="loadMore()"
+            @click="loadMoreCategory()"
             :disabled="loadingMore"
             class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
           >
@@ -157,104 +198,19 @@ permalink: /blogroll/
           </button>
         </div>
 
-        {# Empty State for Items #}
-        <div x-show="!loading && items.length === 0 && activeTab === 'items' && !error" class="text-center py-12">
+        {# Empty State for Category Items #}
+        <div x-show="categoryItems.length === 0 && !error" class="text-center py-12">
           <svg class="w-16 h-16 mx-auto text-surface-300 dark:text-surface-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
           </svg>
-          <p class="text-surface-600 dark:text-surface-400 text-lg">No posts yet.</p>
+          <p class="text-surface-600 dark:text-surface-400 text-lg">No posts in this category yet.</p>
           <p class="text-surface-500 text-sm mt-2">Posts will appear once blogs are synced.</p>
         </div>
-      </div>
-
-      {# All Blogs Tab #}
-      <div x-show="activeTab === 'blogs'" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <template x-for="blog in blogs" :key="blog.id">
-          <a
-            :href="blog.siteUrl || blog.feedUrl"
-            class="block bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 hover:border-primary-400 dark:hover:border-primary-600 transition-colors group"
-            target="_blank"
-            rel="noopener"
-          >
-            <div class="flex items-center gap-3 mb-2">
-              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                <img x-show="blog.photo" :src="blog.photo" class="w-10 h-10 object-cover" loading="lazy" />
-                <span x-show="!blog.photo" class="text-white text-sm font-bold" x-text="blog.title?.charAt(0)?.toUpperCase()"></span>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-surface-900 dark:text-surface-100 truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" x-text="blog.title"></h3>
-                <p x-show="blog.category" class="text-xs text-surface-500 truncate" x-text="blog.category"></p>
-              </div>
-            </div>
-            <p x-show="blog.description" class="text-sm text-surface-600 dark:text-surface-400 line-clamp-2 mb-3" x-text="blog.description"></p>
-            <div class="flex items-center gap-3 text-xs text-surface-500">
-              <span x-text="`${blog.itemCount || 0} posts`"></span>
-              <span :class="blog.status === 'active' ? 'text-green-500' : 'text-red-500'">
-                <span x-show="blog.status === 'active'" class="flex items-center gap-1">
-                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
-                  Active
-                </span>
-                <span x-show="blog.status === 'error'" class="flex items-center gap-1">
-                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
-                  Error
-                </span>
-              </span>
-            </div>
-          </a>
-        </template>
-      </div>
-
-      {# Empty State for Blogs #}
-      <div x-show="!loading && blogs.length === 0 && activeTab === 'blogs' && !error" class="text-center py-12">
-        <svg class="w-16 h-16 mx-auto text-surface-300 dark:text-surface-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
-        </svg>
-        <p class="text-surface-600 dark:text-surface-400 text-lg">No blogs yet.</p>
-        <p class="text-surface-500 text-sm mt-2">Add blogs via the admin dashboard.</p>
       </div>
     </div>
 
     {# Sidebar #}
     <aside class="sidebar">
-      {# Categories Widget #}
-      <div class="widget">
-        <h3 class="widget-title flex items-center gap-2">
-          <svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
-            <circle cx="6.18" cy="17.82" r="2.18"/>
-            <path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/>
-          </svg>
-          Categories
-        </h3>
-
-        <ul class="space-y-1 mt-4">
-          <li>
-            <button
-              @click="filterCategory = ''; fetchData()"
-              :class="filterCategory === '' ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'hover:bg-surface-100 dark:hover:bg-surface-700'"
-              class="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
-            >
-              All Blogs <span class="text-surface-500" x-text="`(${blogs.length})`"></span>
-            </button>
-          </li>
-          <template x-for="cat in categories" :key="cat.name">
-            <li>
-              <button
-                @click="filterCategory = cat.name; fetchData()"
-                :class="filterCategory === cat.name ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'hover:bg-surface-100 dark:hover:bg-surface-700'"
-                class="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
-              >
-                <span x-text="cat.name"></span>
-                <span class="text-surface-500" x-text="`(${cat.count})`"></span>
-              </button>
-            </li>
-          </template>
-        </ul>
-
-        <div x-show="categories.length === 0 && !loading" class="text-sm text-surface-500 text-center py-4">
-          No categories yet.
-        </div>
-      </div>
-
       {# OPML Download Widget #}
       <div class="widget">
         <h3 class="widget-title">Subscribe</h3>
@@ -287,6 +243,31 @@ permalink: /blogroll/
           </div>
         </div>
       </div>
+
+      {# Category Quick Links (for when on blogs tab) #}
+      <div class="widget" x-show="categories.length > 0">
+        <h3 class="widget-title flex items-center gap-2">
+          <svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
+            <circle cx="6.18" cy="17.82" r="2.18"/>
+            <path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/>
+          </svg>
+          Categories
+        </h3>
+        <ul class="space-y-1 mt-4">
+          <template x-for="cat in categories" :key="cat.name">
+            <li>
+              <button
+                @click="switchTab('category:' + cat.name)"
+                :class="activeTab === 'category:' + cat.name ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'hover:bg-surface-100 dark:hover:bg-surface-700'"
+                class="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
+              >
+                <span x-text="cat.name"></span>
+                <span class="text-surface-500" x-text="`(${cat.count})`"></span>
+              </button>
+            </li>
+          </template>
+        </ul>
+      </div>
     </aside>
   </div>
 </div>
@@ -294,18 +275,20 @@ permalink: /blogroll/
 <script>
 function blogrollApp() {
   return {
-    items: [],
     blogs: [],
     categories: [],
     status: null,
     loading: true,
     loadingMore: false,
     error: null,
-    activeTab: 'items',
-    filterCategory: '',
-    offset: 0,
+    activeTab: 'blogs',
+    // Category items (loaded per-tab)
+    categoryItems: [],
+    categoryOffset: 0,
+    categoryHasMore: false,
     limit: 20,
-    hasMore: false,
+    // Cache category items to avoid re-fetching on tab switch
+    categoryCache: {},
 
     async init() {
       await this.fetchData();
@@ -314,20 +297,14 @@ function blogrollApp() {
     async fetchData() {
       this.loading = true;
       this.error = null;
-      this.offset = 0;
 
       try {
-        const catParam = this.filterCategory ? `&category=${encodeURIComponent(this.filterCategory)}` : '';
-
-        const [itemsRes, blogsRes, catsRes, statusRes] = await Promise.all([
-          fetch(`/blogrollapi/api/items?limit=${this.limit}${catParam}`).then(r => r.json()),
-          fetch(`/blogrollapi/api/blogs?limit=100${catParam}`).then(r => r.json()),
+        const [blogsRes, catsRes, statusRes] = await Promise.all([
+          fetch('/blogrollapi/api/blogs?limit=200').then(r => r.json()),
           fetch('/blogrollapi/api/categories').then(r => r.json()),
           fetch('/blogrollapi/api/status').then(r => r.json())
         ]);
 
-        this.items = itemsRes.items || [];
-        this.hasMore = itemsRes.hasMore || false;
         this.blogs = blogsRes.items || [];
         this.categories = catsRes.items || [];
         this.status = statusRes;
@@ -339,17 +316,67 @@ function blogrollApp() {
       }
     },
 
-    async loadMore() {
-      this.loadingMore = true;
-      const newOffset = this.offset + this.limit;
+    async switchTab(tab) {
+      this.activeTab = tab;
+
+      if (tab.startsWith('category:')) {
+        const categoryName = tab.replace('category:', '');
+        await this.fetchCategoryItems(categoryName);
+      }
+    },
+
+    async fetchCategoryItems(category) {
+      // Use cache if available
+      if (this.categoryCache[category]) {
+        this.categoryItems = this.categoryCache[category].items;
+        this.categoryHasMore = this.categoryCache[category].hasMore;
+        this.categoryOffset = this.categoryCache[category].offset;
+        return;
+      }
+
+      this.loading = true;
+      this.categoryOffset = 0;
 
       try {
-        const catParam = this.filterCategory ? `&category=${encodeURIComponent(this.filterCategory)}` : '';
-        const res = await fetch(`/blogrollapi/api/items?limit=${this.limit}&offset=${newOffset}${catParam}`).then(r => r.json());
+        const catParam = encodeURIComponent(category);
+        const res = await fetch(`/blogrollapi/api/items?limit=${this.limit}&category=${catParam}`).then(r => r.json());
 
-        this.items = [...this.items, ...(res.items || [])];
-        this.hasMore = res.hasMore || false;
-        this.offset = newOffset;
+        this.categoryItems = res.items || [];
+        this.categoryHasMore = res.hasMore || false;
+
+        // Cache the result
+        this.categoryCache[category] = {
+          items: this.categoryItems,
+          hasMore: this.categoryHasMore,
+          offset: 0
+        };
+      } catch (err) {
+        this.error = 'Failed to load posts: ' + err.message;
+        console.error('Category fetch error:', err);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadMoreCategory() {
+      const categoryName = this.activeTab.replace('category:', '');
+      this.loadingMore = true;
+      const newOffset = this.categoryOffset + this.limit;
+
+      try {
+        const catParam = encodeURIComponent(categoryName);
+        const res = await fetch(`/blogrollapi/api/items?limit=${this.limit}&offset=${newOffset}&category=${catParam}`).then(r => r.json());
+
+        this.categoryItems = [...this.categoryItems, ...(res.items || [])];
+        this.categoryHasMore = res.hasMore || false;
+        this.categoryOffset = newOffset;
+
+        // Update cache
+        this.categoryCache[categoryName] = {
+          items: this.categoryItems,
+          hasMore: this.categoryHasMore,
+          offset: newOffset
+        };
       } catch (err) {
         console.error('Load more error:', err);
       } finally {
