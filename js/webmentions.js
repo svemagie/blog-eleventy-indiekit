@@ -18,8 +18,8 @@
   // stores targets inconsistently (Bridgy sends different formats)
   const targetWithSlash = target.endsWith('/') ? target : target + '/';
   const targetWithoutSlash = target.endsWith('/') ? target.slice(0, -1) : target;
-  const apiUrl1 = `/webmentions-api/api/mentions?target=${encodeURIComponent(targetWithSlash)}&per-page=100`;
-  const apiUrl2 = `/webmentions-api/api/mentions?target=${encodeURIComponent(targetWithoutSlash)}&per-page=100`;
+  const apiUrl1 = `/webmentions/api/mentions?target=${encodeURIComponent(targetWithSlash)}&per-page=100`;
+  const apiUrl2 = `/webmentions/api/mentions?target=${encodeURIComponent(targetWithoutSlash)}&per-page=100`;
 
   // Check if build-time webmentions section exists
   const hasBuildTimeSection = document.getElementById('webmentions') !== null;

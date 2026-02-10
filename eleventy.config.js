@@ -164,7 +164,7 @@ export default function (eleventyConfig) {
   const wmDomain = siteUrl.replace("https://", "").replace("http://", "");
   eleventyConfig.addPlugin(pluginWebmentions, {
     domain: siteUrl,
-    feed: `https://webmention.io/api/mentions.jf2?domain=${wmDomain}&token=${process.env.WEBMENTION_IO_TOKEN}`,
+    feed: `http://127.0.0.1:8080/webmentions/api/mentions?per-page=10000`,
     key: "children",
   });
 

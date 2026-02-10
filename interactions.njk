@@ -358,7 +358,7 @@ function interactionsApp() {
 
       try {
         // Use our server-side proxy which has the token
-        const url = `/webmentions-api/api/mentions?per-page=${this.perPage}&page=${this.page}`;
+        const url = `/webmentions/api/mentions?per-page=${this.perPage}&page=${this.page}`;
 
         const response = await fetch(url);
         if (!response.ok) {
@@ -402,7 +402,7 @@ function interactionsApp() {
       this.page++;
 
       try {
-        const url = `/webmentions-api/api/mentions?per-page=${this.perPage}&page=${this.page}`;
+        const url = `/webmentions/api/mentions?per-page=${this.perPage}&page=${this.page}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
