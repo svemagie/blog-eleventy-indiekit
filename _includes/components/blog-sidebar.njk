@@ -38,16 +38,52 @@
     {% if previousPost %}
     <div class="border-b border-surface-200 dark:border-surface-700 pb-3">
       <span class="text-xs text-surface-500 uppercase tracking-wide block mb-1">Previous</span>
-      <a href="{{ previousPost.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-2">
-        {{ previousPost.data.title or previousPost.data.name or "Untitled" }}
+      {% set _likedUrl = previousPost.data.likeOf or previousPost.data.like_of %}
+      {% set _bookmarkedUrl = previousPost.data.bookmarkOf or previousPost.data.bookmark_of %}
+      {% set _repostedUrl = previousPost.data.repostOf or previousPost.data.repost_of %}
+      {% set _replyToUrl = previousPost.data.inReplyTo or previousPost.data.in_reply_to %}
+      <a href="{{ previousPost.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-2 flex items-center gap-1.5">
+        {% if _likedUrl %}
+        <svg class="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        Liked {{ _likedUrl | replace("https://", "") | truncate(35) }}
+        {% elif _bookmarkedUrl %}
+        <svg class="w-3.5 h-3.5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+        {{ previousPost.data.title or ("Bookmarked " + (_bookmarkedUrl | replace("https://", "") | truncate(30))) }}
+        {% elif _repostedUrl %}
+        <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Reposted {{ _repostedUrl | replace("https://", "") | truncate(35) }}
+        {% elif _replyToUrl %}
+        <svg class="w-3.5 h-3.5 text-primary-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+        Reply to {{ _replyToUrl | replace("https://", "") | truncate(35) }}
+        {% else %}
+        {{ previousPost.data.title or previousPost.data.name or (previousPost.templateContent | striptags | truncate(50)) or "Note" }}
+        {% endif %}
       </a>
     </div>
     {% endif %}
     {% if nextPost %}
     <div>
       <span class="text-xs text-surface-500 uppercase tracking-wide block mb-1">Next</span>
-      <a href="{{ nextPost.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-2">
-        {{ nextPost.data.title or nextPost.data.name or "Untitled" }}
+      {% set _likedUrl = nextPost.data.likeOf or nextPost.data.like_of %}
+      {% set _bookmarkedUrl = nextPost.data.bookmarkOf or nextPost.data.bookmark_of %}
+      {% set _repostedUrl = nextPost.data.repostOf or nextPost.data.repost_of %}
+      {% set _replyToUrl = nextPost.data.inReplyTo or nextPost.data.in_reply_to %}
+      <a href="{{ nextPost.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-2 flex items-center gap-1.5">
+        {% if _likedUrl %}
+        <svg class="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        Liked {{ _likedUrl | replace("https://", "") | truncate(35) }}
+        {% elif _bookmarkedUrl %}
+        <svg class="w-3.5 h-3.5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+        {{ nextPost.data.title or ("Bookmarked " + (_bookmarkedUrl | replace("https://", "") | truncate(30))) }}
+        {% elif _repostedUrl %}
+        <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Reposted {{ _repostedUrl | replace("https://", "") | truncate(35) }}
+        {% elif _replyToUrl %}
+        <svg class="w-3.5 h-3.5 text-primary-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+        Reply to {{ _replyToUrl | replace("https://", "") | truncate(35) }}
+        {% else %}
+        {{ nextPost.data.title or nextPost.data.name or (nextPost.templateContent | striptags | truncate(50)) or "Note" }}
+        {% endif %}
       </a>
     </div>
     {% endif %}
@@ -93,20 +129,79 @@
 </div>
 {% endif %}
 
-{# Recent Posts Widget #}
+{# Recent Posts Widget — type-aware #}
 {% if collections.posts %}
 <div class="widget">
   <h3 class="widget-title">Recent Posts</h3>
-  <ul class="space-y-2">
+  <ul class="space-y-3">
     {% for post in collections.posts | head(5) %}
     {% if post.url != page.url %}
     <li>
+      {% set _likedUrl = post.data.likeOf or post.data.like_of %}
+      {% set _bookmarkedUrl = post.data.bookmarkOf or post.data.bookmark_of %}
+      {% set _repostedUrl = post.data.repostOf or post.data.repost_of %}
+      {% set _replyToUrl = post.data.inReplyTo or post.data.in_reply_to %}
+
+      {% if _likedUrl %}
+      <div class="flex items-start gap-2">
+        <svg class="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <div class="min-w-0">
+          <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-1">
+            Liked {{ _likedUrl | replace("https://", "") | truncate(40) }}
+          </a>
+          <time class="text-xs text-surface-500 block" datetime="{{ post.data.published or post.date }}">
+            {{ (post.data.published or post.date) | dateDisplay }}
+          </time>
+        </div>
+      </div>
+
+      {% elif _bookmarkedUrl %}
+      <div class="flex items-start gap-2">
+        <svg class="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+        <div class="min-w-0">
+          <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-1">
+            {{ post.data.title or ("Bookmarked " + (_bookmarkedUrl | replace("https://", "") | truncate(35))) }}
+          </a>
+          <time class="text-xs text-surface-500 block" datetime="{{ post.data.published or post.date }}">
+            {{ (post.data.published or post.date) | dateDisplay }}
+          </time>
+        </div>
+      </div>
+
+      {% elif _repostedUrl %}
+      <div class="flex items-start gap-2">
+        <svg class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        <div class="min-w-0">
+          <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-1">
+            Reposted {{ _repostedUrl | replace("https://", "") | truncate(40) }}
+          </a>
+          <time class="text-xs text-surface-500 block" datetime="{{ post.data.published or post.date }}">
+            {{ (post.data.published or post.date) | dateDisplay }}
+          </time>
+        </div>
+      </div>
+
+      {% elif _replyToUrl %}
+      <div class="flex items-start gap-2">
+        <svg class="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+        <div class="min-w-0">
+          <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-1">
+            Reply to {{ _replyToUrl | replace("https://", "") | truncate(40) }}
+          </a>
+          <time class="text-xs text-surface-500 block" datetime="{{ post.data.published or post.date }}">
+            {{ (post.data.published or post.date) | dateDisplay }}
+          </time>
+        </div>
+      </div>
+
+      {% else %}
       <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-2">
-        {{ post.data.title or post.data.name or "Untitled" }}
+        {{ post.data.title or post.data.name or (post.templateContent | striptags | truncate(50)) or "Note" }}
       </a>
       <time class="text-xs text-surface-500 block" datetime="{{ post.data.published or post.date }}">
-        {{ (post.data.published or post.date) | date("MMM d, yyyy") }}
+        {{ (post.data.published or post.date) | dateDisplay }}
       </time>
+      {% endif %}
     </li>
     {% endif %}
     {% endfor %}
