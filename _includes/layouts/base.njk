@@ -114,9 +114,7 @@
         <nav class="site-nav" id="site-nav">
           <a href="/">Home</a>
           <a href="/about/">About</a>
-          {% if collections.pages | selectattr("url", "equalto", "/now/") | list | length %}
-          <a href="/now/">Now</a>
-          {% endif %}
+          <a href="/cv/">CV</a>
           {# Slash pages dropdown - all root pages in one menu #}
           <div class="nav-dropdown" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
             <a href="/slashes/" class="nav-dropdown-trigger">
@@ -201,9 +199,7 @@
     <nav class="mobile-nav hidden" id="mobile-nav" x-data="{ blogOpen: false, slashOpen: false }">
       <a href="/">Home</a>
       <a href="/about/">About</a>
-      {% if collections.pages | selectattr("url", "equalto", "/now/") | list | length %}
-      <a href="/now/">Now</a>
-      {% endif %}
+      <a href="/cv/">CV</a>
       {# Slash pages section - all root pages in one menu #}
       <div class="mobile-nav-section">
         <button type="button" class="mobile-nav-toggle" @click="slashOpen = !slashOpen">
