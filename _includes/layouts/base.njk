@@ -295,19 +295,51 @@
     {% endif %}
   </main>
 
-  <footer class="site-footer">
+  <footer class="border-t border-surface-200 dark:border-surface-700 mt-12 pt-8 pb-6">
     <div class="container">
-      <div class="flex flex-wrap justify-center gap-4 mb-4">
-        <a href="/feed.xml" class="inline-flex items-center gap-1 text-primary-600 dark:text-primary-400 hover:underline">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1Z"/></svg>
-          RSS Feed
-        </a>
-        <a href="/feed.json" class="inline-flex items-center gap-1 text-primary-600 dark:text-primary-400 hover:underline">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2m3 12h2v2H8v-2m4-8h2v10h-2V7m4 4h2v6h-2v-6Z"/></svg>
-          JSON Feed
-        </a>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+        {# Navigate #}
+        <div>
+          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-3">Navigate</h4>
+          <ul class="space-y-2">
+            <li><a href="/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">Home</a></li>
+            <li><a href="/about/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">About</a></li>
+            <li><a href="/cv/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">CV</a></li>
+            <li><a href="/changelog/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">Changelog</a></li>
+            <li><a href="/search/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">Search</a></li>
+          </ul>
+        </div>
+        {# Content #}
+        <div>
+          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-3">Content</h4>
+          <ul class="space-y-2">
+            <li><a href="/blog/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">Blog</a></li>
+            {% for pt in enabledPostTypes %}
+            <li><a href="{{ pt.path }}" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">{{ pt.label }}</a></li>
+            {% endfor %}
+            <li><a href="/interactions/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">Interactions</a></li>
+          </ul>
+        </div>
+        {# Connect #}
+        <div>
+          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-3">Connect</h4>
+          <ul class="space-y-2">
+            {% for social in site.social %}
+            <li><a href="{{ social.url }}" rel="{{ social.rel }}" target="_blank" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">{{ social.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {# Meta #}
+        <div>
+          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-3">Meta</h4>
+          <ul class="space-y-2">
+            <li><a href="/feed.xml" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">RSS Feed</a></li>
+            <li><a href="/feed.json" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">JSON Feed</a></li>
+            <li><a href="/changelog/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">Changelog</a></li>
+          </ul>
+        </div>
       </div>
-      <p>Powered by <a href="https://getindiekit.com">Indiekit</a> + <a href="https://11ty.dev">Eleventy</a></p>
+      <p class="text-center text-sm text-surface-500 dark:text-surface-400">Powered by <a href="https://getindiekit.com" class="hover:text-primary-600 dark:hover:text-primary-400">Indiekit</a> + <a href="https://11ty.dev" class="hover:text-primary-600 dark:hover:text-primary-400">Eleventy</a></p>
     </div>
   </footer>
   <script>
