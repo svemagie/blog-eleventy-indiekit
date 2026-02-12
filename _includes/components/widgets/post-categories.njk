@@ -1,0 +1,19 @@
+{# Categories for This Post #}
+{% if category %}
+<div class="widget">
+  <h3 class="widget-title">Categories</h3>
+  <div class="flex flex-wrap gap-2">
+    {% if category is string %}
+    <a href="/categories/{{ category | slugify }}/" class="p-category text-xs px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors">
+      {{ category }}
+    </a>
+    {% else %}
+    {% for cat in category %}
+    <a href="/categories/{{ cat | slugify }}/" class="p-category text-xs px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors">
+      {{ cat }}
+    </a>
+    {% endfor %}
+    {% endif %}
+  </div>
+</div>
+{% endif %}

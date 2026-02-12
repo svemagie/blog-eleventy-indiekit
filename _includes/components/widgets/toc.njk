@@ -1,0 +1,17 @@
+{# Table of Contents Widget (for articles with headings) #}
+{% if toc and toc.length %}
+<div class="widget">
+  <h3 class="widget-title">Contents</h3>
+  <nav class="toc">
+    <ul class="space-y-1 text-sm">
+      {% for item in toc %}
+      <li class="{% if item.level > 2 %}ml-{{ (item.level - 2) * 3 }}{% endif %}">
+        <a href="#{{ item.slug }}" class="text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+          {{ item.text }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </nav>
+</div>
+{% endif %}

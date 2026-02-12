@@ -1,0 +1,28 @@
+{# Author Compact Card - h-card microformat (compact version for blog sidebars) #}
+<div class="widget">
+  <div class="h-card p-author flex items-center gap-3">
+    {# Hidden u-photo for reliable microformat parsing #}
+    <data class="u-photo hidden" value="{{ site.author.avatar }}"></data>
+    <a href="{{ site.author.url }}" class="u-url u-uid" rel="me" itemprop="url">
+      <img
+        src="{{ site.author.avatar }}"
+        alt="{{ site.author.name }}"
+        class="w-12 h-12 rounded-full object-cover"
+        loading="lazy"
+      >
+    </a>
+    <div>
+      <a href="{{ site.author.url }}" class="u-url p-name font-medium text-surface-900 dark:text-surface-100 hover:text-primary-600 dark:hover:text-primary-400">
+        {{ site.author.name }}
+      </a>
+      <p class="p-job-title text-xs text-surface-500">{{ site.author.title }}</p>
+      {% if site.author.locality %}
+      <p class="p-locality text-xs text-surface-500">{{ site.author.locality }}{% if site.author.country %}, <span class="p-country-name">{{ site.author.country }}</span>{% endif %}</p>
+      {% endif %}
+    </div>
+  </div>
+  {# Hidden but present for microformat completeness #}
+  <p class="p-note hidden">{{ site.author.bio }}</p>
+  {% if site.author.email %}<data class="u-email hidden" value="{{ site.author.email }}"></data>{% endif %}
+  {% if site.author.org %}<data class="p-org hidden" value="{{ site.author.org }}"></data>{% endif %}
+</div>

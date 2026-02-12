@@ -1,26 +1,79 @@
-{# Sidebar — composed from individual widget partials #}
-{# Each widget handles its own conditional display internally, #}
-{# except API-only widgets which need a data-source guard here. #}
+{# Sidebar — for blog listing pages (/blog/, /notes/, /articles/...) #}
+{# Data-driven when homepageConfig.blogListingSidebar is configured, otherwise falls back to default widgets #}
 
-{# Author Card (h-card) — always shown #}
-{% include "components/widgets/author-card.njk" %}
+{% if homepageConfig and homepageConfig.blogListingSidebar and homepageConfig.blogListingSidebar.length %}
+  {# === Data-driven mode: render configured widgets === #}
+  {% for widget in homepageConfig.blogListingSidebar %}
+    {% if widget.type == "author-card" %}
+      {% include "components/widgets/author-card.njk" %}
+    {% elif widget.type == "author-card-compact" %}
+      {% include "components/widgets/author-card-compact.njk" %}
+    {% elif widget.type == "social-activity" %}
+      {% include "components/widgets/social-activity.njk" %}
+    {% elif widget.type == "github-repos" %}
+      {% include "components/widgets/github-repos.njk" %}
+    {% elif widget.type == "funkwhale" %}
+      {% include "components/widgets/funkwhale.njk" %}
+    {% elif widget.type == "recent-posts" %}
+      {% include "components/widgets/recent-posts.njk" %}
+    {% elif widget.type == "blogroll" %}
+      {% if blogrollStatus and blogrollStatus.source == "indiekit" %}
+      {% include "components/widgets/blogroll.njk" %}
+      {% endif %}
+    {% elif widget.type == "categories" %}
+      {% include "components/widgets/categories.njk" %}
+    {% elif widget.type == "subscribe" %}
+      {% include "components/widgets/subscribe.njk" %}
+    {% elif widget.type == "search" %}
+      <div class="sidebar-widget">
+        <h3 class="text-sm font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wide mb-3">Search</h3>
+        <link rel="stylesheet" href="/pagefind/pagefind-ui.css">
+        <div id="listing-sidebar-search"></div>
+        <script src="/pagefind/pagefind-ui.js"></script>
+        <script>
+          window.addEventListener("DOMContentLoaded", function() {
+            new PagefindUI({ element: "#listing-sidebar-search", showSubResults: false, showImages: false });
+          });
+        </script>
+      </div>
+    {% elif widget.type == "custom-html" %}
+      {% set wConfig = widget.config or {} %}
+      <div class="sidebar-widget">
+        {% if wConfig.title %}
+        <h3 class="text-sm font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wide mb-3">{{ wConfig.title }}</h3>
+        {% endif %}
+        {% if wConfig.content %}
+        <div class="prose dark:prose-invert prose-sm max-w-none">
+          {{ wConfig.content | safe }}
+        </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <!-- Unknown widget type: {{ widget.type }} -->
+    {% endif %}
+  {% endfor %}
+{% else %}
+  {# === Fallback: current hardcoded sidebar (backward compatibility) === #}
+  {# Author Card (h-card) — always shown #}
+  {% include "components/widgets/author-card.njk" %}
 
-{# Social Activity — Bluesky/Mastodon feeds #}
-{% include "components/widgets/social-activity.njk" %}
+  {# Social Activity — Bluesky/Mastodon feeds #}
+  {% include "components/widgets/social-activity.njk" %}
 
-{# GitHub Repos #}
-{% include "components/widgets/github-repos.njk" %}
+  {# GitHub Repos #}
+  {% include "components/widgets/github-repos.njk" %}
 
-{# Funkwhale — Now Playing / Listening Stats #}
-{% include "components/widgets/funkwhale.njk" %}
+  {# Funkwhale — Now Playing / Listening Stats #}
+  {% include "components/widgets/funkwhale.njk" %}
 
-{# Recent Posts (for non-blog pages) #}
-{% include "components/widgets/recent-posts.njk" %}
+  {# Recent Posts (for non-blog pages) #}
+  {% include "components/widgets/recent-posts.njk" %}
 
-{# Blogroll — only when backend is available #}
-{% if blogrollStatus and blogrollStatus.source == "indiekit" %}
-{% include "components/widgets/blogroll.njk" %}
+  {# Blogroll — only when backend is available #}
+  {% if blogrollStatus and blogrollStatus.source == "indiekit" %}
+  {% include "components/widgets/blogroll.njk" %}
+  {% endif %}
+
+  {# Categories/Tags #}
+  {% include "components/widgets/categories.njk" %}
 {% endif %}
-
-{# Categories/Tags #}
-{% include "components/widgets/categories.njk" %}

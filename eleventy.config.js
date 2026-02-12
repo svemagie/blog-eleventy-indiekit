@@ -418,7 +418,7 @@ export default function (eleventyConfig) {
   // Recent posts for sidebar
   eleventyConfig.addCollection("recentPosts", function (collectionApi) {
     return collectionApi
-      .getFilteredByGlob("content/posts/**/*.md")
+      .getFilteredByGlob("content/**/*.md")
       .sort((a, b) => b.date - a.date)
       .slice(0, 5);
   });

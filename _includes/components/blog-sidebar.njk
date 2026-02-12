@@ -1,290 +1,73 @@
 {# Blog Sidebar - Shown on individual post pages #}
-{# Contains: Author compact card, Related posts, Categories, Recent posts #}
+{# Data-driven when homepageConfig.blogPostSidebar is configured, otherwise falls back to default widgets #}
 
-{# Author Compact Card - h-card microformat (compact version) #}
-<div class="widget">
-  <div class="h-card p-author flex items-center gap-3">
-    {# Hidden u-photo for reliable microformat parsing #}
-    <data class="u-photo hidden" value="{{ site.author.avatar }}"></data>
-    <a href="{{ site.author.url }}" class="u-url u-uid" rel="me" itemprop="url">
-      <img
-        src="{{ site.author.avatar }}"
-        alt="{{ site.author.name }}"
-        class="w-12 h-12 rounded-full object-cover"
-        loading="lazy"
-      >
-    </a>
-    <div>
-      <a href="{{ site.author.url }}" class="u-url p-name font-medium text-surface-900 dark:text-surface-100 hover:text-primary-600 dark:hover:text-primary-400">
-        {{ site.author.name }}
-      </a>
-      <p class="p-job-title text-xs text-surface-500">{{ site.author.title }}</p>
-      {% if site.author.locality %}
-      <p class="p-locality text-xs text-surface-500">{{ site.author.locality }}{% if site.author.country %}, <span class="p-country-name">{{ site.author.country }}</span>{% endif %}</p>
-      {% endif %}
-    </div>
-  </div>
-  {# Hidden but present for microformat completeness #}
-  <p class="p-note hidden">{{ site.author.bio }}</p>
-  {% if site.author.email %}<data class="u-email hidden" value="{{ site.author.email }}"></data>{% endif %}
-  {% if site.author.org %}<data class="p-org hidden" value="{{ site.author.org }}"></data>{% endif %}
-</div>
-
-{# Post Navigation Widget - Previous/Next #}
-{% if previousPost or nextPost %}
-<div class="widget">
-  <h3 class="widget-title">More Posts</h3>
-  <div class="space-y-3">
-    {% if previousPost %}
-    <div class="border-b border-surface-200 dark:border-surface-700 pb-3">
-      <span class="text-xs text-surface-500 uppercase tracking-wide block mb-1">Previous</span>
-      {% set _likedUrl = previousPost.data.likeOf or previousPost.data.like_of %}
-      {% set _bookmarkedUrl = previousPost.data.bookmarkOf or previousPost.data.bookmark_of %}
-      {% set _repostedUrl = previousPost.data.repostOf or previousPost.data.repost_of %}
-      {% set _replyToUrl = previousPost.data.inReplyTo or previousPost.data.in_reply_to %}
-      <a href="{{ previousPost.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-2 flex items-center gap-1.5">
-        {% if _likedUrl %}
-        <svg class="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        Liked {{ _likedUrl | replace("https://", "") | truncate(35) }}
-        {% elif _bookmarkedUrl %}
-        <svg class="w-3.5 h-3.5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-        {{ previousPost.data.title or ("Bookmarked " + (_bookmarkedUrl | replace("https://", "") | truncate(30))) }}
-        {% elif _repostedUrl %}
-        <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        Reposted {{ _repostedUrl | replace("https://", "") | truncate(35) }}
-        {% elif _replyToUrl %}
-        <svg class="w-3.5 h-3.5 text-primary-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-        Reply to {{ _replyToUrl | replace("https://", "") | truncate(35) }}
-        {% else %}
-        {{ previousPost.data.title or previousPost.data.name or (previousPost.templateContent | striptags | truncate(50)) or "Note" }}
+{% if homepageConfig and homepageConfig.blogPostSidebar and homepageConfig.blogPostSidebar.length %}
+  {# === Data-driven mode: render configured widgets === #}
+  {% for widget in homepageConfig.blogPostSidebar %}
+    {% if widget.type == "author-card-compact" %}
+      {% include "components/widgets/author-card-compact.njk" %}
+    {% elif widget.type == "author-card" %}
+      {% include "components/widgets/author-card.njk" %}
+    {% elif widget.type == "post-navigation" %}
+      {% include "components/widgets/post-navigation.njk" %}
+    {% elif widget.type == "toc" %}
+      {% include "components/widgets/toc.njk" %}
+    {% elif widget.type == "post-categories" %}
+      {% include "components/widgets/post-categories.njk" %}
+    {% elif widget.type == "recent-posts" %}
+      {% include "components/widgets/recent-posts-blog.njk" %}
+    {% elif widget.type == "webmentions" %}
+      {% include "components/widgets/webmentions.njk" %}
+    {% elif widget.type == "share" %}
+      {% include "components/widgets/share.njk" %}
+    {% elif widget.type == "subscribe" %}
+      {% include "components/widgets/subscribe.njk" %}
+    {% elif widget.type == "social-activity" %}
+      {% include "components/widgets/social-activity.njk" %}
+    {% elif widget.type == "github-repos" %}
+      {% include "components/widgets/github-repos.njk" %}
+    {% elif widget.type == "funkwhale" %}
+      {% include "components/widgets/funkwhale.njk" %}
+    {% elif widget.type == "blogroll" %}
+      {% include "components/widgets/blogroll.njk" %}
+    {% elif widget.type == "categories" %}
+      {% include "components/widgets/categories.njk" %}
+    {% elif widget.type == "search" %}
+      <div class="sidebar-widget">
+        <h3 class="text-sm font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wide mb-3">Search</h3>
+        <link rel="stylesheet" href="/pagefind/pagefind-ui.css">
+        <div id="blog-sidebar-search"></div>
+        <script src="/pagefind/pagefind-ui.js"></script>
+        <script>
+          window.addEventListener("DOMContentLoaded", function() {
+            new PagefindUI({ element: "#blog-sidebar-search", showSubResults: false, showImages: false });
+          });
+        </script>
+      </div>
+    {% elif widget.type == "custom-html" %}
+      {% set wConfig = widget.config or {} %}
+      <div class="sidebar-widget">
+        {% if wConfig.title %}
+        <h3 class="text-sm font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wide mb-3">{{ wConfig.title }}</h3>
         {% endif %}
-      </a>
-    </div>
-    {% endif %}
-    {% if nextPost %}
-    <div>
-      <span class="text-xs text-surface-500 uppercase tracking-wide block mb-1">Next</span>
-      {% set _likedUrl = nextPost.data.likeOf or nextPost.data.like_of %}
-      {% set _bookmarkedUrl = nextPost.data.bookmarkOf or nextPost.data.bookmark_of %}
-      {% set _repostedUrl = nextPost.data.repostOf or nextPost.data.repost_of %}
-      {% set _replyToUrl = nextPost.data.inReplyTo or nextPost.data.in_reply_to %}
-      <a href="{{ nextPost.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-2 flex items-center gap-1.5">
-        {% if _likedUrl %}
-        <svg class="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        Liked {{ _likedUrl | replace("https://", "") | truncate(35) }}
-        {% elif _bookmarkedUrl %}
-        <svg class="w-3.5 h-3.5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-        {{ nextPost.data.title or ("Bookmarked " + (_bookmarkedUrl | replace("https://", "") | truncate(30))) }}
-        {% elif _repostedUrl %}
-        <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        Reposted {{ _repostedUrl | replace("https://", "") | truncate(35) }}
-        {% elif _replyToUrl %}
-        <svg class="w-3.5 h-3.5 text-primary-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-        Reply to {{ _replyToUrl | replace("https://", "") | truncate(35) }}
-        {% else %}
-        {{ nextPost.data.title or nextPost.data.name or (nextPost.templateContent | striptags | truncate(50)) or "Note" }}
+        {% if wConfig.content %}
+        <div class="prose dark:prose-invert prose-sm max-w-none">
+          {{ wConfig.content | safe }}
+        </div>
         {% endif %}
-      </a>
-    </div>
-    {% endif %}
-  </div>
-</div>
-{% endif %}
-
-{# Table of Contents Widget (for articles with headings) #}
-{% if toc and toc.length %}
-<div class="widget">
-  <h3 class="widget-title">Contents</h3>
-  <nav class="toc">
-    <ul class="space-y-1 text-sm">
-      {% for item in toc %}
-      <li class="{% if item.level > 2 %}ml-{{ (item.level - 2) * 3 }}{% endif %}">
-        <a href="#{{ item.slug }}" class="text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-          {{ item.text }}
-        </a>
-      </li>
-      {% endfor %}
-    </ul>
-  </nav>
-</div>
-{% endif %}
-
-{# Categories for This Post #}
-{% if category %}
-<div class="widget">
-  <h3 class="widget-title">Categories</h3>
-  <div class="flex flex-wrap gap-2">
-    {% if category is string %}
-    <a href="/categories/{{ category | slugify }}/" class="p-category text-xs px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors">
-      {{ category }}
-    </a>
+      </div>
     {% else %}
-    {% for cat in category %}
-    <a href="/categories/{{ cat | slugify }}/" class="p-category text-xs px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors">
-      {{ cat }}
-    </a>
-    {% endfor %}
+      <!-- Unknown widget type: {{ widget.type }} -->
     {% endif %}
-  </div>
-</div>
+  {% endfor %}
+{% else %}
+  {# === Fallback: default blog post sidebar (backward compatibility) === #}
+  {% include "components/widgets/author-card-compact.njk" %}
+  {% include "components/widgets/post-navigation.njk" %}
+  {% include "components/widgets/toc.njk" %}
+  {% include "components/widgets/post-categories.njk" %}
+  {% include "components/widgets/recent-posts-blog.njk" %}
+  {% include "components/widgets/webmentions.njk" %}
+  {% include "components/widgets/share.njk" %}
+  {% include "components/widgets/subscribe.njk" %}
 {% endif %}
-
-{# Recent Posts Widget — type-aware #}
-{% if collections.posts %}
-<div class="widget">
-  <h3 class="widget-title">Recent Posts</h3>
-  <ul class="space-y-3">
-    {% for post in collections.posts | head(5) %}
-    {% if post.url != page.url %}
-    <li>
-      {% set _likedUrl = post.data.likeOf or post.data.like_of %}
-      {% set _bookmarkedUrl = post.data.bookmarkOf or post.data.bookmark_of %}
-      {% set _repostedUrl = post.data.repostOf or post.data.repost_of %}
-      {% set _replyToUrl = post.data.inReplyTo or post.data.in_reply_to %}
-
-      {% if _likedUrl %}
-      <div class="flex items-start gap-2">
-        <svg class="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        <div class="min-w-0">
-          <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-1">
-            Liked {{ _likedUrl | replace("https://", "") | truncate(40) }}
-          </a>
-          <time class="text-xs text-surface-500 block" datetime="{{ post.data.published or post.date }}">
-            {{ (post.data.published or post.date) | dateDisplay }}
-          </time>
-        </div>
-      </div>
-
-      {% elif _bookmarkedUrl %}
-      <div class="flex items-start gap-2">
-        <svg class="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-        <div class="min-w-0">
-          <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-1">
-            {{ post.data.title or ("Bookmarked " + (_bookmarkedUrl | replace("https://", "") | truncate(35))) }}
-          </a>
-          <time class="text-xs text-surface-500 block" datetime="{{ post.data.published or post.date }}">
-            {{ (post.data.published or post.date) | dateDisplay }}
-          </time>
-        </div>
-      </div>
-
-      {% elif _repostedUrl %}
-      <div class="flex items-start gap-2">
-        <svg class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        <div class="min-w-0">
-          <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-1">
-            Reposted {{ _repostedUrl | replace("https://", "") | truncate(40) }}
-          </a>
-          <time class="text-xs text-surface-500 block" datetime="{{ post.data.published or post.date }}">
-            {{ (post.data.published or post.date) | dateDisplay }}
-          </time>
-        </div>
-      </div>
-
-      {% elif _replyToUrl %}
-      <div class="flex items-start gap-2">
-        <svg class="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-        <div class="min-w-0">
-          <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-1">
-            Reply to {{ _replyToUrl | replace("https://", "") | truncate(40) }}
-          </a>
-          <time class="text-xs text-surface-500 block" datetime="{{ post.data.published or post.date }}">
-            {{ (post.data.published or post.date) | dateDisplay }}
-          </time>
-        </div>
-      </div>
-
-      {% else %}
-      <a href="{{ post.url }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline line-clamp-2">
-        {{ post.data.title or post.data.name or (post.templateContent | striptags | truncate(50)) or "Note" }}
-      </a>
-      <time class="text-xs text-surface-500 block" datetime="{{ post.data.published or post.date }}">
-        {{ (post.data.published or post.date) | dateDisplay }}
-      </time>
-      {% endif %}
-    </li>
-    {% endif %}
-    {% endfor %}
-  </ul>
-  <a href="/blog/" class="text-sm text-primary-600 dark:text-primary-400 hover:underline mt-3 inline-block">
-    View all posts
-  </a>
-</div>
-{% endif %}
-
-{# Webmentions Widget (if this post has any) #}
-{% if webmentions and webmentions.length %}
-<div class="widget">
-  <h3 class="widget-title flex items-center gap-2">
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-    </svg>
-    Interactions
-  </h3>
-  <div class="space-y-2">
-    {% set likes = webmentions | filter("like-of") %}
-    {% set reposts = webmentions | filter("repost-of") %}
-    {% set replies = webmentions | filter("in-reply-to") %}
-
-    {% if likes.length %}
-    <p class="text-sm text-surface-600 dark:text-surface-400">
-      <span class="font-medium text-surface-900 dark:text-surface-100">{{ likes.length }}</span> likes
-    </p>
-    {% endif %}
-    {% if reposts.length %}
-    <p class="text-sm text-surface-600 dark:text-surface-400">
-      <span class="font-medium text-surface-900 dark:text-surface-100">{{ reposts.length }}</span> reposts
-    </p>
-    {% endif %}
-    {% if replies.length %}
-    <p class="text-sm text-surface-600 dark:text-surface-400">
-      <span class="font-medium text-surface-900 dark:text-surface-100">{{ replies.length }}</span> replies
-    </p>
-    {% endif %}
-  </div>
-</div>
-{% endif %}
-
-{# Share Widget #}
-<div class="widget">
-  <h3 class="widget-title">Share</h3>
-  <div class="flex gap-2">
-    <a href="https://bsky.app/intent/compose?text={{ title | urlencode }}%20{{ site.url }}{{ page.url | urlencode }}"
-       target="_blank"
-       rel="noopener"
-       class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[#0085ff]/10 text-[#0085ff] hover:bg-[#0085ff]/20 transition-colors text-sm font-medium"
-       title="Share on Bluesky">
-      <svg class="w-4 h-4" viewBox="0 0 568 501" fill="currentColor">
-        <path d="M123.121 33.664C188.241 82.553 258.281 181.68 284 234.873c25.719-53.192 95.759-152.32 160.879-201.21C491.866-1.611 568-28.906 568 57.947c0 17.346-9.945 145.713-15.778 166.555-20.275 72.453-94.155 90.933-159.875 79.748C507.222 323.8 536.444 388.56 473.333 453.32c-119.86 122.992-172.272-30.859-185.702-70.281-2.462-7.227-3.614-10.608-3.631-7.733-.017-2.875-1.169.506-3.631 7.733-13.43 39.422-65.842 193.273-185.702 70.281-63.111-64.76-33.89-129.52 80.986-149.071-65.72 11.185-139.6-7.295-159.875-79.748C9.945 203.659 0 75.291 0 57.946 0-28.906 76.135-1.612 123.121 33.664Z"/>
-      </svg>
-    </a>
-    <a href="https://{{ site.feeds.mastodon.instance }}/share?text={{ title | urlencode }}%20{{ site.url }}{{ page.url | urlencode }}"
-       target="_blank"
-       rel="noopener"
-       class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[#6364ff]/10 text-[#6364ff] hover:bg-[#6364ff]/20 transition-colors text-sm font-medium"
-       title="Share on Mastodon">
-      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M23.268 5.313c-.35-2.578-2.617-4.61-5.304-5.004C17.51.242 15.792 0 11.813 0h-.03c-3.98 0-4.835.242-5.288.309C3.882.692 1.496 2.518.917 5.127.64 6.412.61 7.837.661 9.143c.074 1.874.088 3.745.26 5.611.118 1.24.325 2.47.62 3.68.55 2.237 2.777 4.098 4.96 4.857 2.336.792 4.849.923 7.256.38.265-.061.527-.132.786-.213.585-.184 1.27-.39 1.774-.753a.057.057 0 0 0 .023-.043v-1.809a.052.052 0 0 0-.02-.041.053.053 0 0 0-.046-.01 20.282 20.282 0 0 1-4.709.545c-2.73 0-3.463-1.284-3.674-1.818a5.593 5.593 0 0 1-.319-1.433.053.053 0 0 1 .066-.054c1.517.363 3.072.546 4.632.546.376 0 .75 0 1.125-.01 1.57-.044 3.224-.124 4.768-.422.038-.008.077-.015.11-.024 2.435-.464 4.753-1.92 4.989-5.604.008-.145.03-1.52.03-1.67.002-.512.167-3.63-.024-5.545zm-3.748 9.195h-2.561V8.29c0-1.309-.55-1.976-1.67-1.976-1.23 0-1.846.79-1.846 2.35v3.403h-2.546V8.663c0-1.56-.617-2.35-1.848-2.35-1.112 0-1.668.668-1.668 1.977v6.218H4.822V8.102c0-1.31.337-2.35 1.011-3.12.696-.77 1.608-1.164 2.74-1.164 1.311 0 2.302.5 2.962 1.498l.638 1.06.638-1.06c.66-.999 1.65-1.498 2.96-1.498 1.13 0 2.043.395 2.74 1.164.675.77 1.012 1.81 1.012 3.12z"/>
-      </svg>
-    </a>
-  </div>
-</div>
-
-{# Subscribe Widget #}
-<div class="widget">
-  <h3 class="widget-title">Subscribe</h3>
-  <div class="space-y-2">
-    <a href="/feed.xml" class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-      <svg class="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1Z"/>
-      </svg>
-      RSS Feed
-    </a>
-    <a href="/feed.json" class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-      <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2m3 12h2v2H8v-2m4-8h2v10h-2V7m4 4h2v6h-2v-6Z"/>
-      </svg>
-      JSON Feed
-    </a>
-  </div>
-</div>
