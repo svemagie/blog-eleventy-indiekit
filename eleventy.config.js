@@ -318,6 +318,22 @@ export default function (eleventyConfig) {
     return mentions.filter((m) => m["wm-property"] === wmProperty);
   });
 
+  // Post navigation — find previous/next post in a collection
+  // (Nunjucks {% set %} inside {% for %} doesn't propagate, so we need filters)
+  eleventyConfig.addFilter("previousInCollection", function (collection, page) {
+    if (!collection || !page) return null;
+    const index = collection.findIndex((p) => p.url === page.url);
+    return index > 0 ? collection[index - 1] : null;
+  });
+
+  eleventyConfig.addFilter("nextInCollection", function (collection, page) {
+    if (!collection || !page) return null;
+    const index = collection.findIndex((p) => p.url === page.url);
+    return index >= 0 && index < collection.length - 1
+      ? collection[index + 1]
+      : null;
+  });
+
   // Collections for different post types
   // Note: content path is content/ due to symlink structure
   // "posts" shows ALL content types combined

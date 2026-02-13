@@ -1,5 +1,6 @@
-{# Webmentions Widget (if this post has any) #}
-{% if webmentions and webmentions.length %}
+{# Webmentions Sidebar Widget (compact counts for this post) #}
+{% set _mentions = webmentions | webmentionsForUrl(page.url, urlAliases) %}
+{% if _mentions and _mentions.length %}
 <div class="widget">
   <h3 class="widget-title flex items-center gap-2">
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -8,9 +9,9 @@
     Interactions
   </h3>
   <div class="space-y-2">
-    {% set likes = webmentions | filter("like-of") %}
-    {% set reposts = webmentions | filter("repost-of") %}
-    {% set replies = webmentions | filter("in-reply-to") %}
+    {% set likes = _mentions | webmentionsByType("likes") %}
+    {% set reposts = _mentions | webmentionsByType("reposts") %}
+    {% set replies = _mentions | webmentionsByType("replies") %}
 
     {% if likes.length %}
     <p class="text-sm text-surface-600 dark:text-surface-400">
