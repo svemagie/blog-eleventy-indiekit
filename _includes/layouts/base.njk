@@ -53,6 +53,20 @@
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css">
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  <script>
+    // Pagefind init helper — queues creation until PagefindUI is available (deferred script)
+    var _pfQueue = [];
+    function initPagefind(sel, opts) { _pfQueue.push([sel, opts]); }
+    document.addEventListener("DOMContentLoaded", function() {
+      if (typeof PagefindUI === "undefined") return;
+      for (var i = 0; i < _pfQueue.length; i++) {
+        var el = document.querySelector(_pfQueue[i][0]);
+        if (el) new PagefindUI(Object.assign({ element: _pfQueue[i][0], showSubResults: false, showImages: false }, _pfQueue[i][1] || {}));
+      }
+    });
+  </script>
   <link rel="stylesheet" href="/css/style.css?v={{ '/css/style.css' | hash }}">
   <link rel="stylesheet" href="/css/prism-theme.css?v={{ '/css/prism-theme.css' | hash }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.min.css">

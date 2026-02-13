@@ -16,17 +16,10 @@
     {% elif widget.type == "categories" %}
       {% include "components/widgets/categories.njk" %}
     {% elif widget.type == "search" %}
-      {# Pagefind search widget #}
       <div class="sidebar-widget">
         <h3 class="text-sm font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wide mb-3">Search</h3>
-        <link rel="stylesheet" href="/pagefind/pagefind-ui.css">
         <div id="sidebar-search"></div>
-        <script src="/pagefind/pagefind-ui.js"></script>
-        <script>
-          window.addEventListener("DOMContentLoaded", function() {
-            new PagefindUI({ element: "#sidebar-search", showSubResults: false, showImages: false });
-          });
-        </script>
+        <script>initPagefind("#sidebar-search");</script>
       </div>
     {% elif widget.type == "webmentions" %}
       {% include "components/widgets/webmentions.njk" %}

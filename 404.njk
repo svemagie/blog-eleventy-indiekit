@@ -14,15 +14,5 @@ pagefindIgnore: true
   </a>
 </div>
 
-<link rel="stylesheet" href="/pagefind/pagefind-ui.css">
 <div id="search-404" class="max-w-2xl mx-auto"></div>
-<script src="/pagefind/pagefind-ui.js"></script>
-<script>
-  window.addEventListener("DOMContentLoaded", () => {
-    new PagefindUI({
-      element: "#search-404",
-      showSubResults: true,
-      showImages: false,
-    });
-  });
-</script>
+<script>initPagefind("#search-404", { showSubResults: true });</script>

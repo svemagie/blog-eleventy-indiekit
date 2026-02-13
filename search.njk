@@ -10,30 +10,24 @@ pagefindIgnore: true
   <p class="text-surface-600 dark:text-surface-400">Search across all posts, articles, notes, and pages.</p>
 </div>
 
-<link rel="stylesheet" href="/pagefind/pagefind-ui.css">
-
 <div id="search"></div>
 
-<script src="/pagefind/pagefind-ui.js"></script>
 <script>
-  window.addEventListener("DOMContentLoaded", () => {
-    const ui = new PagefindUI({
-      element: "#search",
-      showSubResults: true,
-      showImages: false,
-    });
+  initPagefind("#search", { showSubResults: true });
 
-    // Support ?q= query parameter
+  // Support ?q= query parameter and auto-focus
+  window.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const query = params.get("q");
     if (query) {
-      ui.triggerSearch(query);
-    }
-
-    // Auto-focus the search input
-    const input = document.querySelector("#search input[type='text']");
-    if (input && !query) {
-      input.focus();
+      const input = document.querySelector("#search input[type='text']");
+      if (input) {
+        input.value = query;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    } else {
+      const input = document.querySelector("#search input[type='text']");
+      if (input) input.focus();
     }
   });
 </script>
