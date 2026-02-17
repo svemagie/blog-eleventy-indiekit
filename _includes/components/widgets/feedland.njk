@@ -7,13 +7,13 @@
 .divBlogrollContainer {
   display: block;
   vertical-align: top;
-  width: 240px;
+  width: 100%;
   border: 1px solid gainsboro;
   padding-top: 5px;
   padding-bottom: 5px;
   font-family: Ubuntu, sans-serif;
   font-size: 15px;
-  box-sizing: content-box;
+  box-sizing: border-box;
 }
 .divBlogrollContainer:focus {
   border-color: rgba(82, 168, 236, 0.8);
@@ -22,9 +22,10 @@
   background-color: white;
 }
 .divBlogroll {
-  width: 220px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+  box-sizing: border-box;
 }
 .divBlogrollTable {
   width: 100%;
@@ -111,7 +112,7 @@
 .trBlogrollFeed .tdBlogrollFeedTitle .spTitleString {
   display: inline-block;
   white-space: nowrap;
-  max-width: 155px;
+  max-width: calc(100% - 60px);
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -175,26 +176,11 @@
   text-decoration: underline;
 }
 @media screen and (max-width: 576px) {
-  .divBlogrollContainer {
-    width: 180px;
-    margin-right: 0;
-  }
-  .divBlogroll {
-    width: 100%;
-  }
   .divBlogrollTitle {
     display: none;
   }
   .trBlogrollFeed .tdBlogrollFeedTitle {
     font-size: 14px;
-  }
-  .trBlogrollFeed .tdBlogrollWedge {
-    width: 12px;
-    padding-left: 4px;
-    padding-right: 0;
-  }
-  .trBlogrollFeed .tdBlogrollFeedTitle .spTitleString {
-    max-width: 115px;
   }
 }
 /* Dark mode adjustments */
