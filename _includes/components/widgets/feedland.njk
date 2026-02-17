@@ -136,6 +136,65 @@
 .fl-footer a:hover {
   text-decoration: underline;
 }
+/* 3-dot menu */
+.fl-header {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+.fl-header .fl-title {
+  flex: 1;
+}
+.fl-menu-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 2px;
+  opacity: 0.5;
+  color: inherit;
+}
+.fl-menu-btn:hover {
+  opacity: 1;
+}
+.fl-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  border: 1px solid gainsboro;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 10;
+  min-width: 180px;
+  padding: 4px 0;
+  font-size: 13px;
+}
+.fl-menu a {
+  display: block;
+  padding: 5px 12px;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.fl-menu a:hover {
+  background-color: whitesmoke;
+}
+.fl-menu hr {
+  margin: 4px 0;
+  border: none;
+  border-top: 1px solid gainsboro;
+}
+.dark .fl-menu {
+  background: #2a2a2a;
+  border-color: #444;
+}
+.dark .fl-menu a:hover {
+  background-color: #333;
+}
+.dark .fl-menu hr {
+  border-top-color: #444;
+}
 @media screen and (max-width: 576px) {
   .fl-title { display: none; }
   .fl-name { font-size: 14px; }
@@ -164,9 +223,18 @@
 
 <div class="widget" x-data="feedlandWidget()" x-init="init()">
   <div class="fl-wrap" tabindex="0">
-    {# Title #}
-    <div class="fl-title">
-      <a :href="riverUrl" target="_blank" rel="noopener" x-text="title"></a>
+    {# Title + menu #}
+    <div class="fl-header">
+      <div class="fl-title">
+        <a :href="riverUrl" target="_blank" rel="noopener" x-text="title"></a>
+      </div>
+      <button class="fl-menu-btn" @click="menuOpen = !menuOpen" aria-label="Menu">&#x22EE;</button>
+      <div class="fl-menu" x-show="menuOpen" @click.away="menuOpen = false" x-cloak>
+        <a href="/blogroll/">Blogroll page</a>
+        <a href="/blogrollapi/api/opml" target="_blank" rel="noopener">View as OPML</a>
+        <hr>
+        <a :href="riverUrl" target="_blank" rel="noopener">View in FeedLand</a>
+      </div>
     </div>
 
     {# Sort links #}
@@ -231,6 +299,7 @@ function feedlandWidget() {
     loading: true,
     selectedId: null,
     expandedId: null,
+    menuOpen: false,
 
     get sortedBlogs() {
       const sorted = [...this.blogs];
