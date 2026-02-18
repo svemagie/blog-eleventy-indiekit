@@ -21,6 +21,14 @@ eleventyExcludeFromCollections: true
       "url": "{{ site.url }}/"
     }
   ],
+  "_textcasting": {
+    "version": "1.0",
+    "about": "https://textcasting.org/"
+    {%- set hasSupport = site.support and (site.support.url or site.support.stripe or site.support.lightning or site.support.paymentPointer) %}
+    {%- if hasSupport %},
+    "support": {{ site.support | textcastingSupport | jsonEncode | safe }}
+    {%- endif %}
+  },
   "items": [
     {%- for post in collections.feed %}
     {%- set absolutePostUrl = site.url + post.url %}
@@ -37,11 +45,17 @@ eleventyExcludeFromCollections: true
     {
       "id": "{{ absolutePostUrl }}",
       "url": "{{ absolutePostUrl }}",
-      "title": {{ post.data.title | default(post.content | striptags | truncate(80)) | jsonEncode | safe }},
+      "title": {% if post.data.title %}{{ post.data.title | jsonEncode | safe }}{% else %}null{% endif %},
       "content_html": {{ post.content | htmlToAbsoluteUrls(absolutePostUrl) | jsonEncode | safe }},
-      "date_published": "{{ post.date | dateToRfc3339 }}"
+      "content_text": {{ post.content | striptags | jsonEncode | safe }},
+      "date_published": "{{ post.date | dateToRfc3339 }}",
+      "date_modified": "{{ (post.data.updated or post.date) | dateToRfc3339 }}"
       {%- if postImage and postImage != "" and (postImage | length) > 10 %},
       "image": "{{ postImage | url | absoluteUrl(site.url) }}"
+      {%- endif %}
+      {%- set attachments = post.data | feedAttachments %}
+      {%- if attachments.length > 0 %},
+      "attachments": {{ attachments | jsonEncode | safe }}
       {%- endif %}
     }{% if not loop.last %},{% endif %}
     {%- endfor %}

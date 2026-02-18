@@ -101,4 +101,12 @@ export default {
 
   // Fediverse creator for meta tag (e.g., @rmdes@mstdn.social)
   fediverseCreator: getMastodonHandle(),
+
+  // Support/monetization configuration (used in _textcasting JSON Feed extension)
+  support: {
+    url: process.env.SUPPORT_URL || null,
+    stripe: process.env.SUPPORT_STRIPE_URL || null,
+    lightning: process.env.SUPPORT_LIGHTNING_ADDRESS || null,
+    paymentPointer: process.env.SUPPORT_PAYMENT_POINTER || null,
+  },
 };

@@ -69,6 +69,78 @@ export default function (eleventyConfig) {
     return JSON.stringify(value);
   });
 
+  // Guess MIME type from URL extension
+  function guessMimeType(url, category) {
+    const lower = (typeof url === "string" ? url : "").toLowerCase();
+    if (category === "photo") {
+      if (lower.includes(".png")) return "image/png";
+      if (lower.includes(".gif")) return "image/gif";
+      if (lower.includes(".webp")) return "image/webp";
+      if (lower.includes(".svg")) return "image/svg+xml";
+      return "image/jpeg";
+    }
+    if (category === "audio") {
+      if (lower.includes(".ogg") || lower.includes(".opus")) return "audio/ogg";
+      if (lower.includes(".flac")) return "audio/flac";
+      if (lower.includes(".wav")) return "audio/wav";
+      return "audio/mpeg";
+    }
+    if (category === "video") {
+      if (lower.includes(".webm")) return "video/webm";
+      if (lower.includes(".mov")) return "video/quicktime";
+      return "video/mp4";
+    }
+    return "application/octet-stream";
+  }
+
+  // Extract URL string from value that may be a string or {url, alt} object
+  function resolveMediaUrl(value) {
+    if (typeof value === "string") return value;
+    if (value && typeof value === "object" && value.url) return value.url;
+    return null;
+  }
+
+  // Feed attachments filter — builds JSON Feed attachments array from post data
+  eleventyConfig.addFilter("feedAttachments", (postData) => {
+    const attachments = [];
+    const processMedia = (items, category) => {
+      const list = Array.isArray(items) ? items : [items];
+      for (const item of list) {
+        const rawUrl = resolveMediaUrl(item);
+        if (!rawUrl) continue;
+        const url = rawUrl.startsWith("http") ? rawUrl : `${siteUrl}${rawUrl}`;
+        attachments.push({ url, mime_type: guessMimeType(rawUrl, category) });
+      }
+    };
+    if (postData.photo) processMedia(postData.photo, "photo");
+    if (postData.audio) processMedia(postData.audio, "audio");
+    if (postData.video) processMedia(postData.video, "video");
+    return attachments;
+  });
+
+  // Textcasting support filter — builds clean support object excluding null values
+  eleventyConfig.addFilter("textcastingSupport", (support) => {
+    if (!support) return {};
+    const obj = {};
+    if (support.url) obj.url = support.url;
+    if (support.stripe) obj.stripe = support.stripe;
+    if (support.lightning) obj.lightning = support.lightning;
+    if (support.paymentPointer) obj.payment_pointer = support.paymentPointer;
+    return obj;
+  });
+
+  // Protocol type filter — classifies a URL by its origin protocol/network
+  eleventyConfig.addFilter("protocolType", (url) => {
+    if (!url || typeof url !== "string") return "web";
+    const lower = url.toLowerCase();
+    if (lower.includes("bsky.app") || lower.includes("bluesky")) return "atmosphere";
+    // Match Fediverse instances by known domain patterns (avoid overly broad "social")
+    if (lower.includes("mastodon.") || lower.includes("mstdn.") || lower.includes("fosstodon.") ||
+        lower.includes("pleroma.") || lower.includes("misskey.") || lower.includes("pixelfed.") ||
+        lower.includes("fediverse")) return "fediverse";
+    return "web";
+  });
+
   // Email obfuscation filter - converts email to HTML entities
   // Blocks ~95% of spam harvesters while remaining valid for microformat parsers
   // Usage: {{ email | obfuscateEmail }} or {{ email | obfuscateEmail("href") }}
