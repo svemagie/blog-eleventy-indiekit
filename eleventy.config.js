@@ -299,13 +299,14 @@ export default function (eleventyConfig) {
   // Extract first image from content for OpenGraph fallback
   eleventyConfig.addFilter("extractFirstImage", (content) => {
     if (!content) return null;
-    // Match <img> tags and extract src attribute
-    const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-    if (imgMatch && imgMatch[1]) {
-      let src = imgMatch[1];
-      // Skip data URIs and external placeholder images
-      if (src.startsWith('data:')) return null;
-      // Return the src (will be made absolute in template)
+    // Match all <img> tags, skip hidden ones and data URIs
+    const imgRegex = /<img[^>]+src=["']([^"']+)["'][^>]*>/gi;
+    let match;
+    while ((match = imgRegex.exec(content)) !== null) {
+      const fullTag = match[0];
+      const src = match[1];
+      if (src.startsWith("data:")) continue;
+      if (/\bhidden\b/.test(fullTag)) continue;
       return src;
     }
     return null;
@@ -531,13 +532,14 @@ export default function (eleventyConfig) {
     const siteName = process.env.SITE_NAME || "My IndieWeb Blog";
     try {
       execFileSync(process.execPath, [
+        "--max-old-space-size=768",
         resolve(__dirname, "lib", "og-cli.js"),
         contentDir,
         cacheDir,
         siteName,
       ], {
         stdio: "inherit",
-        env: { ...process.env, NODE_OPTIONS: "--max-old-space-size=768" },
+        env: { ...process.env, NODE_OPTIONS: "" },
       });
     } catch (err) {
       console.error("[og] Image generation failed:", err.message);
