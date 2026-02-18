@@ -220,14 +220,19 @@ export default function (eleventyConfig) {
   // HTML minification — only during initial build, skip during watch rebuilds
   eleventyConfig.addTransform("htmlmin", async function (content, outputPath) {
     if (outputPath && outputPath.endsWith(".html") && process.env.ELEVENTY_RUN_MODE === "build") {
-      return await minify(content, {
-        collapseWhitespace: true,
-        removeComments: true,
-        html5: true,
-        decodeEntities: true,
-        minifyCSS: false,
-        minifyJS: false,
-      });
+      try {
+        return await minify(content, {
+          collapseWhitespace: true,
+          removeComments: true,
+          html5: true,
+          decodeEntities: true,
+          minifyCSS: false,
+          minifyJS: false,
+        });
+      } catch {
+        console.warn(`[htmlmin] Parse error in ${outputPath}, skipping minification`);
+        return content;
+      }
     }
     return content;
   });
