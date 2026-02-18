@@ -10,7 +10,6 @@ import { minify } from "html-minifier-terser";
 import { createHash } from "crypto";
 import { execFileSync } from "child_process";
 import { readFileSync, existsSync } from "fs";
-import { generateOgImages } from "./lib/og.js";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -526,12 +525,20 @@ export default function (eleventyConfig) {
   });
 
   // Generate OpenGraph images for posts without photos
-  eleventyConfig.on("eleventy.before", async () => {
+  eleventyConfig.on("eleventy.before", () => {
     const contentDir = resolve(__dirname, "content");
     const cacheDir = resolve(__dirname, ".cache");
     const siteName = process.env.SITE_NAME || "My IndieWeb Blog";
     try {
-      await generateOgImages(contentDir, cacheDir, siteName);
+      execFileSync(process.execPath, [
+        resolve(__dirname, "lib", "og-cli.js"),
+        contentDir,
+        cacheDir,
+        siteName,
+      ], {
+        stdio: "inherit",
+        env: { ...process.env, NODE_OPTIONS: "--max-old-space-size=768" },
+      });
     } catch (err) {
       console.error("[og] Image generation failed:", err.message);
     }
