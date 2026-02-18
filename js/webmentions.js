@@ -109,20 +109,44 @@
     processWebmentions(cached);
   }
 
-  // Always fetch fresh data (updates cache for next refresh)
+  // Conversations API URLs (dual-fetch for enriched data)
+  const convApiUrl1 = `/conversations/api/mentions?target=${encodeURIComponent(targetWithSlash)}&per-page=100`;
+  const convApiUrl2 = `/conversations/api/mentions?target=${encodeURIComponent(targetWithoutSlash)}&per-page=100`;
+
+  // Always fetch fresh data from both APIs (updates cache for next refresh)
   Promise.all([
     fetch(apiUrl1).then((res) => res.json()).catch(() => ({ children: [] })),
     fetch(apiUrl2).then((res) => res.json()).catch(() => ({ children: [] })),
+    fetch(convApiUrl1).then((res) => res.ok ? res.json() : { children: [] }).catch(() => ({ children: [] })),
+    fetch(convApiUrl2).then((res) => res.ok ? res.json() : { children: [] }).catch(() => ({ children: [] })),
   ])
-    .then(([data1, data2]) => {
-      // Merge and deduplicate by wm-id
+    .then(([wmData1, wmData2, convData1, convData2]) => {
+      // Collect all items from both APIs
+      const wmItems = [...(wmData1.children || []), ...(wmData2.children || [])];
+      const convItems = [...(convData1.children || []), ...(convData2.children || [])];
+
+      // Build dedup sets from conversations items (richer metadata, take priority)
+      const convUrls = new Set(convItems.map(c => c.url).filter(Boolean));
       const seen = new Set();
       const allChildren = [];
-      for (const wm of [...(data1.children || []), ...(data2.children || [])]) {
-        if (!seen.has(wm['wm-id'])) {
-          seen.add(wm['wm-id']);
+
+      // Add conversations items first (they have platform provenance)
+      for (const wm of convItems) {
+        const key = wm['wm-id'] || wm.url;
+        if (key && !seen.has(key)) {
+          seen.add(key);
           allChildren.push(wm);
         }
+      }
+
+      // Add webmention-io items, skipping duplicates
+      for (const wm of wmItems) {
+        const key = wm['wm-id'];
+        if (seen.has(key)) continue;
+        // Also skip if same source URL exists in conversations
+        if (wm.url && convUrls.has(wm.url)) continue;
+        seen.add(key);
+        allChildren.push(wm);
       }
 
       // Cache the merged results

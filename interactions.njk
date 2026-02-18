@@ -243,6 +243,14 @@ permalink: /interactions/
                   🔖 bookmarked
                 </span>
 
+                {# Platform badge (from conversations API) #}
+                <span x-show="wm.platform === 'mastodon'" class="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full" title="Mastodon">
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M23.268 5.313c-.35-2.578-2.617-4.61-5.304-5.004C17.51.242 15.792 0 11.813 0h-.03c-3.98 0-4.835.242-5.288.309C3.882.692 1.496 2.518.917 5.127.64 6.412.61 7.837.661 9.143c.074 1.874.088 3.745.26 5.611.118 1.24.325 2.47.62 3.68.55 2.237 2.777 4.098 4.96 4.857 2.336.792 4.849.923 7.256.38.265-.061.527-.132.786-.213.585-.184 1.27-.39 1.774-.753a.057.057 0 0 0 .023-.043v-1.809a.052.052 0 0 0-.02-.041.053.053 0 0 0-.046-.01 20.282 20.282 0 0 1-4.709.545c-2.73 0-3.463-1.284-3.674-1.818a5.593 5.593 0 0 1-.319-1.433.053.053 0 0 1 .066-.054c1.517.363 3.072.546 4.632.546.376 0 .75 0 1.125-.01 1.57-.044 3.224-.124 4.768-.422.038-.008.077-.015.11-.024 2.435-.464 4.753-1.92 4.989-5.604.008-.145.03-1.52.03-1.67.002-.512.167-3.63-.024-5.545zm-3.748 9.195h-2.561V8.29c0-1.309-.55-1.976-1.67-1.976-1.23 0-1.846.79-1.846 2.35v3.403h-2.546V8.663c0-1.56-.617-2.35-1.848-2.35-1.112 0-1.668.668-1.668 1.977v6.218H4.822V8.102c0-1.31.337-2.35 1.011-3.12.696-.77 1.608-1.164 2.74-1.164 1.311 0 2.302.5 2.962 1.498l.638 1.06.638-1.06c.66-.999 1.65-1.498 2.96-1.498 1.13 0 2.043.395 2.74 1.164.675.77 1.012 1.81 1.012 3.12z"/></svg>
+                </span>
+                <span x-show="wm.platform === 'bluesky'" class="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-full" title="Bluesky">
+                  <svg class="w-3 h-3" viewBox="0 0 568 501" fill="currentColor"><path d="M123.121 33.664C188.241 82.553 258.281 181.68 284 234.873c25.719-53.192 95.759-152.32 160.879-201.21C491.866-1.611 568-28.906 568 57.947c0 17.346-9.945 145.713-15.778 166.555-20.275 72.453-94.155 90.933-159.875 79.748C507.222 323.8 536.444 388.56 473.333 453.32c-119.86 122.992-172.272-30.859-185.702-70.281-2.462-7.227-3.614-10.608-3.631-7.733-.017-2.875-1.169.506-3.631 7.733-13.43 39.422-65.842 193.273-185.702 70.281-63.111-64.76-33.89-129.52 80.986-149.071-65.72 11.185-139.6-7.295-159.875-79.748C9.945 203.659 0 75.291 0 57.946 0-28.906 76.135-1.612 123.121 33.664Z"/></svg>
+                </span>
+
                 <a :href="wm.url || '#'" target="_blank" rel="noopener" class="text-xs text-surface-500 hover:underline">
                   <time :datetime="wm.published || wm['wm-received']" x-text="formatDate(wm.published || wm['wm-received'])"></time>
                 </a>
@@ -357,38 +365,47 @@ function interactionsApp() {
       this.error = null;
 
       try {
-        // Use our server-side proxy which has the token
-        const url = `/webmentions/api/mentions?per-page=${this.perPage}&page=${this.page}`;
+        // Fetch from both webmention-io and conversations APIs in parallel
+        const wmUrl = `/webmentions/api/mentions?per-page=${this.perPage}&page=${this.page}`;
+        const convUrl = `/conversations/api/mentions?per-page=${this.perPage}&page=${this.page}`;
 
-        const response = await fetch(url);
-        if (!response.ok) {
-          if (response.status === 404) {
-            this.notConfigured = true;
-            return;
-          }
-          const data = await response.json().catch(() => ({}));
-          throw new Error(data.message || `HTTP ${response.status}`);
+        const [wmResult, convResult] = await Promise.allSettled([
+          fetch(wmUrl).then(r => {
+            if (r.status === 404) return { children: [], notConfigured: true };
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
+          }),
+          fetch(convUrl).then(r => {
+            if (!r.ok) return { children: [] };
+            return r.json();
+          }).catch(() => ({ children: [] })),
+        ]);
+
+        const wmData = wmResult.status === 'fulfilled' ? wmResult.value : { children: [] };
+        const convData = convResult.status === 'fulfilled' ? convResult.value : { children: [] };
+
+        // Check if webmention-io is configured
+        if (wmData.notConfigured && (!convData.children || !convData.children.length)) {
+          this.notConfigured = true;
+          return;
         }
         this.notConfigured = false;
 
-        const data = await response.json();
-        const newMentions = data.children || [];
+        // Merge and deduplicate - conversations items (with platform field) take priority
+        const merged = this.mergeAndDeduplicate(
+          wmData.children || [],
+          convData.children || []
+        );
 
-        // Sort by published date, newest first
-        newMentions.sort((a, b) => {
+        // Sort by date, newest first
+        merged.sort((a, b) => {
           const dateA = new Date(a.published || a['wm-received'] || 0);
           const dateB = new Date(b.published || b['wm-received'] || 0);
           return dateB - dateA;
         });
 
-        if (silent) {
-          // For silent refresh, replace all
-          this.webmentions = newMentions;
-        } else {
-          this.webmentions = newMentions;
-        }
-
-        this.hasMore = newMentions.length === this.perPage;
+        this.webmentions = merged;
+        this.hasMore = (wmData.children || []).length === this.perPage;
       } catch (err) {
         this.error = `Failed to load webmentions: ${err.message}`;
         console.error('[Interactions]', err);
@@ -397,20 +414,60 @@ function interactionsApp() {
       }
     },
 
+    mergeAndDeduplicate(wmItems, convItems) {
+      // Build a Set of source URLs from conversations for dedup
+      const convUrls = new Set(convItems.map(c => c.url).filter(Boolean));
+      const seen = new Set();
+      const result = [];
+
+      // Add all conversations items first (they have richer metadata)
+      for (const item of convItems) {
+        const key = item['wm-id'] || item.url;
+        if (key && !seen.has(key)) {
+          seen.add(key);
+          result.push(item);
+        }
+      }
+
+      // Add webmention-io items that aren't duplicated by conversations
+      for (const item of wmItems) {
+        const wmKey = item['wm-id'];
+        if (seen.has(wmKey)) continue;
+
+        // Also check if this webmention's source URL matches a conversations item
+        // (same interaction from Bridgy webmention AND direct poll)
+        if (item.url && convUrls.has(item.url)) continue;
+
+        seen.add(wmKey);
+        result.push(item);
+      }
+
+      return result;
+    },
+
     async loadMore() {
       this.loadingMore = true;
       this.page++;
 
       try {
-        const url = `/webmentions/api/mentions?per-page=${this.perPage}&page=${this.page}`;
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const wmUrl = `/webmentions/api/mentions?per-page=${this.perPage}&page=${this.page}`;
+        const convUrl = `/conversations/api/mentions?per-page=${this.perPage}&page=${this.page}`;
 
-        const data = await response.json();
-        const newMentions = data.children || [];
+        const [wmResult, convResult] = await Promise.allSettled([
+          fetch(wmUrl).then(r => r.ok ? r.json() : { children: [] }),
+          fetch(convUrl).then(r => r.ok ? r.json() : { children: [] }).catch(() => ({ children: [] })),
+        ]);
 
-        this.webmentions = [...this.webmentions, ...newMentions];
-        this.hasMore = newMentions.length === this.perPage;
+        const wmData = wmResult.status === 'fulfilled' ? wmResult.value : { children: [] };
+        const convData = convResult.status === 'fulfilled' ? convResult.value : { children: [] };
+
+        const merged = this.mergeAndDeduplicate(
+          wmData.children || [],
+          convData.children || []
+        );
+
+        this.webmentions = [...this.webmentions, ...merged];
+        this.hasMore = (wmData.children || []).length === this.perPage;
       } catch (err) {
         this.error = `Failed to load more: ${err.message}`;
       } finally {
