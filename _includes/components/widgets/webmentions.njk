@@ -1,6 +1,7 @@
 {# Recent Webmentions Widget - site-wide inbound/outbound activity #}
 {# Uses client-side fetch from /webmentions/api/mentions (same as /interactions page) #}
 {# Outbound tab uses Eleventy collections (likes, replies, bookmarks, reposts) #}
+<is-land on:visible>
 <div class="widget" x-data="webmentionsWidget()" x-init="init()">
   <h3 class="widget-title flex items-center gap-2">
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,3 +149,4 @@ function webmentionsWidget() {
   };
 }
 </script>
+</is-land>
