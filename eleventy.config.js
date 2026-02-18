@@ -616,12 +616,14 @@ export default function (eleventyConfig) {
   });
 
   // Pagefind indexing + WebSub hub notification after each build (skip on incremental rebuilds)
-  eleventyConfig.on("eleventy.after", async ({ dir, runMode, incremental }) => {
+  eleventyConfig.on("eleventy.after", async ({ dir, directories, runMode, incremental }) => {
     if (incremental) return;
+    // Use directories.output (reflects --output CLI flag) instead of dir.output (config default)
+    const outputDir = directories?.output || dir.output;
     // Pagefind indexing
     try {
-      console.log(`[pagefind] Indexing ${dir.output} (${runMode})...`);
-      execFileSync("npx", ["pagefind", "--site", dir.output, "--output-subdir", "pagefind", "--glob", "**/*.html"], {
+      console.log(`[pagefind] Indexing ${outputDir} (${runMode})...`);
+      execFileSync("npx", ["pagefind", "--site", outputDir, "--output-subdir", "pagefind", "--glob", "**/*.html"], {
         stdio: "inherit",
         timeout: 60000,
       });
