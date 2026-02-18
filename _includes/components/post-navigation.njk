@@ -12,10 +12,11 @@
       {% set _bookmarkedUrl = _prevPost.data.bookmarkOf or _prevPost.data.bookmark_of %}
       {% set _repostedUrl = _prevPost.data.repostOf or _prevPost.data.repost_of %}
       {% set _replyToUrl = _prevPost.data.inReplyTo or _prevPost.data.in_reply_to %}
-      {% set _prevHasOg = _prevPost.fileSlug | hasOgImage %}
+      {% set _prevOgSlug = _prevPost.url | ogSlug %}
+      {% set _prevHasOg = _prevOgSlug | hasOgImage %}
       <a href="{{ _prevPost.url }}" class="group flex items-start gap-3 text-sm text-primary-600 dark:text-primary-400 hover:underline">
         {% if _prevHasOg %}
-        <img src="/og/{{ _prevPost.fileSlug }}.png" alt="" class="w-20 h-[42px] object-cover rounded flex-shrink-0 opacity-80 group-hover:opacity-100 transition-opacity" loading="lazy" eleventy:ignore>
+        <img src="/og/{{ _prevOgSlug }}.png" alt="" class="w-20 h-[42px] object-cover rounded flex-shrink-0 opacity-80 group-hover:opacity-100 transition-opacity" loading="lazy" eleventy:ignore>
         {% endif %}
         <span class="line-clamp-2 flex items-center gap-1.5">
           {% if _likedUrl %}
@@ -46,7 +47,8 @@
       {% set _bookmarkedUrl = _nextPost.data.bookmarkOf or _nextPost.data.bookmark_of %}
       {% set _repostedUrl = _nextPost.data.repostOf or _nextPost.data.repost_of %}
       {% set _replyToUrl = _nextPost.data.inReplyTo or _nextPost.data.in_reply_to %}
-      {% set _nextHasOg = _nextPost.fileSlug | hasOgImage %}
+      {% set _nextOgSlug = _nextPost.url | ogSlug %}
+      {% set _nextHasOg = _nextOgSlug | hasOgImage %}
       <a href="{{ _nextPost.url }}" class="group flex items-start gap-3 text-sm text-primary-600 dark:text-primary-400 hover:underline {% if _prevPost %}justify-end{% endif %}">
         <span class="line-clamp-2 flex items-center gap-1.5 {% if _prevPost %}justify-end{% endif %}">
           {% if _likedUrl %}
@@ -66,7 +68,7 @@
           {% endif %}
         </span>
         {% if _nextHasOg %}
-        <img src="/og/{{ _nextPost.fileSlug }}.png" alt="" class="w-20 h-[42px] object-cover rounded flex-shrink-0 opacity-80 group-hover:opacity-100 transition-opacity" loading="lazy" eleventy:ignore>
+        <img src="/og/{{ _nextOgSlug }}.png" alt="" class="w-20 h-[42px] object-cover rounded flex-shrink-0 opacity-80 group-hover:opacity-100 transition-opacity" loading="lazy" eleventy:ignore>
         {% endif %}
       </a>
     </div>

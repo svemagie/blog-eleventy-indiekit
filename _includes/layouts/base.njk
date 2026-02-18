@@ -23,7 +23,8 @@
   <meta property="og:type" content="{% if page.url == '/' %}website{% else %}article{% endif %}">
   <meta property="og:description" content="{{ ogDesc }}">
   <meta name="description" content="{{ ogDesc }}">
-  {% set hasGeneratedOg = page.fileSlug | hasOgImage %}
+  {% set ogFileSlug = page.url | ogSlug %}
+  {% set hasGeneratedOg = ogFileSlug | hasOgImage %}
   {% if ogPhoto and ogPhoto != "" and (ogPhoto | length) > 10 %}
   <meta property="og:image" content="{% if 'http' in ogPhoto %}{{ ogPhoto }}{% else %}{{ site.url }}{% if ogPhoto[0] != '/' %}/{% endif %}{{ ogPhoto }}{% endif %}">
   {% elif image and image != "" and (image | length) > 10 %}
@@ -31,7 +32,7 @@
   {% elif contentImage and contentImage != "" and (contentImage | length) > 10 %}
   <meta property="og:image" content="{% if 'http' in contentImage %}{{ contentImage }}{% else %}{{ site.url }}{% if contentImage[0] != '/' %}/{% endif %}{{ contentImage }}{% endif %}">
   {% elif hasGeneratedOg %}
-  <meta property="og:image" content="{{ site.url }}/og/{{ page.fileSlug }}.png">
+  <meta property="og:image" content="{{ site.url }}/og/{{ ogFileSlug }}.png">
   {% else %}
   <meta property="og:image" content="{{ site.url }}/images/og-default.png">
   {% endif %}
@@ -51,7 +52,7 @@
   {% elif contentImage and contentImage != "" and (contentImage | length) > 10 %}
   <meta name="twitter:image" content="{% if 'http' in contentImage %}{{ contentImage }}{% else %}{{ site.url }}/{{ contentImage }}{% endif %}">
   {% elif hasGeneratedOg %}
-  <meta name="twitter:image" content="{{ site.url }}/og/{{ page.fileSlug }}.png">
+  <meta name="twitter:image" content="{{ site.url }}/og/{{ ogFileSlug }}.png">
   {% endif %}
 
   {# Favicon #}

@@ -362,10 +362,18 @@ export default function (eleventyConfig) {
     }
   });
 
-  // Check if a generated OG image exists for this page slug
-  eleventyConfig.addFilter("hasOgImage", (fileSlug) => {
-    if (!fileSlug) return false;
-    const ogPath = resolve(__dirname, ".cache", "og", `${fileSlug}.png`);
+  // Derive OG slug from page.url (reliable) instead of page.fileSlug
+  // (which suffers from Nunjucks race conditions in Eleventy 3.x parallel rendering)
+  eleventyConfig.addFilter("ogSlug", (url) => {
+    if (!url) return "";
+    const last = url.replace(/\/$/, "").split("/").pop();
+    return last.replace(/^\d{4}-\d{2}-\d{2}-/, "");
+  });
+
+  // Check if a generated OG image exists for this slug
+  eleventyConfig.addFilter("hasOgImage", (slug) => {
+    if (!slug) return false;
+    const ogPath = resolve(__dirname, ".cache", "og", `${slug}.png`);
     return existsSync(ogPath);
   });
 
