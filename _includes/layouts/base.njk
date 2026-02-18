@@ -23,12 +23,15 @@
   <meta property="og:type" content="{% if page.url == '/' %}website{% else %}article{% endif %}">
   <meta property="og:description" content="{{ ogDesc }}">
   <meta name="description" content="{{ ogDesc }}">
+  {% set hasGeneratedOg = page.fileSlug | hasOgImage %}
   {% if ogPhoto and ogPhoto != "" and (ogPhoto | length) > 10 %}
   <meta property="og:image" content="{% if 'http' in ogPhoto %}{{ ogPhoto }}{% else %}{{ site.url }}{% if ogPhoto[0] != '/' %}/{% endif %}{{ ogPhoto }}{% endif %}">
   {% elif image and image != "" and (image | length) > 10 %}
   <meta property="og:image" content="{% if 'http' in image %}{{ image }}{% else %}{{ site.url }}{% if image[0] != '/' %}/{% endif %}{{ image }}{% endif %}">
   {% elif contentImage and contentImage != "" and (contentImage | length) > 10 %}
   <meta property="og:image" content="{% if 'http' in contentImage %}{{ contentImage }}{% else %}{{ site.url }}{% if contentImage[0] != '/' %}/{% endif %}{{ contentImage }}{% endif %}">
+  {% elif hasGeneratedOg %}
+  <meta property="og:image" content="{{ site.url }}/og/{{ page.fileSlug }}.png">
   {% else %}
   <meta property="og:image" content="{{ site.url }}/images/og-default.png">
   {% endif %}
@@ -37,7 +40,7 @@
   <meta property="og:locale" content="{{ site.locale | default('en_US') }}">
 
   {# Twitter Card meta tags #}
-  {% set hasImage = (ogPhoto and ogPhoto != "" and (ogPhoto | length) > 10) or (image and image != "" and (image | length) > 10) or (contentImage and contentImage != "" and (contentImage | length) > 10) %}
+  {% set hasImage = hasGeneratedOg or (ogPhoto and ogPhoto != "" and (ogPhoto | length) > 10) or (image and image != "" and (image | length) > 10) or (contentImage and contentImage != "" and (contentImage | length) > 10) %}
   <meta name="twitter:card" content="{% if hasImage %}summary_large_image{% else %}summary{% endif %}">
   <meta name="twitter:title" content="{{ ogTitle }}">
   <meta name="twitter:description" content="{{ ogDesc }}">
@@ -47,6 +50,8 @@
   <meta name="twitter:image" content="{% if 'http' in image %}{{ image }}{% else %}{{ site.url }}/{{ image }}{% endif %}">
   {% elif contentImage and contentImage != "" and (contentImage | length) > 10 %}
   <meta name="twitter:image" content="{% if 'http' in contentImage %}{{ contentImage }}{% else %}{{ site.url }}/{{ contentImage }}{% endif %}">
+  {% elif hasGeneratedOg %}
+  <meta name="twitter:image" content="{{ site.url }}/og/{{ page.fileSlug }}.png">
   {% endif %}
 
   {# Favicon #}

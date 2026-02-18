@@ -9,7 +9,8 @@ import syntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
 import { minify } from "html-minifier-terser";
 import { createHash } from "crypto";
 import { execFileSync } from "child_process";
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
+import { generateOgImages } from "./lib/og.js";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -165,6 +166,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("images");
   eleventyConfig.addPassthroughCopy("js");
   eleventyConfig.addPassthroughCopy("favicon.ico");
+  eleventyConfig.addPassthroughCopy({ ".cache/og": "og" });
 
   // Watch for content changes
   eleventyConfig.addWatchTarget("./content/");
@@ -264,6 +266,12 @@ export default function (eleventyConfig) {
       // Return timestamp as fallback if file not found
       return Date.now().toString(36);
     }
+  });
+
+  // Check if a generated OG image exists for this page slug
+  eleventyConfig.addFilter("hasOgImage", (fileSlug) => {
+    if (!fileSlug) return false;
+    return existsSync(resolve(__dirname, ".cache", "og", `${fileSlug}.png`));
   });
 
   // Current timestamp filter (for client-side JS buildtime)
@@ -443,6 +451,18 @@ export default function (eleventyConfig) {
       .getFilteredByGlob("content/**/*.md")
       .sort((a, b) => b.date - a.date)
       .slice(0, 5);
+  });
+
+  // Generate OpenGraph images for posts without photos
+  eleventyConfig.on("eleventy.before", async () => {
+    const contentDir = resolve(__dirname, "content");
+    const cacheDir = resolve(__dirname, ".cache");
+    const siteName = process.env.SITE_NAME || "My IndieWeb Blog";
+    try {
+      await generateOgImages(contentDir, cacheDir, siteName);
+    } catch (err) {
+      console.error("[og] Image generation failed:", err.message);
+    }
   });
 
   // Pagefind indexing + WebSub hub notification after each build
