@@ -42,6 +42,8 @@ export default function (eleventyConfig) {
   eleventyConfig.watchIgnores.add("/app/data/site/**");
   eleventyConfig.watchIgnores.add("_pagefind");
   eleventyConfig.watchIgnores.add("_pagefind/**");
+  eleventyConfig.watchIgnores.add(".cache/og");
+  eleventyConfig.watchIgnores.add(".cache/og/**");
 
   // Configure markdown-it with linkify enabled (auto-convert URLs to links)
   const md = markdownIt({
