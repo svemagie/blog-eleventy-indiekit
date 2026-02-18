@@ -582,8 +582,9 @@ export default function (eleventyConfig) {
       .slice(0, 5);
   });
 
-  // Generate OpenGraph images for posts without photos
-  eleventyConfig.on("eleventy.before", () => {
+  // Generate OpenGraph images for posts without photos (skip on incremental rebuilds)
+  eleventyConfig.on("eleventy.before", ({ incremental }) => {
+    if (incremental) return;
     const contentDir = resolve(__dirname, "content");
     const cacheDir = resolve(__dirname, ".cache");
     const siteName = process.env.SITE_NAME || "My IndieWeb Blog";
@@ -603,8 +604,9 @@ export default function (eleventyConfig) {
     }
   });
 
-  // Pagefind indexing + WebSub hub notification after each build
-  eleventyConfig.on("eleventy.after", async ({ dir, runMode }) => {
+  // Pagefind indexing + WebSub hub notification after each build (skip on incremental rebuilds)
+  eleventyConfig.on("eleventy.after", async ({ dir, runMode, incremental }) => {
+    if (incremental) return;
     // Pagefind indexing
     try {
       console.log(`[pagefind] Indexing ${dir.output} (${runMode})...`);
