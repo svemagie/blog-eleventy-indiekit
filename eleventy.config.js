@@ -344,11 +344,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("hasOgImage", (fileSlug) => {
     if (!fileSlug) return false;
     const ogPath = resolve(__dirname, ".cache", "og", `${fileSlug}.png`);
-    const exists = existsSync(ogPath);
-    if (!exists && fileSlug.includes("quand-un-oui")) {
-      console.log(`[og-debug] fileSlug=${fileSlug}, path=${ogPath}, exists=${exists}`);
-    }
-    return exists;
+    return existsSync(ogPath);
   });
 
   // Current timestamp filter (for client-side JS buildtime)
