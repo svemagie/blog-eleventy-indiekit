@@ -6,7 +6,7 @@ permalink: /cv/
 pagefindIgnore: true
 ---
 
-{# Standalone CV page — renders all CV sections using the same partials as the homepage builder #}
+{# CV page — uses configurable layout when cvPageConfig exists, falls back to hardcoded layout #}
 
 {% set hasCvData = (cv.experience and cv.experience.length) or
       (cv.projects and cv.projects.length) or
@@ -14,75 +14,84 @@ pagefindIgnore: true
 
 {% if hasCvData %}
 
-{# Hero / intro #}
-<section class="mb-8 sm:mb-12">
-  <div class="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
-    <img
-      src="{{ site.author.avatar }}"
-      alt="{{ site.author.name }}"
-      class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover shadow-lg flex-shrink-0"
-      loading="eager"
-    >
-    <div class="flex-1 min-w-0">
-      <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">
-        {{ site.author.name }}
-      </h1>
-      {% if site.author.title %}
-      <p class="text-lg sm:text-xl text-primary-600 dark:text-primary-400 mb-3 sm:mb-4">
-        {{ site.author.title }}
-      </p>
-      {% endif %}
-      {% if site.author.bio %}
-      <p class="text-base sm:text-lg text-surface-700 dark:text-surface-300 mb-4">
-        {{ site.author.bio }}
-      </p>
-      {% endif %}
-      <div class="flex flex-wrap gap-3">
-        {% for link in site.social %}
-        <a
-          href="{{ link.url }}"
-          rel="{{ link.rel }} noopener"
-          class="inline-flex items-center gap-2 px-3 py-2 text-sm bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
-          target="_blank"
+  {# Configurable layout — use cvPageConfig if available #}
+  {% if cvPageConfig and cvPageConfig.sections %}
+    {% include "components/cv-builder.njk" %}
+
+  {# Fallback — hardcoded layout for backward compatibility #}
+  {% else %}
+
+    {# Hero / intro #}
+    <section class="mb-8 sm:mb-12">
+      <div class="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
+        <img
+          src="{{ site.author.avatar }}"
+          alt="{{ site.author.name }}"
+          class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover shadow-lg flex-shrink-0"
+          loading="eager"
         >
-          <span class="text-sm font-medium">{{ link.name }}</span>
-        </a>
-        {% endfor %}
+        <div class="flex-1 min-w-0">
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">
+            {{ site.author.name }}
+          </h1>
+          {% if site.author.title %}
+          <p class="text-lg sm:text-xl text-primary-600 dark:text-primary-400 mb-3 sm:mb-4">
+            {{ site.author.title }}
+          </p>
+          {% endif %}
+          {% if site.author.bio %}
+          <p class="text-base sm:text-lg text-surface-700 dark:text-surface-300 mb-4">
+            {{ site.author.bio }}
+          </p>
+          {% endif %}
+          <div class="flex flex-wrap gap-3">
+            {% for link in site.social %}
+            <a
+              href="{{ link.url }}"
+              rel="{{ link.rel }} noopener"
+              class="inline-flex items-center gap-2 px-3 py-2 text-sm bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
+              target="_blank"
+            >
+              <span class="text-sm font-medium">{{ link.name }}</span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-{# Experience — work-only variant #}
-{% set section = { type: "cv-experience-work", config: {} } %}
-{% include "components/sections/cv-experience-work.njk" ignore missing %}
+    {# Experience — work-only variant #}
+    {% set section = { type: "cv-experience-work", config: {} } %}
+    {% include "components/sections/cv-experience-work.njk" ignore missing %}
 
-{# Skills — work-only variant #}
-{% set section = { type: "cv-skills-work", config: {} } %}
-{% include "components/sections/cv-skills-work.njk" ignore missing %}
+    {# Skills — work-only variant #}
+    {% set section = { type: "cv-skills-work", config: {} } %}
+    {% include "components/sections/cv-skills-work.njk" ignore missing %}
 
-{# Work Projects (only work-related projects on the CV page) #}
-{% set section = { type: "cv-projects-work", config: {} } %}
-{% include "components/sections/cv-projects-work.njk" ignore missing %}
+    {# Work Projects (only work-related projects on the CV page) #}
+    {% set section = { type: "cv-projects-work", config: {} } %}
+    {% include "components/sections/cv-projects-work.njk" ignore missing %}
 
-{# Education — work-only variant #}
-{% set section = { type: "cv-education-work", config: {} } %}
-{% include "components/sections/cv-education-work.njk" ignore missing %}
+    {# Education — work-only variant #}
+    {% set section = { type: "cv-education-work", config: {} } %}
+    {% include "components/sections/cv-education-work.njk" ignore missing %}
 
-{# Languages — standalone section #}
-{% set section = { type: "cv-languages", config: {} } %}
-{% include "components/sections/cv-languages.njk" ignore missing %}
+    {# Languages — standalone section #}
+    {% set section = { type: "cv-languages", config: {} } %}
+    {% include "components/sections/cv-languages.njk" ignore missing %}
 
-{# Interests — work-only variant #}
-{% set section = { type: "cv-interests-work", config: {} } %}
-{% include "components/sections/cv-interests-work.njk" ignore missing %}
+    {# Interests — work-only variant #}
+    {% set section = { type: "cv-interests-work", config: {} } %}
+    {% include "components/sections/cv-interests-work.njk" ignore missing %}
 
-{# Last Updated #}
-{% if cv.lastUpdated %}
-<p class="text-sm text-surface-500 text-center mt-8">
-  Last updated: {% if cv.lastUpdated %}{{ cv.lastUpdated | date("PPP") }}{% endif %}
-</p>
-{% endif %}
+    {# Last Updated #}
+    {% if cv.lastUpdated %}
+    <p class="text-sm text-surface-500 text-center mt-8">
+      Last updated: {{ cv.lastUpdated | date("PPP") }}
+    </p>
+    {% endif %}
+
+  {% endif %}
 
 {% else %}
 
