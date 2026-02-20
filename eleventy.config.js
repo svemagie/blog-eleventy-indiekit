@@ -622,22 +622,12 @@ export default function (eleventyConfig) {
     }
   });
 
-  // Pagefind indexing + WebSub hub notification after each build (skip on incremental rebuilds)
-  eleventyConfig.on("eleventy.after", async ({ dir, directories, runMode, incremental }) => {
+  // WebSub hub notification after each full build (skip on incremental rebuilds)
+  // Note: Pagefind indexing is handled by start.sh for reliability (eleventy.after
+  // is unreliable when the initial build is OOM-killed or when --incremental flag
+  // causes the hook to skip even on the watcher's first full build)
+  eleventyConfig.on("eleventy.after", async ({ incremental }) => {
     if (incremental) return;
-    // Use directories.output (reflects --output CLI flag) instead of dir.output (config default)
-    const outputDir = directories?.output || dir.output;
-    // Pagefind indexing
-    try {
-      console.log(`[pagefind] Indexing ${outputDir} (${runMode})...`);
-      execFileSync("npx", ["pagefind", "--site", outputDir, "--output-subdir", "pagefind", "--glob", "**/*.html"], {
-        stdio: "inherit",
-        timeout: 60000,
-      });
-      console.log("[pagefind] Indexing complete");
-    } catch (err) {
-      console.error("[pagefind] Indexing failed:", err.message);
-    }
 
     // WebSub hub notification — notify subscribers of feed updates
     const hubUrl = "https://websubhub.com/hub";
