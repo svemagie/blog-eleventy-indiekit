@@ -58,9 +58,10 @@ permalink: "replies/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNum
           {% set replyTo = post.data.inReplyTo or post.data.in_reply_to %}
           {% if replyTo %}
           {% set protocol = replyTo | protocolType %}
+          {% unfurl replyTo %}
           <p class="mt-2 text-sm flex items-center gap-2 flex-wrap">
             <span class="text-surface-500">In reply to:</span>
-            <a class="u-in-reply-to text-primary-600 dark:text-primary-400 hover:underline break-all" href="{{ replyTo }}">
+            <a class="u-in-reply-to text-xs text-surface-400 dark:text-surface-500 hover:underline break-all" href="{{ replyTo }}">
               {{ replyTo | replace("https://", "") | replace("http://", "") | truncate(60) }}
             </a>
             {% if protocol == "atmosphere" %}

@@ -57,12 +57,10 @@ permalink: "reposts/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNum
           {# Support both camelCase (Indiekit Eleventy preset) and underscore (legacy) property names #}
           {% set repostedUrl = post.data.repostOf or post.data.repost_of %}
           {% if repostedUrl %}
-          <p class="mt-2 text-sm">
-            <span class="text-surface-500">Reposted:</span>
-            <a class="u-repost-of text-primary-600 dark:text-primary-400 hover:underline break-all" href="{{ repostedUrl }}">
-              {{ repostedUrl }}
-            </a>
-          </p>
+          {% unfurl repostedUrl %}
+          <a class="u-repost-of text-xs text-surface-400 dark:text-surface-500 hover:underline break-all mt-1 inline-block" href="{{ repostedUrl }}">
+            {{ repostedUrl }}
+          </a>
           {% endif %}
           {% if post.templateContent %}
           <div class="e-content prose dark:prose-invert prose-sm mt-3 max-w-none">

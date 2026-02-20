@@ -52,11 +52,10 @@ permalink: "likes/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumbe
           {# Support both camelCase (Indiekit Eleventy preset) and underscore (legacy) property names #}
           {% set likedUrl = post.data.likeOf or post.data.like_of %}
           {% if likedUrl %}
-          <p class="mt-2">
-            <a class="u-like-of text-primary-600 dark:text-primary-400 hover:underline break-all" href="{{ likedUrl }}">
-              {{ likedUrl }}
-            </a>
-          </p>
+          {% unfurl likedUrl %}
+          <a class="u-like-of text-xs text-surface-400 dark:text-surface-500 hover:underline break-all mt-1 inline-block" href="{{ likedUrl }}">
+            {{ likedUrl }}
+          </a>
           {% endif %}
           {% if post.templateContent %}
           <div class="e-content prose dark:prose-invert prose-sm mt-3 max-w-none">
