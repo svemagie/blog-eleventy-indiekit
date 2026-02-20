@@ -11,9 +11,11 @@
 
   <div class="flex flex-wrap gap-2">
     {% for interest in cv.interests %}
+    {% if not filterType or (cv.interestTypes and cv.interestTypes[interest] == filterType) or (filterType == "personal" and (not cv.interestTypes or not cv.interestTypes[interest])) %}
     <span class="px-3 py-1.5 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-full text-sm text-surface-700 dark:text-surface-300 hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
       {{ interest }}
     </span>
+    {% endif %}
     {% endfor %}
   </div>
 </section>

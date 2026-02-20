@@ -15,6 +15,7 @@
   {% if hasEducation %}
   <div class="space-y-3 mb-6">
     {% for item in cv.education %}
+    {% if not filterType or item.educationType == filterType or (filterType == "personal" and not item.educationType) %}
     <div class="p-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
       <h3 class="font-semibold text-surface-900 dark:text-surface-100">{{ item.degree }}</h3>
       <p class="text-sm text-surface-600 dark:text-surface-400">
@@ -25,11 +26,12 @@
       <p class="text-sm text-surface-700 dark:text-surface-300 mt-1">{{ item.description }}</p>
       {% endif %}
     </div>
+    {% endif %}
     {% endfor %}
   </div>
   {% endif %}
 
-  {% if hasLanguages %}
+  {% if hasLanguages and not filterType %}
   <div class="flex flex-wrap gap-3">
     {% for lang in cv.languages %}
     <div class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-surface-800 rounded-full border border-surface-200 dark:border-surface-700">

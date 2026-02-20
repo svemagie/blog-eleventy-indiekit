@@ -17,6 +17,24 @@
   {% include "components/sections/cv-education.njk" ignore missing %}
 {% elif section.type == "cv-interests" %}
   {% include "components/sections/cv-interests.njk" ignore missing %}
+{% elif section.type == "cv-experience-personal" %}
+  {% include "components/sections/cv-experience-personal.njk" ignore missing %}
+{% elif section.type == "cv-experience-work" %}
+  {% include "components/sections/cv-experience-work.njk" ignore missing %}
+{% elif section.type == "cv-education-personal" %}
+  {% include "components/sections/cv-education-personal.njk" ignore missing %}
+{% elif section.type == "cv-education-work" %}
+  {% include "components/sections/cv-education-work.njk" ignore missing %}
+{% elif section.type == "cv-skills-personal" %}
+  {% include "components/sections/cv-skills-personal.njk" ignore missing %}
+{% elif section.type == "cv-skills-work" %}
+  {% include "components/sections/cv-skills-work.njk" ignore missing %}
+{% elif section.type == "cv-interests-personal" %}
+  {% include "components/sections/cv-interests-personal.njk" ignore missing %}
+{% elif section.type == "cv-interests-work" %}
+  {% include "components/sections/cv-interests-work.njk" ignore missing %}
+{% elif section.type == "cv-languages" %}
+  {% include "components/sections/cv-languages.njk" ignore missing %}
 {% elif section.type == "blogroll" %}
   {% include "components/sections/blogroll.njk" ignore missing %}
 {% elif section.type == "podroll" %}

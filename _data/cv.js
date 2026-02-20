@@ -27,9 +27,11 @@ export default function () {
       experience: [],
       projects: [],
       skills: {},
+      skillTypes: {},
       languages: [],
       education: [],
       interests: [],
+      interestTypes: {},
     };
   }
 }

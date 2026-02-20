@@ -53,25 +53,29 @@ pagefindIgnore: true
   </div>
 </section>
 
-{# Experience — reuse the section partial #}
-{% set section = { type: "cv-experience", config: {} } %}
-{% include "components/sections/cv-experience.njk" ignore missing %}
+{# Experience — work-only variant #}
+{% set section = { type: "cv-experience-work", config: {} } %}
+{% include "components/sections/cv-experience-work.njk" ignore missing %}
 
-{# Skills #}
-{% set section = { type: "cv-skills", config: {} } %}
-{% include "components/sections/cv-skills.njk" ignore missing %}
+{# Skills — work-only variant #}
+{% set section = { type: "cv-skills-work", config: {} } %}
+{% include "components/sections/cv-skills-work.njk" ignore missing %}
 
 {# Work Projects (only work-related projects on the CV page) #}
 {% set section = { type: "cv-projects-work", config: {} } %}
 {% include "components/sections/cv-projects-work.njk" ignore missing %}
 
-{# Education & Languages #}
-{% set section = { type: "cv-education", config: {} } %}
-{% include "components/sections/cv-education.njk" ignore missing %}
+{# Education — work-only variant #}
+{% set section = { type: "cv-education-work", config: {} } %}
+{% include "components/sections/cv-education-work.njk" ignore missing %}
 
-{# Interests #}
-{% set section = { type: "cv-interests", config: {} } %}
-{% include "components/sections/cv-interests.njk" ignore missing %}
+{# Languages — standalone section #}
+{% set section = { type: "cv-languages", config: {} } %}
+{% include "components/sections/cv-languages.njk" ignore missing %}
+
+{# Interests — work-only variant #}
+{% set section = { type: "cv-interests-work", config: {} } %}
+{% include "components/sections/cv-interests-work.njk" ignore missing %}
 
 {# Last Updated #}
 {% if cv.lastUpdated %}
