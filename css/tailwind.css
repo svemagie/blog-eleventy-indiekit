@@ -280,7 +280,7 @@
 
   /* Widget cards */
   .widget {
-    @apply p-4 bg-surface-100 dark:bg-surface-800 rounded-lg overflow-hidden;
+    @apply p-4 mb-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden;
   }
 
   .widget-title {
