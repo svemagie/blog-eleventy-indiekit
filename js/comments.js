@@ -1,10 +1,13 @@
 /**
  * Client-side comments component (Alpine.js)
  * Handles IndieAuth flow, comment submission, and display
+ *
+ * Registered via Alpine.data() so the component is available
+ * regardless of script loading order.
  */
 
-function commentsSection(targetUrl) {
-  return {
+document.addEventListener("alpine:init", () => {
+  Alpine.data("commentsSection", (targetUrl) => ({
     targetUrl,
     user: null,
     meUrl: "",
@@ -42,7 +45,11 @@ function commentsSection(targetUrl) {
       const authError = params.get("auth_error");
       if (authError) {
         this.showStatus(`Authentication failed: ${authError}`, "error");
-        window.history.replaceState({}, "", window.location.pathname + "#comments");
+        window.history.replaceState(
+          {},
+          "",
+          window.location.pathname + "#comments",
+        );
       }
     },
 
@@ -139,5 +146,5 @@ function commentsSection(targetUrl) {
         this.statusMessage = "";
       }, 5000);
     },
-  };
-}
+  }));
+});
