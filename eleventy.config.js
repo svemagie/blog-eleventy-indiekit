@@ -663,24 +663,30 @@ export default function (eleventyConfig) {
   });
 
   // Post-build hook: pagefind indexing + WebSub notification
-  // Runs after every full build (initial + watcher's first build), skips incremental rebuilds
+  // Pagefind runs once on the first build (initial or watcher's first full build), then never again.
+  // WebSub runs on every non-incremental build.
+  // Note: --incremental CLI flag sets incremental=true even for the watcher's first full build,
+  // so we cannot use the incremental flag to guard pagefind. Use a one-shot flag instead.
+  let pagefindDone = false;
   eleventyConfig.on("eleventy.after", async ({ dir, directories, runMode, incremental }) => {
-    if (incremental) return;
-
-    // Pagefind indexing — use directories.output (reflects --output CLI flag)
-    const outputDir = directories?.output || dir.output;
-    try {
-      console.log(`[pagefind] Indexing ${outputDir} (${runMode})...`);
-      execFileSync("npx", ["pagefind", "--site", outputDir, "--output-subdir", "pagefind", "--glob", "**/*.html"], {
-        stdio: "inherit",
-        timeout: 120000,
-      });
-      console.log("[pagefind] Indexing complete");
-    } catch (err) {
-      console.error("[pagefind] Indexing failed:", err.message);
+    // Pagefind indexing — run exactly once per process lifetime
+    if (!pagefindDone) {
+      pagefindDone = true;
+      const outputDir = directories?.output || dir.output;
+      try {
+        console.log(`[pagefind] Indexing ${outputDir} (${runMode})...`);
+        execFileSync("npx", ["pagefind", "--site", outputDir, "--output-subdir", "pagefind", "--glob", "**/*.html"], {
+          stdio: "inherit",
+          timeout: 120000,
+        });
+        console.log("[pagefind] Indexing complete");
+      } catch (err) {
+        console.error("[pagefind] Indexing failed:", err.message);
+      }
     }
 
-    // WebSub hub notification — notify subscribers of feed updates
+    // WebSub hub notification — skip on incremental rebuilds
+    if (incremental) return;
     const hubUrl = "https://websubhub.com/hub";
     const feedUrls = [
       `${siteUrl}/`,
