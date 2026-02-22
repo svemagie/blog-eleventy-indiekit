@@ -71,13 +71,13 @@
     var _pfQueue = [];
     function initPagefind(sel, opts) { _pfQueue.push([sel, opts]); }
   </script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.min.js" defer></script>
+  <link rel="stylesheet" href="/css/lite-yt-embed.css?v={{ '/css/lite-yt-embed.css' | hash }}">
+  <script src="/js/vendor/lite-yt-embed.js?v={{ '/js/vendor/lite-yt-embed.js' | hash }}" defer></script>
   {# Alpine.js components — MUST load before Alpine core (Alpine.data() registration via alpine:init) #}
   <script src="/js/comments.js?v={{ '/js/comments.js' | hash }}" defer></script>
   <script src="/js/fediverse-interact.js?v={{ '/js/fediverse-interact.js' | hash }}" defer></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script defer src="/js/vendor/alpine-collapse.min.js?v={{ '/js/vendor/alpine-collapse.min.js' | hash }}"></script>
+  <script defer src="/js/vendor/alpine.min.js?v={{ '/js/vendor/alpine.min.js' | hash }}"></script>
   <style>[x-cloak] { display: none !important; }</style>
   {# Graceful no-JS fallback: show content that Alpine would normally control #}
   <noscript>
