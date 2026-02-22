@@ -72,20 +72,95 @@ withBlogSidebar: true
   {% endif %}
 
   {# Syndication Footer - shows where this post was also published #}
-  {# Skip syndication URLs that point back to our own site (self-hosted AP) #}
+  {# Separate self-hosted AP URLs from external syndication targets #}
   {% set externalSyndication = [] %}
+  {% set selfHostedApUrl = "" %}
   {% if syndication %}
     {% for url in syndication %}
-      {% if url.indexOf(site.url) != 0 %}
+      {% if url.indexOf(site.url) == 0 %}
+        {% set selfHostedApUrl = url %}
+      {% else %}
         {% set externalSyndication = (externalSyndication.push(url), externalSyndication) %}
       {% endif %}
     {% endfor %}
   {% endif %}
-  {% if externalSyndication.length %}
+  {% if externalSyndication.length or selfHostedApUrl %}
   <footer class="post-footer mt-8 pt-6 border-t border-surface-200 dark:border-surface-700">
     <div class="flex flex-wrap items-center gap-4">
       <span class="text-sm text-surface-500 dark:text-surface-400">Also on:</span>
       <div class="flex flex-wrap gap-3">
+        {# Fediverse remote interaction button (self-hosted ActivityPub) #}
+        {% if selfHostedApUrl %}
+        <span x-data="fediverseInteract('{{ site.url }}{{ page.url }}')" class="inline-flex">
+          <a class="u-syndication inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#a730b8]/10 text-[#a730b8] hover:bg-[#a730b8]/20 transition-colors text-sm font-medium cursor-pointer"
+             href="{{ site.url }}{{ page.url }}"
+             rel="syndication"
+             title="Interact from your fediverse instance (Shift+click to change)"
+             @click="handleClick($event)">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+            <span>Fediverse</span>
+          </a>
+
+          {# Modal overlay for instance entry #}
+          <template x-if="showModal">
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="showModal = false">
+              {# Backdrop #}
+              <div class="fixed inset-0 bg-black/40"
+                   x-transition:enter="transition ease-out duration-200"
+                   x-transition:enter-start="opacity-0"
+                   x-transition:enter-end="opacity-100"
+                   x-transition:leave="transition ease-in duration-150"
+                   x-transition:leave-start="opacity-100"
+                   x-transition:leave-end="opacity-0"
+                   @click="showModal = false"></div>
+              {# Panel #}
+              <div class="relative bg-white dark:bg-surface-800 rounded-xl shadow-xl w-full max-w-sm p-6"
+                   x-transition:enter="transition ease-out duration-200"
+                   x-transition:enter-start="opacity-0 scale-95"
+                   x-transition:enter-end="opacity-100 scale-100"
+                   x-transition:leave="transition ease-in duration-150"
+                   x-transition:leave-start="opacity-100 scale-100"
+                   x-transition:leave-end="opacity-0 scale-95"
+                   @click.outside="showModal = false">
+                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">Fediverse Interaction</h3>
+                <p class="text-sm text-surface-500 dark:text-surface-400 mb-4">Enter your instance to like, boost, or reply.</p>
+                <div class="relative">
+                  <input x-ref="instanceInput"
+                         x-model="instance"
+                         @input="filterSuggestions()"
+                         @keydown.enter.prevent="confirm()"
+                         type="text"
+                         placeholder="mastodon.social"
+                         class="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-[#a730b8] focus:border-transparent text-sm">
+                  {# Autocomplete suggestions #}
+                  <ul x-show="suggestions.length > 0"
+                      class="absolute z-10 left-0 right-0 mt-1 bg-white dark:bg-surface-700 border border-surface-200 dark:border-surface-600 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    <template x-for="domain in suggestions" :key="domain">
+                      <li @click="selectSuggestion(domain)"
+                          x-text="domain"
+                          class="px-3 py-2 text-sm text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-600 cursor-pointer"></li>
+                    </template>
+                  </ul>
+                </div>
+                <div class="flex gap-3 mt-4">
+                  <button @click="showModal = false"
+                          class="flex-1 px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-300 bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 rounded-lg transition-colors">
+                    Cancel
+                  </button>
+                  <button @click="confirm()"
+                          class="flex-1 px-4 py-2 text-sm font-medium text-white bg-[#a730b8] hover:bg-[#a730b8]/80 rounded-lg transition-colors">
+                    Go
+                  </button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </span>
+        {% endif %}
+
+        {# External syndication buttons #}
         {% for url in externalSyndication %}
           {% if "bsky.app" in url or "bluesky" in url %}
           <a class="u-syndication inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0085ff]/10 text-[#0085ff] hover:bg-[#0085ff]/20 transition-colors text-sm font-medium" href="{{ url }}" target="_blank" rel="noopener syndication" title="View on Bluesky">
@@ -94,12 +169,26 @@ withBlogSidebar: true
             </svg>
             <span>Bluesky</span>
           </a>
-          {% elif "mstdn" in url or "mastodon" in url or "social" in url %}
+          {% elif site.feeds.mastodon.instance and site.feeds.mastodon.instance in url %}
           <a class="u-syndication inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#6364ff]/10 text-[#6364ff] hover:bg-[#6364ff]/20 transition-colors text-sm font-medium" href="{{ url }}" target="_blank" rel="noopener syndication" title="View on Mastodon">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M23.268 5.313c-.35-2.578-2.617-4.61-5.304-5.004C17.51.242 15.792 0 11.813 0h-.03c-3.98 0-4.835.242-5.288.309C3.882.692 1.496 2.518.917 5.127.64 6.412.61 7.837.661 9.143c.074 1.874.088 3.745.26 5.611.118 1.24.325 2.47.62 3.68.55 2.237 2.777 4.098 4.96 4.857 2.336.792 4.849.923 7.256.38.265-.061.527-.132.786-.213.585-.184 1.27-.39 1.774-.753a.057.057 0 0 0 .023-.043v-1.809a.052.052 0 0 0-.02-.041.053.053 0 0 0-.046-.01 20.282 20.282 0 0 1-4.709.545c-2.73 0-3.463-1.284-3.674-1.818a5.593 5.593 0 0 1-.319-1.433.053.053 0 0 1 .066-.054c1.517.363 3.072.546 4.632.546.376 0 .75 0 1.125-.01 1.57-.044 3.224-.124 4.768-.422.038-.008.077-.015.11-.024 2.435-.464 4.753-1.92 4.989-5.604.008-.145.03-1.52.03-1.67.002-.512.167-3.63-.024-5.545zm-3.748 9.195h-2.561V8.29c0-1.309-.55-1.976-1.67-1.976-1.23 0-1.846.79-1.846 2.35v3.403h-2.546V8.663c0-1.56-.617-2.35-1.848-2.35-1.112 0-1.668.668-1.668 1.977v6.218H4.822V8.102c0-1.31.337-2.35 1.011-3.12.696-.77 1.608-1.164 2.74-1.164 1.311 0 2.302.5 2.962 1.498l.638 1.06.638-1.06c.66-.999 1.65-1.498 2.96-1.498 1.13 0 2.043.395 2.74 1.164.675.77 1.012 1.81 1.012 3.12z"/>
             </svg>
             <span>Mastodon</span>
+          </a>
+          {% elif "linkedin.com" in url %}
+          <a class="u-syndication inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0a66c2]/10 text-[#0a66c2] hover:bg-[#0a66c2]/20 transition-colors text-sm font-medium" href="{{ url }}" target="_blank" rel="noopener syndication" title="View on LinkedIn">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+            <span>LinkedIn</span>
+          </a>
+          {% elif "news.indieweb.org" in url %}
+          <a class="u-syndication inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ff5c00]/10 text-[#ff5c00] hover:bg-[#ff5c00]/20 transition-colors text-sm font-medium" href="{{ url }}" target="_blank" rel="noopener syndication" title="View on IndieNews">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><line x1="10" y1="6" x2="18" y2="6"/><line x1="10" y1="10" x2="18" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/>
+            </svg>
+            <span>IndieNews</span>
           </a>
           {% else %}
           <a class="u-syndication inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors text-sm font-medium" href="{{ url }}" target="_blank" rel="noopener syndication">
