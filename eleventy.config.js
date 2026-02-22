@@ -335,7 +335,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("extractFirstImage", (content) => {
     if (!content) return null;
     // Match all <img> tags, skip hidden ones and data URIs
-    const imgRegex = /<img[^>]+src=["']([^"']+)["'][^>]*>/gi;
+    const imgRegex = /<img[^>]*?\ssrc=["']([^"']+)["'][^>]*>/gi;
     let match;
     while ((match = imgRegex.exec(content)) !== null) {
       const fullTag = match[0];
