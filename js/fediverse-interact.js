@@ -12,9 +12,6 @@ document.addEventListener("alpine:init", () => {
     postUrl,
     showModal: false,
     instance: "",
-    suggestions: [],
-    allNodes: null,
-    loading: false,
 
     handleClick(event) {
       event.preventDefault();
@@ -28,65 +25,11 @@ document.addEventListener("alpine:init", () => {
 
     openModal(prefill) {
       this.instance = prefill || "";
-      this.suggestions = [];
       this.showModal = true;
-      this.fetchNodes();
       this.$nextTick(() => {
         const input = this.$refs.instanceInput;
         if (input) input.focus();
       });
-    },
-
-    async fetchNodes() {
-      const cached = sessionStorage.getItem("fediverse_nodes");
-      if (cached) {
-        try {
-          this.allNodes = JSON.parse(cached);
-          this.filterSuggestions();
-          return;
-        } catch {
-          // Corrupted cache, refetch
-        }
-      }
-
-      this.loading = true;
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 3000);
-
-      try {
-        const res = await fetch("https://nodes.fediverse.party/nodes.json", {
-          signal: controller.signal,
-        });
-        clearTimeout(timeout);
-        if (res.ok) {
-          this.allNodes = await res.json();
-          sessionStorage.setItem(
-            "fediverse_nodes",
-            JSON.stringify(this.allNodes),
-          );
-          this.filterSuggestions();
-        }
-      } catch {
-        // Network error or timeout — autocomplete unavailable
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    filterSuggestions() {
-      const query = this.instance.trim().toLowerCase();
-      if (!query || !this.allNodes) {
-        this.suggestions = [];
-        return;
-      }
-      this.suggestions = this.allNodes
-        .filter((node) => node.toLowerCase().includes(query))
-        .slice(0, 8);
-    },
-
-    selectSuggestion(domain) {
-      this.instance = domain;
-      this.suggestions = [];
     },
 
     confirm() {

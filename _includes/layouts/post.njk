@@ -126,24 +126,12 @@ withBlogSidebar: true
                    @click.outside="showModal = false">
                 <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">Fediverse Interaction</h3>
                 <p class="text-sm text-surface-500 dark:text-surface-400 mb-4">Enter your instance to like, boost, or reply.</p>
-                <div class="relative">
-                  <input x-ref="instanceInput"
-                         x-model="instance"
-                         @input="filterSuggestions()"
-                         @keydown.enter.prevent="confirm()"
-                         type="text"
-                         placeholder="mastodon.social"
-                         class="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-[#a730b8] focus:border-transparent text-sm">
-                  {# Autocomplete suggestions #}
-                  <ul x-show="suggestions.length > 0"
-                      class="absolute z-10 left-0 right-0 mt-1 bg-white dark:bg-surface-700 border border-surface-200 dark:border-surface-600 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                    <template x-for="domain in suggestions" :key="domain">
-                      <li @click="selectSuggestion(domain)"
-                          x-text="domain"
-                          class="px-3 py-2 text-sm text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-600 cursor-pointer"></li>
-                    </template>
-                  </ul>
-                </div>
+                <input x-ref="instanceInput"
+                       x-model="instance"
+                       @keydown.enter.prevent="confirm()"
+                       type="text"
+                       placeholder="mastodon.social"
+                       class="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-[#a730b8] focus:border-transparent text-sm">
                 <div class="flex gap-3 mt-4">
                   <button @click="showModal = false"
                           class="flex-1 px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-300 bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 rounded-lg transition-colors">
