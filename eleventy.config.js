@@ -500,42 +500,51 @@ export default function (eleventyConfig) {
     return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Posting frequency over the last 12 months"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" points="${points}"/></svg>`;
   });
 
+  // Helper: exclude drafts from collections
+  const isPublished = (item) => !item.data.draft;
+
   // Collections for different post types
   // Note: content path is content/ due to symlink structure
   // "posts" shows ALL content types combined
   eleventyConfig.addCollection("posts", function (collectionApi) {
     return collectionApi
       .getFilteredByGlob("content/**/*.md")
+      .filter(isPublished)
       .sort((a, b) => b.date - a.date);
   });
 
   eleventyConfig.addCollection("notes", function (collectionApi) {
     return collectionApi
       .getFilteredByGlob("content/notes/**/*.md")
+      .filter(isPublished)
       .sort((a, b) => b.date - a.date);
   });
 
   eleventyConfig.addCollection("articles", function (collectionApi) {
     return collectionApi
       .getFilteredByGlob("content/articles/**/*.md")
+      .filter(isPublished)
       .sort((a, b) => b.date - a.date);
   });
 
   eleventyConfig.addCollection("bookmarks", function (collectionApi) {
     return collectionApi
       .getFilteredByGlob("content/bookmarks/**/*.md")
+      .filter(isPublished)
       .sort((a, b) => b.date - a.date);
   });
 
   eleventyConfig.addCollection("photos", function (collectionApi) {
     return collectionApi
       .getFilteredByGlob("content/photos/**/*.md")
+      .filter(isPublished)
       .sort((a, b) => b.date - a.date);
   });
 
   eleventyConfig.addCollection("likes", function (collectionApi) {
     return collectionApi
       .getFilteredByGlob("content/likes/**/*.md")
+      .filter(isPublished)
       .sort((a, b) => b.date - a.date);
   });
 
@@ -544,7 +553,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addCollection("replies", function (collectionApi) {
     return collectionApi
       .getAll()
-      .filter((item) => item.data.inReplyTo || item.data.in_reply_to)
+      .filter((item) => isPublished(item) && (item.data.inReplyTo || item.data.in_reply_to))
       .sort((a, b) => b.date - a.date);
   });
 
@@ -553,7 +562,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addCollection("reposts", function (collectionApi) {
     return collectionApi
       .getAll()
-      .filter((item) => item.data.repostOf || item.data.repost_of)
+      .filter((item) => isPublished(item) && (item.data.repostOf || item.data.repost_of))
       .sort((a, b) => b.date - a.date);
   });
 
@@ -564,7 +573,7 @@ export default function (eleventyConfig) {
     const rootPages = collectionApi.getFilteredByGlob("content/*.md");
     const pagesDir = collectionApi.getFilteredByGlob("content/pages/*.md");
     return [...rootPages, ...pagesDir]
-      .filter(page => !page.inputPath.includes('content.json') && !page.inputPath.includes('pages.json'))
+      .filter(page => isPublished(page) && !page.inputPath.includes('content.json') && !page.inputPath.includes('pages.json'))
       .sort((a, b) => (a.data.title || a.data.name || "").localeCompare(b.data.title || b.data.name || ""));
   });
 
@@ -572,6 +581,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addCollection("feed", function (collectionApi) {
     return collectionApi
       .getFilteredByGlob("content/**/*.md")
+      .filter(isPublished)
       .sort((a, b) => b.date - a.date)
       .slice(0, 20);
   });
@@ -581,7 +591,7 @@ export default function (eleventyConfig) {
     const categoryMap = new Map(); // slug -> original name (first seen)
     const slugify = (str) => str.toLowerCase().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
 
-    collectionApi.getAll().forEach((item) => {
+    collectionApi.getAll().filter(isPublished).forEach((item) => {
       if (item.data.category) {
         const cats = Array.isArray(item.data.category) ? item.data.category : [item.data.category];
         cats.forEach((cat) => {
@@ -601,6 +611,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addCollection("recentPosts", function (collectionApi) {
     return collectionApi
       .getFilteredByGlob("content/**/*.md")
+      .filter(isPublished)
       .sort((a, b) => b.date - a.date)
       .slice(0, 5);
   });
