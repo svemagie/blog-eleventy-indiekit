@@ -142,12 +142,24 @@
         }
       }
 
+      // Build set of author+action keys from conversations for cross-source dedup
+      const authorActions = new Set();
+      for (const wm of convItems) {
+        const authorUrl = (wm.author && wm.author.url) || wm.url || '';
+        const action = wm['wm-property'] || 'mention';
+        if (authorUrl) authorActions.add(authorUrl + '::' + action);
+      }
+
       // Add webmention-io items, skipping duplicates
       for (const wm of wmItems) {
         const key = wm['wm-id'];
         if (seen.has(key)) continue;
         // Also skip if same source URL exists in conversations
         if (wm.url && convUrls.has(wm.url)) continue;
+        // Skip if same author + same action type already from conversations
+        const authorUrl = (wm.author && wm.author.url) || wm.url || '';
+        const action = wm['wm-property'] || 'mention';
+        if (authorUrl && authorActions.has(authorUrl + '::' + action)) continue;
         seen.add(key);
         allChildren.push(wm);
       }
