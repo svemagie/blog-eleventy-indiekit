@@ -484,7 +484,21 @@ export default function (eleventyConfig) {
     }
 
     // Filter merged data matching any of our URLs
-    return merged.filter((wm) => urlsToCheck.has(wm["wm-target"]));
+    const matched = merged.filter((wm) => urlsToCheck.has(wm["wm-target"]));
+
+    // Deduplicate cross-source: same author + same interaction type = same mention
+    // (webmention.io and conversations API may both report the same like/reply)
+    const deduped = [];
+    const authorActions = new Set();
+    for (const wm of matched) {
+      const authorUrl = wm.author?.url || wm.url || "";
+      const action = wm["wm-property"] || "mention";
+      const key = `${authorUrl}::${action}`;
+      if (authorActions.has(key)) continue;
+      authorActions.add(key);
+      deduped.push(wm);
+    }
+    return deduped;
   });
 
   eleventyConfig.addFilter("webmentionsByType", function (mentions, type) {
