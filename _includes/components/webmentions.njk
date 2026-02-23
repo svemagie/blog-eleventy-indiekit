@@ -3,7 +3,7 @@
 {# Also checks legacy URLs from micro.blog and old blog for historical webmentions #}
 {# Client-side JS supplements build-time data with real-time fetches #}
 
-{% set mentions = webmentions | webmentionsForUrl(page.url, urlAliases) %}
+{% set mentions = webmentions | webmentionsForUrl(page.url, urlAliases, conversationMentions) %}
 {% set absoluteUrl = site.url + page.url %}
 {% set buildTimestamp = "" | timestamp %}
 

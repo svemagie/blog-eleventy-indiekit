@@ -43,7 +43,7 @@ pagefindIgnore: true
         </thead>
         <tbody class="divide-y divide-surface-200 dark:divide-surface-700">
           {% for post in collections.posts | head(50) %}
-            {% set allMentions = webmentions | webmentionsForUrl(post.url, urlAliases) %}
+            {% set allMentions = webmentions | webmentionsForUrl(post.url, urlAliases, conversationMentions) %}
             {% set legacyUrls = urlAliases.getOldUrls(post.url) %}
             {% if allMentions.length > 0 or legacyUrls.length > 0 %}
             <tr class="hover:bg-surface-50 dark:hover:bg-surface-800/50">

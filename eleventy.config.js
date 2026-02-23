@@ -380,7 +380,14 @@ export default function (eleventyConfig) {
   // OG images are named with the full date prefix to match URL segments exactly.
   eleventyConfig.addFilter("ogSlug", (url) => {
     if (!url) return "";
-    return url.replace(/\/$/, "").split("/").pop();
+    const segments = url.split("/").filter(Boolean);
+    // Date-based URL: /type/yyyy/MM/dd/slug/ → 5 segments → "yyyy-MM-dd-slug"
+    if (segments.length === 5) {
+      const [, year, month, day, slug] = segments;
+      return `${year}-${month}-${day}-${slug}`;
+    }
+    // Fallback: last segment (for pages, legacy URLs)
+    return segments[segments.length - 1] || "";
   });
 
   // Check if a generated OG image exists for this slug
@@ -418,8 +425,33 @@ export default function (eleventyConfig) {
 
   // Webmention filters - with legacy URL support
   // This filter checks both current URL and any legacy URLs from redirects
-  eleventyConfig.addFilter("webmentionsForUrl", function (webmentions, url, urlAliases) {
-    if (!webmentions || !url) return [];
+  // Merges webmentions + conversations with deduplication (conversations first)
+  eleventyConfig.addFilter("webmentionsForUrl", function (webmentions, url, urlAliases, conversationMentions = []) {
+    if (!url) return [];
+
+    // Merge conversations + webmentions with deduplication
+    const seen = new Set();
+    const merged = [];
+
+    // Add conversations first (richer metadata)
+    for (const item of conversationMentions) {
+      const key = item['wm-id'] || item.url;
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        merged.push(item);
+      }
+    }
+
+    // Add webmentions (skip duplicates)
+    if (webmentions) {
+      for (const item of webmentions) {
+        const key = item['wm-id'];
+        if (!key || seen.has(key)) continue;
+        if (item.url && seen.has(item.url)) continue;
+        seen.add(key);
+        merged.push(item);
+      }
+    }
 
     // Build list of all URLs to check (current + legacy)
     const urlsToCheck = new Set();
@@ -441,8 +473,18 @@ export default function (eleventyConfig) {
       }
     }
 
-    // Filter webmentions matching any of our URLs
-    return webmentions.filter((wm) => urlsToCheck.has(wm["wm-target"]));
+    // Compute legacy /content/ URL from current URL for old webmention.io targets
+    // Pattern: /type/yyyy/MM/dd/slug/ → /content/type/yyyy-MM-dd-slug/
+    const pathSegments = url.replace(/\/$/, "").split("/").filter(Boolean);
+    if (pathSegments.length === 5) {
+      const [type, year, month, day, slug] = pathSegments;
+      const contentUrl = `/content/${type}/${year}-${month}-${day}-${slug}/`;
+      urlsToCheck.add(`${siteUrl}${contentUrl}`);
+      urlsToCheck.add(`${siteUrl}${contentUrl}`.replace(/\/$/, ""));
+    }
+
+    // Filter merged data matching any of our URLs
+    return merged.filter((wm) => urlsToCheck.has(wm["wm-target"]));
   });
 
   eleventyConfig.addFilter("webmentionsByType", function (mentions, type) {
