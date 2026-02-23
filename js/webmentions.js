@@ -79,26 +79,26 @@
 
     // Append new likes
     if (likes.length) {
-      appendAvatars('.webmention-likes .avatar-row', likes, 'likes');
-      updateCount('.webmention-likes h3', likes.length);
+      appendAvatars('.webmention-likes .facepile, .webmention-likes .avatar-row', likes, 'likes');
+      updateCount('.webmention-likes h3', likes.length, 'Like');
     }
 
     // Append new reposts
     if (reposts.length) {
-      appendAvatars('.webmention-reposts .avatar-row', reposts, 'reposts');
-      updateCount('.webmention-reposts h3', reposts.length);
+      appendAvatars('.webmention-reposts .facepile, .webmention-reposts .avatar-row', reposts, 'reposts');
+      updateCount('.webmention-reposts h3', reposts.length, 'Repost');
     }
 
     // Append new replies
     if (replies.length) {
       appendReplies('.webmention-replies ul', replies);
-      updateCount('.webmention-replies h3', replies.length);
+      updateCount('.webmention-replies h3', replies.length, 'Repl', 'ies', 'y');
     }
 
     // Append new mentions
     if (mentions.length) {
       appendMentions('.webmention-mentions ul', mentions);
-      updateCount('.webmention-mentions h3', mentions.length);
+      updateCount('.webmention-mentions h3', mentions.length, 'Mention');
     }
 
     // Update total count in main header
@@ -188,7 +188,7 @@
       }
       if (webmentionsSection) {
         webmentionsSection.appendChild(section);
-        row = section.querySelector('.avatar-row');
+        row = section.querySelector('.facepile');
       }
     }
 
@@ -199,7 +199,7 @@
 
       const link = document.createElement('a');
       link.href = author.url || '#';
-      link.className = 'inline-block';
+      link.className = 'facepile-avatar';
       link.title = author.name || 'Anonymous';
       link.target = '_blank';
       link.rel = 'noopener';
@@ -208,7 +208,7 @@
       const img = document.createElement('img');
       img.src = author.photo || '/images/default-avatar.svg';
       img.alt = author.name || 'Anonymous';
-      img.className = 'w-8 h-8 rounded-full ring-2 ring-primary-500';
+      img.className = 'w-8 h-8 rounded-full ring-2 ring-white dark:ring-surface-900';
       img.loading = 'lazy';
 
       link.appendChild(img);
@@ -355,7 +355,7 @@
     });
   }
 
-  function updateCount(selector, additionalCount) {
+  function updateCount(selector, additionalCount, noun, pluralSuffix, singularSuffix) {
     const header = document.querySelector(selector);
     if (!header) return;
 
@@ -364,7 +364,14 @@
     if (match) {
       const currentCount = parseInt(match[1], 10);
       const newCount = currentCount + additionalCount;
-      header.textContent = text.replace(/\d+/, newCount);
+      if (noun) {
+        // Rebuild the header text with correct pluralization
+        var suffix = pluralSuffix || 's';
+        var singSuffix = singularSuffix || '';
+        header.textContent = newCount + ' ' + noun + (newCount !== 1 ? suffix : singSuffix);
+      } else {
+        header.textContent = text.replace(/\d+/, newCount);
+      }
     }
   }
 
@@ -390,7 +397,7 @@
     header.textContent = `0 ${type === 'likes' ? 'Likes' : 'Reposts'}`;
 
     const row = document.createElement('div');
-    row.className = 'avatar-row';
+    row.className = 'facepile';
 
     section.appendChild(header);
     section.appendChild(row);
