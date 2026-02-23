@@ -1,0 +1,76 @@
+{# Fediverse Follow Me Widget — uses the fediverseInteract Alpine.js component #}
+{# Requires fediverse-interact.js loaded in base.njk (already present) #}
+{# Determines actor URI from site social links: prefers self-hosted AP, falls back to Mastodon #}
+
+{% set actorUrl = "" %}
+{% for link in site.social %}
+  {% if link.icon == "activitypub" and not actorUrl %}
+    {% set actorUrl = link.url %}
+  {% endif %}
+{% endfor %}
+{% if not actorUrl %}
+  {% for link in site.social %}
+    {% if link.icon == "mastodon" and not actorUrl %}
+      {% set actorUrl = link.url %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% if actorUrl %}
+<is-land on:visible>
+<div class="widget" x-data="fediverseInteract('{{ actorUrl }}')">
+  <h3 class="widget-title">Follow Me</h3>
+  <p class="text-sm text-surface-500 dark:text-surface-400 mb-3">Follow me from your fediverse instance.</p>
+  <a href="{{ actorUrl }}"
+     @click="handleClick($event)"
+     class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#a730b8]/10 text-[#a730b8] hover:bg-[#a730b8]/20 transition-colors text-sm font-medium cursor-pointer"
+     title="Follow from your fediverse instance (Shift+click to change)">
+    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
+    </svg>
+    <span>Follow on the Fediverse</span>
+  </a>
+
+  {# Modal overlay for instance entry — same pattern as post.njk #}
+  <template x-if="showModal">
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="showModal = false">
+      <div class="fixed inset-0 bg-black/40"
+           x-transition:enter="transition ease-out duration-200"
+           x-transition:enter-start="opacity-0"
+           x-transition:enter-end="opacity-100"
+           x-transition:leave="transition ease-in duration-150"
+           x-transition:leave-start="opacity-100"
+           x-transition:leave-end="opacity-0"
+           @click="showModal = false"></div>
+      <div class="relative bg-white dark:bg-surface-800 rounded-xl shadow-xl w-full max-w-sm p-6"
+           x-transition:enter="transition ease-out duration-200"
+           x-transition:enter-start="opacity-0 scale-95"
+           x-transition:enter-end="opacity-100 scale-100"
+           x-transition:leave="transition ease-in duration-150"
+           x-transition:leave-start="opacity-100 scale-100"
+           x-transition:leave-end="opacity-0 scale-95"
+           @click.stop>
+        <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">Follow on the Fediverse</h3>
+        <p class="text-sm text-surface-500 dark:text-surface-400 mb-4">Enter your instance to follow this account.</p>
+        <input x-ref="instanceInput"
+               x-model="instance"
+               @keydown.enter.prevent="confirm()"
+               type="text"
+               placeholder="mastodon.social"
+               class="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-[#a730b8] focus:border-transparent text-sm">
+        <div class="flex gap-3 mt-4">
+          <button @click="showModal = false"
+                  class="flex-1 px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-300 bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 rounded-lg transition-colors">
+            Cancel
+          </button>
+          <button @click="confirm()"
+                  class="flex-1 px-4 py-2 text-sm font-medium text-white bg-[#a730b8] hover:bg-[#a730b8]/80 rounded-lg transition-colors">
+            Go
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
+</div>
+</is-land>
+{% endif %}

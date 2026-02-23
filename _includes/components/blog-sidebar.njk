@@ -42,6 +42,8 @@
         <script>initPagefind("#blog-sidebar-search");</script>
       </div>
       </is-land>
+    {% elif widget.type == "fediverse-follow" %}
+      {% include "components/widgets/fediverse-follow.njk" %}
     {% elif widget.type == "custom-html" %}
       {% set wConfig = widget.config or {} %}
       <is-land on:visible>
