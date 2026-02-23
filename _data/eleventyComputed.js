@@ -20,10 +20,20 @@ export default {
     // Compute permalink from file path for posts without explicit frontmatter permalink.
     // Pattern: content/{type}/{yyyy}-{MM}-{dd}-{slug}.md → /{type}/{yyyy}/{MM}/{dd}/{slug}/
     permalink: (data) => {
-      // If frontmatter already has permalink, use it (new posts from preset)
-      if (data.permalink) return data.permalink;
+      // Convert stale /content/ permalinks from pre-beta.37 posts to canonical format
+      if (data.permalink && typeof data.permalink === "string") {
+        const contentMatch = data.permalink.match(
+          /^\/content\/([^/]+)\/(\d{4})-(\d{2})-(\d{2})-(.+?)\/?$/
+        );
+        if (contentMatch) {
+          const [, type, year, month, day, slug] = contentMatch;
+          return `/${type}/${year}/${month}/${day}/${slug}/`;
+        }
+        // Valid non-/content/ permalink — use as-is
+        return data.permalink;
+      }
 
-      // Only compute for files matching the dated post pattern
+      // No frontmatter permalink — compute from file path
       const inputPath = data.page?.inputPath || "";
       const match = inputPath.match(
         /content\/([^/]+)\/(\d{4})-(\d{2})-(\d{2})-(.+)\.md$/
@@ -33,7 +43,7 @@ export default {
         return `/${type}/${year}/${month}/${day}/${slug}/`;
       }
 
-      // For non-matching files (pages, root files), preserve existing permalink or let Eleventy decide
+      // For non-matching files (pages, root files), let Eleventy decide
       return data.permalink;
     },
 
