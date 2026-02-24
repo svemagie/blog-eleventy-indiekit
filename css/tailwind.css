@@ -224,7 +224,7 @@
   }
 
   .post-list li {
-    @apply pb-6 border-b border-surface-200 dark:border-surface-700 last:border-0;
+    @apply pb-6 border-b border-b-surface-200 dark:border-b-surface-700 last:border-0;
   }
 
   /* Post meta */
