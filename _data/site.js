@@ -16,8 +16,16 @@ function parseSocialLinks(envVar) {
   });
 }
 
-// Get Mastodon handle for fediverse:creator meta tag
-function getMastodonHandle() {
+// Get fediverse handle for fediverse:creator meta tag
+// Prefers the site's own ActivityPub identity over external Mastodon account
+function getFediverseCreator() {
+  // Primary: site's own ActivityPub actor (canonical fediverse identity)
+  const apHandle = process.env.ACTIVITYPUB_HANDLE;
+  if (apHandle) {
+    const domain = (process.env.SITE_URL || "https://example.com").replace(/^https?:\/\//, "");
+    return `@${apHandle}@${domain}`;
+  }
+  // Fallback: external Mastodon account (syndication target)
   const instance = process.env.MASTODON_INSTANCE?.replace("https://", "") || "";
   const user = process.env.MASTODON_USER || "";
   if (instance && user) {
@@ -104,8 +112,8 @@ export default {
     domain: process.env.SITE_URL?.replace("https://", "").replace("http://", "") || "example.com",
   },
 
-  // Fediverse creator for meta tag (e.g., @rmdes@mstdn.social)
-  fediverseCreator: getMastodonHandle(),
+  // Fediverse creator for meta tag (e.g., @rick@rmendes.net)
+  fediverseCreator: getFediverseCreator(),
 
   // Support/monetization configuration (used in _textcasting JSON Feed extension)
   support: {
