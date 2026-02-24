@@ -292,6 +292,34 @@
     @apply font-bold text-lg mb-4;
   }
 
+  /* Collapsible widget wrapper */
+  .widget-header {
+    @apply flex items-center justify-between cursor-pointer;
+  }
+
+  .widget-header .widget-title {
+    @apply mb-0;
+  }
+
+  .widget-chevron {
+    @apply w-4 h-4 text-surface-400 transition-transform duration-200 shrink-0;
+  }
+
+  /* Hide inner widget titles when the collapsible wrapper provides one */
+  .widget-collapsible .widget .widget-title {
+    @apply hidden;
+  }
+
+  /* Hide FeedLand's custom title in collapsible wrapper */
+  .widget-collapsible .widget .fl-title {
+    @apply hidden;
+  }
+
+  /* Neutralize inner widget card styling when inside collapsible wrapper */
+  .widget-collapsible .widget {
+    @apply border-0 shadow-none rounded-none mb-0 bg-transparent;
+  }
+
   /* Post cards */
   .post-card {
     @apply p-5 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden;
