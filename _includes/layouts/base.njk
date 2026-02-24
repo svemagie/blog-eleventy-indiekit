@@ -314,7 +314,7 @@
   </header>
 
   <main class="container py-8" data-pagefind-body>
-    {% if withSidebar and page.url == "/" and homepageConfig and homepageConfig.sections %}
+    {% if withSidebar and _pageUrl == "/" and homepageConfig and homepageConfig.sections %}
     {# Homepage: builder controls its own layout and sidebar #}
     {{ content | safe }}
     {% elif withSidebar %}
