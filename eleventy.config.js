@@ -412,6 +412,11 @@ export default function (eleventyConfig) {
       .replace(/^-+|-+$/g, "");
   });
 
+  eleventyConfig.addFilter("stripTrailingSlash", (url) => {
+    if (!url || typeof url !== "string") return url || "";
+    return url.endsWith("/") ? url.slice(0, -1) : url;
+  });
+
   // Hash filter for cache busting - generates MD5 hash of file content
   eleventyConfig.addFilter("hash", (filePath) => {
     try {
