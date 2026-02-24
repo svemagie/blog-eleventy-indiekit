@@ -11,7 +11,7 @@ import registerUnfurlShortcode, { getCachedCard, prefetchUrl } from "./lib/unfur
 import matter from "gray-matter";
 import { createHash } from "crypto";
 import { execFileSync } from "child_process";
-import { readFileSync, readdirSync, existsSync } from "fs";
+import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -796,6 +796,60 @@ export default function (eleventyConfig) {
   // so we cannot use the incremental flag to guard pagefind. Use a one-shot flag instead.
   let pagefindDone = false;
   eleventyConfig.on("eleventy.after", async ({ dir, directories, runMode, incremental }) => {
+    // Markdown for Agents — generate index.md alongside index.html for articles
+    const mdEnabled = (process.env.MARKDOWN_AGENTS_ENABLED || "true").toLowerCase() === "true";
+    if (mdEnabled && !incremental) {
+      const outputDir = directories?.output || dir.output;
+      const contentDir = resolve(__dirname, "content/articles");
+      const aiTrain = process.env.MARKDOWN_AGENTS_AI_TRAIN || "yes";
+      const search = process.env.MARKDOWN_AGENTS_SEARCH || "yes";
+      const aiInput = process.env.MARKDOWN_AGENTS_AI_INPUT || "yes";
+      const authorName = process.env.AUTHOR_NAME || "Blog Author";
+      let mdCount = 0;
+      try {
+        const files = readdirSync(contentDir).filter(f => f.endsWith(".md"));
+        for (const file of files) {
+          const src = readFileSync(resolve(contentDir, file), "utf-8");
+          const { data: fm, content: body } = matter(src);
+          if (!fm || fm.draft) continue;
+          // Derive the output path from the article's permalink or url
+          const articleUrl = fm.permalink || fm.url;
+          if (!articleUrl || !articleUrl.startsWith("/articles/")) continue;
+          const mdDir = resolve(outputDir, articleUrl.replace(/^\//, "").replace(/\/$/, ""));
+          const mdPath = resolve(mdDir, "index.md");
+          const trimmedBody = body.trim();
+          const tokens = Math.ceil(trimmedBody.length / 4);
+          const title = (fm.title || "").replace(/"/g, '\\"');
+          const date = fm.date ? new Date(fm.date).toISOString() : fm.published || "";
+          let frontLines = [
+            "---",
+            `title: "${title}"`,
+            `date: ${date}`,
+            `author: ${authorName}`,
+            `url: ${siteUrl}${articleUrl}`,
+          ];
+          if (fm.category && Array.isArray(fm.category) && fm.category.length > 0) {
+            frontLines.push("categories:");
+            for (const cat of fm.category) {
+              frontLines.push(`  - ${cat}`);
+            }
+          }
+          if (fm.description) {
+            frontLines.push(`description: "${fm.description.replace(/"/g, '\\"')}"`);
+          }
+          frontLines.push(`tokens: ${tokens}`);
+          frontLines.push(`content_signal: ai-train=${aiTrain}, search=${search}, ai-input=${aiInput}`);
+          frontLines.push("---");
+          mkdirSync(mdDir, { recursive: true });
+          writeFileSync(mdPath, frontLines.join("\n") + "\n\n# " + (fm.title || "") + "\n\n" + trimmedBody + "\n");
+          mdCount++;
+        }
+        console.log(`[markdown-agents] Generated ${mdCount} article .md files`);
+      } catch (err) {
+        console.error("[markdown-agents] Error generating .md files:", err.message);
+      }
+    }
+
     // Pagefind indexing — run exactly once per process lifetime
     if (!pagefindDone) {
       pagefindDone = true;
