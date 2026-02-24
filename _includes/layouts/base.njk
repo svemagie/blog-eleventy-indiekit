@@ -23,17 +23,11 @@
   <meta property="og:type" content="{% if page.url == '/' %}website{% else %}article{% endif %}">
   <meta property="og:description" content="{{ ogDesc }}">
   <meta name="description" content="{{ ogDesc }}">
-  {# Compute OG slug inline from page.url using string ops — avoid filter calls
-     which may be affected by Eleventy 3.x parallel rendering race conditions.
-     page.url is correct (verified via og:url), compute slug inline. #}
-  {% set _urlParts = page.url.split('/') | reject("equalto", "") | list %}
-  {% if _urlParts | length >= 5 %}
-    {% set _ogSlug = _urlParts[1] + '-' + _urlParts[2] + '-' + _urlParts[3] + '-' + _urlParts[4] %}
-  {% else %}
-    {% set _ogSlug = _urlParts | last | default("") %}
-  {% endif %}
+  {# Compute OG slug from page.url — NOT permalink or eleventyComputed values.
+     page.url may be false for pages with permalink:false (e.g., about.njk),
+     so guard with (page.url or ""). The ogSlug filter handles empty strings. #}
+  {% set _ogSlug = (page.url or "") | ogSlug %}
   {% set _hasOg = _ogSlug | hasOgImage %}
-  <!-- debug:og page.url={{ page.url }} permalink={{ permalink }} ogSlug={{ _ogSlug }} -->
   {% if ogPhoto and ogPhoto != "" and (ogPhoto | length) > 10 %}
   <meta property="og:image" content="{% if 'http' in ogPhoto %}{{ ogPhoto }}{% else %}{{ site.url }}{% if ogPhoto[0] != '/' %}/{% endif %}{{ ogPhoto }}{% endif %}">
   {% elif image and image != "" and (image | length) > 10 %}
