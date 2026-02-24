@@ -908,6 +908,22 @@ export default function (eleventyConfig) {
       `${siteUrl}/feed.xml`,
       `${siteUrl}/feed.json`,
     ];
+
+    // Discover category feed URLs from build output
+    const outputDir = directories?.output || dir.output;
+    const categoriesDir = resolve(outputDir, "categories");
+    try {
+      for (const entry of readdirSync(categoriesDir, { withFileTypes: true })) {
+        if (entry.isDirectory() && existsSync(resolve(categoriesDir, entry.name, "feed.xml"))) {
+          feedUrls.push(`${siteUrl}/categories/${entry.name}/feed.xml`);
+          feedUrls.push(`${siteUrl}/categories/${entry.name}/feed.json`);
+        }
+      }
+    } catch {
+      // categoriesDir may not exist on first build — ignore
+    }
+
+    console.log(`[websub] Notifying hub for ${feedUrls.length} URLs...`);
     for (const feedUrl of feedUrls) {
       try {
         const res = await fetch(hubUrl, {

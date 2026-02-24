@@ -96,6 +96,10 @@
   {% if site.markdownAgents.enabled and page.url and page.url.startsWith('/articles/') and page.url != '/articles/' %}
   <link rel="alternate" type="text/markdown" href="{{ page.url | stripTrailingSlash }}.md" title="Markdown version">
   {% endif %}
+  {% if category and page.url and page.url.startsWith('/categories/') and page.url != '/categories/' %}
+  <link rel="alternate" type="application/rss+xml" href="/categories/{{ category | slugify }}/feed.xml" title="{{ category }} — RSS Feed">
+  <link rel="alternate" type="application/json" href="/categories/{{ category | slugify }}/feed.json" title="{{ category }} — JSON Feed">
+  {% endif %}
   <link rel="authorization_endpoint" href="{{ site.url }}/auth">
   <link rel="token_endpoint" href="{{ site.url }}/auth/token">
   <link rel="micropub" href="{{ site.url }}/micropub">

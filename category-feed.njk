@@ -1,0 +1,47 @@
+---
+eleventyExcludeFromCollections: true
+eleventyImport:
+  collections:
+    - categoryFeeds
+pagination:
+  data: collections.categoryFeeds
+  size: 1
+  alias: categoryFeed
+permalink: "categories/{{ categoryFeed.slug }}/feed.xml"
+---
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>{{ site.name }} — {{ categoryFeed.name }}</title>
+    <link>{{ site.url }}/categories/{{ categoryFeed.slug }}/</link>
+    <description>Posts tagged with "{{ categoryFeed.name }}" on {{ site.name }}</description>
+    <language>{{ site.locale | default('en') }}</language>
+    <atom:link href="{{ site.url }}/categories/{{ categoryFeed.slug }}/feed.xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="https://websubhub.com/hub" rel="hub"/>
+    <lastBuildDate>{{ categoryFeed.posts | getNewestCollectionItemDate | dateToRfc822 }}</lastBuildDate>
+    {%- for post in categoryFeed.posts %}
+    {%- set absolutePostUrl = site.url + post.url %}
+    {%- set postImage = post.data.photo %}
+    {%- if postImage %}
+      {%- if postImage[0] and (postImage[0] | length) > 10 %}
+        {%- set postImage = postImage[0] %}
+      {%- endif %}
+    {%- endif %}
+    {%- if not postImage or postImage == "" %}
+      {%- set postImage = post.data.image or (post.content | extractFirstImage) %}
+    {%- endif %}
+    <item>
+      <title>{{ post.data.title | default(post.content | striptags | truncate(80)) | escape }}</title>
+      <link>{{ absolutePostUrl }}</link>
+      <guid isPermaLink="true">{{ absolutePostUrl }}</guid>
+      <pubDate>{{ post.date | dateToRfc822 }}</pubDate>
+      <description>{{ post.content | htmlToAbsoluteUrls(absolutePostUrl) | escape }}</description>
+      {%- if postImage and postImage != "" and (postImage | length) > 10 %}
+      {%- set imageUrl = postImage | url | absoluteUrl(site.url) %}
+      <enclosure url="{{ imageUrl }}" type="image/jpeg" length="0"/>
+      <media:content url="{{ imageUrl }}" medium="image"/>
+      {%- endif %}
+    </item>
+    {%- endfor %}
+  </channel>
+</rss>
