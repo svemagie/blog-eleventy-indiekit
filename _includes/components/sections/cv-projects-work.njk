@@ -1,5 +1,6 @@
 {#
-  CV Work Projects Section - filters projects by projectType == "work"
+  CV Work Projects Section - collapsible project cards (accordion)
+  Filters projects by projectType == "work"
   Data fetched from /cv/data.json via homepage plugin
 #}
 
@@ -17,52 +18,86 @@
 {% endif %}
 
 {% if workProjects.length %}
-<section class="mb-8 sm:mb-12" id="work-projects">
+<section class="mb-8 sm:mb-12" id="work-projects" x-data="{ expanded: {} }">
   <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6">
     {{ sectionConfig.title or "Work Projects" }}
   </h2>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     {% for item in workProjects | head(maxItems) %}
-    <div class="p-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
-      <div class="flex items-start justify-between gap-2 mb-1">
-        <h3 class="font-semibold text-surface-900 dark:text-surface-100">
-          {% if item.url %}
-          <a href="{{ item.url }}" class="hover:text-primary-600 dark:hover:text-primary-400">{{ item.name }}</a>
-          {% else %}
-          {{ item.name }}
+    <div class="bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-primary-400 dark:hover:border-primary-600 transition-colors overflow-hidden">
+      {# Summary row — always visible, clickable #}
+      <button
+        class="w-full p-4 flex items-center justify-between gap-2 cursor-pointer text-left hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-colors"
+        @click="expanded[{{ loop.index0 }}] = !expanded[{{ loop.index0 }}]"
+        :aria-expanded="expanded[{{ loop.index0 }}] ? 'true' : 'false'"
+      >
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 truncate">
+            {% if item.url %}
+            <a href="{{ item.url }}" class="hover:text-primary-600 dark:hover:text-primary-400" @click.stop>{{ item.name }}</a>
+            {% else %}
+            {{ item.name }}
+            {% endif %}
+          </h3>
+          {% if item.status %}
+          <span class="shrink-0 text-xs px-2 py-0.5 rounded-full capitalize
+            {% if item.status == 'active' %}bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300
+            {% elif item.status == 'maintained' %}bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300
+            {% elif item.status == 'archived' %}bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-400
+            {% else %}bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-400{% endif %}">
+            {{ item.status }}
+          </span>
           {% endif %}
-        </h3>
-        {% if item.status %}
-        <span class="shrink-0 text-xs px-2 py-0.5 rounded-full capitalize
-          {% if item.status == 'active' %}bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300
-          {% elif item.status == 'maintained' %}bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300
-          {% elif item.status == 'archived' %}bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-400
-          {% else %}bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-400{% endif %}">
-          {{ item.status }}
-        </span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          {% if item.startDate %}
+          <span class="text-xs text-surface-500 hidden sm:inline">
+            {{ item.startDate }}{% if item.endDate %} – {{ item.endDate }}{% else %} – Present{% endif %}
+          </span>
+          {% endif %}
+          <svg
+            class="w-4 h-4 text-surface-400 transition-transform duration-200"
+            :class="expanded[{{ loop.index0 }}] && 'rotate-180'"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+      </button>
+
+      {# Detail section — collapsible #}
+      <div
+        x-show="expanded[{{ loop.index0 }}]"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 -translate-y-1"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 -translate-y-1"
+        x-cloak
+        class="px-4 pb-4"
+      >
+        {% if item.startDate %}
+        <p class="text-xs text-surface-500 mb-1 sm:hidden">
+          {{ item.startDate }}{% if item.endDate %} – {{ item.endDate }}{% else %} – Present{% endif %}
+        </p>
+        {% endif %}
+
+        {% if item.description %}
+        <p class="text-sm text-surface-600 dark:text-surface-400 mb-2">{{ item.description }}</p>
+        {% endif %}
+
+        {% if showTechnologies and item.technologies and item.technologies.length %}
+        <div class="flex flex-wrap gap-1">
+          {% for tech in item.technologies %}
+          <span class="text-xs px-2 py-0.5 bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-400 rounded">
+            {{ tech }}
+          </span>
+          {% endfor %}
+        </div>
         {% endif %}
       </div>
-
-      {% if item.startDate %}
-      <p class="text-xs text-surface-500 mb-1">
-        {{ item.startDate }}{% if item.endDate %} – {{ item.endDate }}{% else %} – Present{% endif %}
-      </p>
-      {% endif %}
-
-      {% if item.description %}
-      <p class="text-sm text-surface-600 dark:text-surface-400 mb-2">{{ item.description }}</p>
-      {% endif %}
-
-      {% if showTechnologies and item.technologies and item.technologies.length %}
-      <div class="flex flex-wrap gap-1">
-        {% for tech in item.technologies %}
-        <span class="text-xs px-2 py-0.5 bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-400 rounded">
-          {{ tech }}
-        </span>
-        {% endfor %}
-      </div>
-      {% endif %}
     </div>
     {% endfor %}
   </div>
