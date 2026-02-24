@@ -1,10 +1,13 @@
 /**
- * Computed data resolved during the data cascade (sequential, per-page).
+ * Computed data resolved during the data cascade.
  *
- * Eleventy 3.x renders Nunjucks templates in parallel, which causes
- * `page.url` and `page.fileSlug` to return wrong values when read
- * via {% set %} in templates. By computing OG-related values here,
- * they are resolved before parallel rendering begins.
+ * Eleventy 3.x parallel rendering causes `page.url` and `page.fileSlug`
+ * to return values from OTHER pages being processed concurrently.
+ * This affects both templates and eleventyComputed functions.
+ *
+ * Fix: ALL computed values derive from `page.inputPath` (the physical file
+ * path on disk), which is always correct regardless of parallel rendering.
+ * NEVER use `page.url` or `page.fileSlug` here.
  *
  * See: https://github.com/11ty/eleventy/issues/3183
  */
@@ -47,30 +50,39 @@ export default {
       return data.permalink;
     },
 
-    // OG image slug — must reconstruct date-prefixed filename from URL segments.
+    // OG image slug — derive from inputPath (physical file), NOT page.url.
+    // page.url suffers from Eleventy 3.x parallel rendering race conditions
+    // where it can return the URL of a DIFFERENT page being processed concurrently.
+    // inputPath is the physical file path, which is always correct.
     // OG images are generated as {yyyy}-{MM}-{dd}-{slug}.png by lib/og.js.
-    // With new URL structure /type/yyyy/MM/dd/slug/, we reconstruct the filename.
     ogSlug: (data) => {
-      const url = data.page?.url || "";
-      const segments = url.split("/").filter(Boolean);
-      // Date-based URL: /type/yyyy/MM/dd/slug/ → 5 segments
-      if (segments.length === 5) {
-        const [, year, month, day, slug] = segments;
+      const inputPath = data.page?.inputPath || "";
+      const match = inputPath.match(
+        /content\/([^/]+)\/(\d{4})-(\d{2})-(\d{2})-(.+)\.md$/,
+      );
+      if (match) {
+        const [, , year, month, day, slug] = match;
         return `${year}-${month}-${day}-${slug}`;
       }
-      // Fallback: last segment (for pages, legacy URLs)
-      return segments[segments.length - 1] || "";
+      // Fallback for pages/root files: use last path segment
+      const segments = inputPath.split("/").filter(Boolean);
+      const last = segments[segments.length - 1] || "";
+      return last.replace(/\.md$/, "");
     },
 
     hasOgImage: (data) => {
-      const url = data.page?.url || "";
-      const segments = url.split("/").filter(Boolean);
+      const inputPath = data.page?.inputPath || "";
+      const match = inputPath.match(
+        /content\/([^/]+)\/(\d{4})-(\d{2})-(\d{2})-(.+)\.md$/,
+      );
       let slug;
-      if (segments.length === 5) {
-        const [, year, month, day, s] = segments;
+      if (match) {
+        const [, , year, month, day, s] = match;
         slug = `${year}-${month}-${day}-${s}`;
       } else {
-        slug = segments[segments.length - 1] || "";
+        const segments = inputPath.split("/").filter(Boolean);
+        const last = segments[segments.length - 1] || "";
+        slug = last.replace(/\.md$/, "");
       }
       if (!slug) return false;
       const ogPath = resolve(__dirname, "..", ".cache", "og", `${slug}.png`);
