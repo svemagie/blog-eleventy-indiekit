@@ -45,11 +45,11 @@
   <meta name="twitter:title" content="{{ ogTitle }}">
   <meta name="twitter:description" content="{{ ogDesc }}">
   {% if ogPhoto and ogPhoto != "" and (ogPhoto | length) > 10 %}
-  <meta name="twitter:image" content="{% if 'http' in ogPhoto %}{{ ogPhoto }}{% else %}{{ site.url }}/{{ ogPhoto }}{% endif %}">
+  <meta name="twitter:image" content="{% if 'http' in ogPhoto %}{{ ogPhoto }}{% else %}{{ site.url }}{% if ogPhoto[0] != '/' %}/{% endif %}{{ ogPhoto }}{% endif %}">
   {% elif image and image != "" and (image | length) > 10 %}
-  <meta name="twitter:image" content="{% if 'http' in image %}{{ image }}{% else %}{{ site.url }}/{{ image }}{% endif %}">
+  <meta name="twitter:image" content="{% if 'http' in image %}{{ image }}{% else %}{{ site.url }}{% if image[0] != '/' %}/{% endif %}{{ image }}{% endif %}">
   {% elif contentImage and contentImage != "" and (contentImage | length) > 10 %}
-  <meta name="twitter:image" content="{% if 'http' in contentImage %}{{ contentImage }}{% else %}{{ site.url }}/{{ contentImage }}{% endif %}">
+  <meta name="twitter:image" content="{% if 'http' in contentImage %}{{ contentImage }}{% else %}{{ site.url }}{% if contentImage[0] != '/' %}/{% endif %}{{ contentImage }}{% endif %}">
   {% elif hasOgImage %}
   <meta name="twitter:image" content="{{ site.url }}/og/{{ ogSlug }}.png">
   {% endif %}

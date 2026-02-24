@@ -62,14 +62,16 @@ function buildSocialFromFeeds() {
   return links;
 }
 
-// Ensure URL has trailing slash (Mastodon rel="me" verification uses strict string match)
-const siteUrl = (process.env.SITE_URL || "https://example.com").replace(/\/$/, "") + "/";
+// site.url: no trailing slash — used as URL base for path concatenation ({{ site.url }}/path)
+// site.me / site.author.url: trailing slash — Mastodon rel="me" requires exact match
+const siteUrlBase = (process.env.SITE_URL || "https://example.com").replace(/\/$/, "");
+const siteUrlWithSlash = siteUrlBase + "/";
 
 export default {
   // Basic site info
   name: process.env.SITE_NAME || "My IndieWeb Blog",
-  url: siteUrl,
-  me: siteUrl,
+  url: siteUrlBase,
+  me: siteUrlWithSlash,
   locale: process.env.SITE_LOCALE || "en",
   description:
     process.env.SITE_DESCRIPTION ||
@@ -78,7 +80,7 @@ export default {
   // Author info (shown in h-card, about page, etc.)
   author: {
     name: process.env.AUTHOR_NAME || "Blog Author",
-    url: siteUrl,
+    url: siteUrlWithSlash,
     avatar: process.env.AUTHOR_AVATAR || "/images/default-avatar.svg",
     title: process.env.AUTHOR_TITLE || "",
     bio: process.env.AUTHOR_BIO || "Welcome to my IndieWeb blog.",
