@@ -12,7 +12,7 @@
   eleventyExcludeFromCollections: true
 }
 ---
-{%- set bodyContent = article.template.frontMatter.content -%}
+{%- set bodyContent = article.inputPath | rawMarkdownBody -%}
 {%- set tokens = (bodyContent.length / 4) | round(0, "ceil") -%}
 ---
 title: "{{ article.data.title | replace('"', '\\"') }}"

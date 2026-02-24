@@ -456,6 +456,17 @@ export default function (eleventyConfig) {
     }
   });
 
+  // Extract raw Markdown body from a source file (strips front matter)
+  eleventyConfig.addFilter("rawMarkdownBody", (inputPath) => {
+    try {
+      const src = readFileSync(inputPath, "utf-8");
+      const { content } = matter(src);
+      return content.trim();
+    } catch {
+      return "";
+    }
+  });
+
   // Current timestamp filter (for client-side JS buildtime)
   eleventyConfig.addFilter("timestamp", () => Date.now());
 
