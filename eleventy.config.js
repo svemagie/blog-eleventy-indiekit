@@ -728,6 +728,35 @@ export default function (eleventyConfig) {
     return [...categoryMap.values()].sort();
   });
 
+  // Category feeds — pre-grouped posts for per-category RSS/JSON feeds
+  eleventyConfig.addCollection("categoryFeeds", function (collectionApi) {
+    const slugify = (str) => str.toLowerCase().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
+    const grouped = new Map(); // slug -> { name, slug, posts[] }
+
+    collectionApi
+      .getFilteredByGlob("content/**/*.md")
+      .filter(isPublished)
+      .sort((a, b) => b.date - a.date)
+      .forEach((item) => {
+        if (!item.data.category) return;
+        const cats = Array.isArray(item.data.category) ? item.data.category : [item.data.category];
+        for (const cat of cats) {
+          if (!cat || typeof cat !== "string" || !cat.trim()) continue;
+          const slug = slugify(cat.trim());
+          if (!slug) continue;
+          if (!grouped.has(slug)) {
+            grouped.set(slug, { name: cat.trim(), slug, posts: [] });
+          }
+          const entry = grouped.get(slug);
+          if (entry.posts.length < 50) {
+            entry.posts.push(item);
+          }
+        }
+      });
+
+    return [...grouped.values()].sort((a, b) => a.name.localeCompare(b.name));
+  });
+
   // Recent posts for sidebar
   eleventyConfig.addCollection("recentPosts", function (collectionApi) {
     return collectionApi
