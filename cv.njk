@@ -28,6 +28,12 @@ pagefindIgnore: true
     {% set authorTitle = cvId.title or site.author.title %}
     {% set authorBio = cvId.bio or site.author.bio %}
     {% set socialLinks = cvId.social if (cvId.social and cvId.social.length) else site.social %}
+    {% set cvLocality = cvId.locality or site.author.locality %}
+    {% set cvCountry = cvId.country or site.author.country %}
+    {% set cvOrg = cvId.org or site.author.org %}
+    {% set cvUrl = cvId.url or '' %}
+    {% set cvEmail = cvId.email or site.author.email %}
+    {% set cvKeyUrl = cvId.keyUrl or site.author.keyUrl %}
 
     {# Hero / intro #}
     <section class="mb-8 sm:mb-12">
@@ -37,6 +43,7 @@ pagefindIgnore: true
           alt="{{ authorName }}"
           class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover shadow-lg flex-shrink-0"
           loading="eager"
+          eleventy:ignore
         >
         <div class="flex-1 min-w-0">
           <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">
@@ -66,6 +73,26 @@ pagefindIgnore: true
               <span class="text-sm font-medium">{{ link.name }}</span>
             </a>
             {% endfor %}
+          </div>
+          {% endif %}
+          {# Contact details #}
+          {% if cvLocality or cvCountry or cvOrg or cvUrl or cvEmail or cvKeyUrl %}
+          <div class="flex flex-wrap gap-x-4 gap-y-1 mt-4 text-sm text-surface-500 dark:text-surface-400">
+            {% if cvLocality or cvCountry %}
+            <span>{% if cvLocality %}{{ cvLocality }}{% endif %}{% if cvLocality and cvCountry %}, {% endif %}{% if cvCountry %}{{ cvCountry }}{% endif %}</span>
+            {% endif %}
+            {% if cvOrg %}
+            <span>{{ cvOrg }}</span>
+            {% endif %}
+            {% if cvUrl %}
+            <span><a href="{{ cvUrl }}" class="text-primary-600 dark:text-primary-400 hover:underline" target="_blank" rel="noopener">{{ cvUrl | replace("https://", "") | replace("http://", "") }}</a></span>
+            {% endif %}
+            {% if cvEmail %}
+            <span><a href="mailto:{{ cvEmail }}" class="text-primary-600 dark:text-primary-400 hover:underline">{{ cvEmail }}</a></span>
+            {% endif %}
+            {% if cvKeyUrl %}
+            <span><a href="{{ cvKeyUrl }}" class="text-primary-600 dark:text-primary-400 hover:underline" target="_blank" rel="noopener">PGP Key</a></span>
+            {% endif %}
           </div>
           {% endif %}
         </div>
