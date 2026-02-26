@@ -93,6 +93,7 @@
   <link rel="canonical" href="{{ site.url }}{{ page.url }}">
   <link rel="alternate" type="application/rss+xml" href="/feed.xml" title="RSS Feed">
   <link rel="alternate" type="application/json" href="/feed.json" title="JSON Feed">
+  <link rel="alternate" type="application/rss+xml" href="/digest/feed.xml" title="Weekly Digest — RSS Feed">
   {% if site.markdownAgents.enabled and page.url and page.url.startsWith('/articles/') and page.url != '/articles/' %}
   <link rel="alternate" type="text/markdown" href="{{ page.url | stripTrailingSlash }}.md" title="Markdown version">
   {% endif %}
@@ -203,6 +204,7 @@
             </div>
           </div>
           <a href="/interactions/">Interactions</a>
+          <a href="/digest/">Digest</a>
           <a href="/dashboard"
              x-data="{ show: false }"
              x-show="show"
@@ -281,6 +283,7 @@
         </div>
       </div>
       <a href="/interactions/">Interactions</a>
+      <a href="/digest/">Digest</a>
       <a href="/search/">Search</a>
       <a href="/dashboard"
          x-data="{ show: false }"
@@ -355,6 +358,7 @@
             <li><a href="{{ pt.path }}" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">{{ pt.label }}</a></li>
             {% endfor %}
             <li><a href="/interactions/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">Interactions</a></li>
+            <li><a href="/digest/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400">Digest</a></li>
           </ul>
         </div>
         {# Connect #}
