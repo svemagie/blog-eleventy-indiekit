@@ -242,7 +242,7 @@ withBlogSidebar: true
       }
     },
     "description": {{ postDesc | dump | safe }}{% if postImage and postImage != "" and (postImage | length) > 10 %},
-    "image": ["{{ site.url }}{% if '/' in postImage and postImage[0] == '/' %}{{ postImage }}{% else %}/{{ postImage }}{% endif %}"]{% endif %}
+    "image": ["{% if postImage.startsWith('http') %}{{ postImage }}{% elif '/' in postImage and postImage[0] == '/' %}{{ site.url }}{{ postImage }}{% else %}{{ site.url }}/{{ postImage }}{% endif %}"]{% endif %}
   }
   </script>
 </article>
