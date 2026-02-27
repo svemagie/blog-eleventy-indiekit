@@ -144,6 +144,17 @@ permalink: /podroll/
                 </svg>
                 RSS
               </a>
+              <button
+                class="save-later-btn"
+                :data-save-url="episode.url"
+                :data-save-title="episode.title"
+                data-save-source="podroll"
+                title="Save for later"
+                aria-label="Save for later"
+              >
+                <span class="save-later-icon">📑</span>
+                <span class="save-later-label">Save</span>
+              </button>
             </div>
           </article>
         </template>

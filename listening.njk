@@ -295,6 +295,16 @@ withSidebar: true
           <div class="text-right flex-shrink-0">
             <span class="inline-block px-2 py-0.5 text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full mb-1">Funkwhale</span>
             <span class="text-xs text-surface-500 block">{{ listening.relativeTime }}</span>
+            <button
+              class="save-later-btn mt-1"
+              data-save-url="{{ listening.trackUrl }}"
+              data-save-title="{{ listening.track }} — {{ listening.artist }}"
+              data-save-source="listening"
+              title="Save for later"
+              aria-label="Save for later"
+            >
+              <span class="save-later-icon">📑</span>
+            </button>
           </div>
         </div>
         {% endfor %}
@@ -333,6 +343,16 @@ withSidebar: true
           <div class="text-right flex-shrink-0">
             <span class="inline-block px-2 py-0.5 text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full mb-1">Last.fm</span>
             <span class="text-xs text-surface-500 block">{{ scrobble.relativeTime }}</span>
+            <button
+              class="save-later-btn mt-1"
+              data-save-url="{{ scrobble.trackUrl }}"
+              data-save-title="{{ scrobble.track }} — {{ scrobble.artist }}"
+              data-save-source="listening"
+              title="Save for later"
+              aria-label="Save for later"
+            >
+              <span class="save-later-icon">📑</span>
+            </button>
           </div>
         </div>
         {% endfor %}
@@ -381,6 +401,16 @@ withSidebar: true
         </div>
 
         <span class="text-red-500 flex-shrink-0">&#9829;</span>
+        <button
+          class="save-later-btn flex-shrink-0"
+          data-save-url="{{ track.trackUrl }}"
+          data-save-title="{{ track.track }} — {{ track.artist }}"
+          data-save-source="listening"
+          title="Save for later"
+          aria-label="Save for later"
+        >
+          <span class="save-later-icon">📑</span>
+        </button>
       </div>
       {% endfor %}
     </div>
@@ -424,6 +454,16 @@ withSidebar: true
           <p class="text-xs text-surface-500 truncate">{{ favorite.album }}</p>
           {% endif %}
         </div>
+        <button
+          class="save-later-btn flex-shrink-0"
+          data-save-url="{{ favorite.trackUrl }}"
+          data-save-title="{{ favorite.track }} — {{ favorite.artist }}"
+          data-save-source="listening"
+          title="Save for later"
+          aria-label="Save for later"
+        >
+          <span class="save-later-icon">📑</span>
+        </button>
       </div>
       {% endfor %}
     </div>

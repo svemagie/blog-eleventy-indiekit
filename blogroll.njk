@@ -176,6 +176,17 @@ permalink: /blogroll/
                 </svg>
                 Visit Blog
               </a>
+              <button
+                class="save-later-btn"
+                :data-save-url="item.url"
+                :data-save-title="item.title"
+                data-save-source="blogroll"
+                title="Save for later"
+                aria-label="Save for later"
+              >
+                <span class="save-later-icon">📑</span>
+                <span class="save-later-label">Save</span>
+              </button>
             </div>
           </article>
         </template>

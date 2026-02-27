@@ -741,3 +741,33 @@
     display: none;
   }
 }
+
+/* Save for Later buttons — hidden until auth confirmed */
+.save-later-btn {
+  display: none;
+}
+
+body[data-indiekit-auth="true"] .save-later-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+body[data-indiekit-auth="true"] .save-later-btn:hover {
+  border-color: #d1d5db;
+  color: #4a9eff;
+}
+
+.save-later--saved {
+  color: #4a9eff !important;
+  opacity: 0.6;
+  pointer-events: none;
+}

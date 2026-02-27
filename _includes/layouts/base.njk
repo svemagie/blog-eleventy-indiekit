@@ -453,6 +453,8 @@
   <script src="/js/webmentions.js?v={{ '/js/webmentions.js' | hash }}" defer></script>
   {# Admin auth detection - shows dashboard link + FAB when logged in #}
   <script src="/js/admin.js?v={{ '/js/admin.js' | hash }}" defer></script>
+  {# Save for Later buttons — active when logged in #}
+  <script src="/js/save-later.js?v={{ '/js/save-later.js' | hash }}" defer></script>
 
   {# Floating Action Button - visible only when logged in #}
   <div x-data="{ show: false, open: false }"
