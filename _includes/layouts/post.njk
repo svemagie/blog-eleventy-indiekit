@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 withBlogSidebar: true
 ---
-<article class="h-entry post">
+<article class="h-entry post" x-data="lightbox" @keydown.window="onKeydown($event)">
   {% if title %}
   <h1 class="p-name text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-3 sm:mb-4">{{ title }}</h1>
   {% endif %}
@@ -245,6 +245,23 @@ withBlogSidebar: true
     "image": ["{% if postImage.startsWith('http') %}{{ postImage }}{% elif '/' in postImage and postImage[0] == '/' %}{{ site.url }}{{ postImage }}{% else %}{{ site.url }}/{{ postImage }}{% endif %}"]{% endif %}
   }
   </script>
+
+  {# Lightbox overlay for article images #}
+  <template x-teleport="body">
+    <div x-show="open" x-transition.opacity.duration.200ms
+         class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+         @click.self="close()">
+      <button @click="close()" class="absolute top-4 right-4 text-white/70 hover:text-white text-3xl leading-none p-2 z-10" aria-label="Close">&times;</button>
+      <template x-if="images.length > 1">
+        <button @click="prev()" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-4xl leading-none p-2 z-10" aria-label="Previous">&lsaquo;</button>
+      </template>
+      <template x-if="images.length > 1">
+        <button @click="next()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-4xl leading-none p-2 z-10" aria-label="Next">&rsaquo;</button>
+      </template>
+      <img :src="src" :alt="alt" class="max-h-[90vh] max-w-[90vw] object-contain" @click.stop>
+      <div x-show="alt" x-text="alt" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm max-w-2xl text-center px-4 py-2 bg-black/50 rounded-lg"></div>
+    </div>
+  </template>
 </article>
 
 {# Comments section #}
