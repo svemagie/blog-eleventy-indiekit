@@ -15,7 +15,7 @@ document.addEventListener("alpine:init", () => {
     init() {
       const container = this.$root;
       const imgs = container.querySelectorAll(
-        ".e-content img:not(.u-photo)"
+        ".e-content img:not(.u-photo), .photo-gallery img.u-photo"
       );
       this.images = Array.from(imgs);
 
