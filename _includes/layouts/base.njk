@@ -455,6 +455,8 @@
   <script src="/js/admin.js?v={{ '/js/admin.js' | hash }}" defer></script>
   {# Save for Later buttons — active when logged in #}
   <script src="/js/save-later.js?v={{ '/js/save-later.js' | hash }}" defer></script>
+  {# Share Post buttons — opens share form popup when logged in #}
+  <script src="/js/share-post.js?v={{ '/js/share-post.js' | hash }}" defer></script>
 
   {# Floating Action Button - visible only when logged in #}
   <div x-data="{ show: false, open: false }"
