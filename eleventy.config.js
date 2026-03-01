@@ -53,6 +53,20 @@ export default function (eleventyConfig) {
   eleventyConfig.watchIgnores.add(".cache/unfurl");
   eleventyConfig.watchIgnores.add(".cache/unfurl/**");
 
+  // Watcher tuning: handle rapid successive file changes
+  // When a post is created via Micropub, the file is written twice in quick
+  // succession: first the initial content, then ~2s later a Micropub update
+  // adds syndication URLs. awaitWriteFinish delays the watcher event until
+  // the file is stable (no writes for 2s), so both changes are captured in
+  // one build. The throttle adds a 3s build-level debounce on top.
+  eleventyConfig.setChokidarConfig({
+    awaitWriteFinish: {
+      stabilityThreshold: 2000,
+      pollInterval: 100,
+    },
+  });
+  eleventyConfig.setWatchThrottleWaitTime(3000);
+
   // Configure markdown-it with linkify enabled (auto-convert URLs to links)
   const md = markdownIt({
     html: true,
