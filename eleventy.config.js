@@ -11,7 +11,7 @@ import registerUnfurlShortcode, { getCachedCard, prefetchUrl } from "./lib/unfur
 import matter from "gray-matter";
 import { createHash } from "crypto";
 import { execFileSync } from "child_process";
-import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync } from "fs";
+import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync, copyFileSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -932,6 +932,25 @@ export default function (eleventyConfig) {
         stdio: "inherit",
         env: { ...process.env, NODE_OPTIONS: "" },
       });
+
+      // Sync new OG images to output directory.
+      // During incremental builds, .cache/og is in watchIgnores so Eleventy's
+      // passthrough copy won't pick up newly generated images. Copy them manually.
+      const ogCacheDir = resolve(cacheDir, "og");
+      const ogOutputDir = resolve(__dirname, "_site", "og");
+      if (existsSync(ogCacheDir) && existsSync(resolve(__dirname, "_site"))) {
+        mkdirSync(ogOutputDir, { recursive: true });
+        let synced = 0;
+        for (const file of readdirSync(ogCacheDir)) {
+          if (file.endsWith(".png") && !existsSync(resolve(ogOutputDir, file))) {
+            copyFileSync(resolve(ogCacheDir, file), resolve(ogOutputDir, file));
+            synced++;
+          }
+        }
+        if (synced > 0) {
+          console.log(`[og] Synced ${synced} new image(s) to output`);
+        }
+      }
     } catch (err) {
       console.error("[og] Image generation failed:", err.message);
     }
