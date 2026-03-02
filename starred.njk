@@ -5,7 +5,7 @@ permalink: /github/starred/
 eleventyExcludeFromCollections: true
 ---
 
-<div class="starred-page">
+<div class="starred-page" x-data="starredPage" x-cloak>
   <header class="mb-6 sm:mb-8">
     <div class="flex items-center gap-2 mb-4">
       <a href="/github/" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">&larr; GitHub Activity</a>
@@ -17,175 +17,191 @@ eleventyExcludeFromCollections: true
       Starred Repositories
     </h1>
     <p class="text-surface-600 dark:text-surface-400">
-      {{ githubStarred.totalCount | default("0") }} repos starred on GitHub.
-      {% if githubStarred.lastSync %}
-        Last synced {{ githubStarred.lastSync | date("PPp") }}.
-      {% endif %}
+      <template x-if="loading">
+        <span>Loading starred repos&hellip;</span>
+      </template>
+      <template x-if="!loading && totalCount > 0">
+        <span>
+          <span x-text="totalCount"></span> repos starred on GitHub.
+          <template x-if="lastSync">
+            <span>Last synced <span x-text="formatDate(lastSync)"></span>.</span>
+          </template>
+        </span>
+      </template>
+      <template x-if="!loading && totalCount === 0">
+        <span>No starred repositories found. The cache may still be syncing.</span>
+      </template>
     </p>
   </header>
 
-  {# Search — separate Pagefind index for starred repos #}
-  <div class="mb-8">
-    <div id="starred-search"></div>
-    <script>
-      (function() {
-        if (typeof _pfStarredQueue === "undefined") window._pfStarredQueue = [];
-        _pfStarredQueue.push(["#starred-search", { showSubResults: false, showImages: false }]);
-      })();
-    </script>
-  </div>
-
-  {# Live updates — new stars since last build #}
-  <div x-data="starredLive" x-show="newStars.length > 0" x-cloak class="mb-8">
-    <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-3 flex items-center gap-2">
-      <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-      Recently Starred
-      <span class="text-sm font-normal text-surface-500" x-text="newStars.length + ' new since last build'"></span>
-    </h2>
-    <div class="grid gap-3 sm:gap-4 md:grid-cols-2 mb-4">
-      <template x-for="repo in newStars" :key="repo.fullName">
-        <article class="p-4 bg-gradient-to-br from-green-50 to-white dark:from-green-900/20 dark:to-surface-800 rounded-lg border-2 border-green-200 dark:border-green-800">
-          <div class="flex items-center gap-2 mb-1">
-            <img :src="repo.ownerAvatar" :alt="repo.ownerLogin" class="w-5 h-5 rounded-full" loading="lazy">
-            <h3 class="font-semibold text-surface-900 dark:text-surface-100 truncate">
-              <a :href="repo.url" class="hover:text-primary-600 dark:hover:text-primary-400" target="_blank" rel="noopener" x-text="repo.fullName"></a>
-            </h3>
-          </div>
-          <p class="text-sm text-surface-600 dark:text-surface-400 mb-2 line-clamp-2" x-text="repo.description"></p>
-          <div class="flex flex-wrap items-center gap-2 text-xs text-surface-500">
-            <span x-show="repo.language" class="flex items-center gap-1">
-              <span class="w-2.5 h-2.5 rounded-full bg-primary-500"></span>
-              <span x-text="repo.language"></span>
-            </span>
-            <span class="flex items-center gap-1">
-              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
-              <span x-text="repo.stars"></span>
-            </span>
-          </div>
-        </article>
+  {# Search box #}
+  <template x-if="!loading && allStars.length > 0">
+    <div class="mb-6">
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input
+          type="text"
+          x-model="searchQuery"
+          placeholder="Search starred repos by name, description, topic, or language..."
+          class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-surface-300 dark:border-surface-600 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        >
+        <template x-if="searchQuery">
+          <button @click="searchQuery = ''" class="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </template>
+      </div>
+      <template x-if="searchQuery">
+        <p class="mt-2 text-sm text-surface-500">
+          <span x-text="filteredStars.length"></span> results for &ldquo;<span x-text="searchQuery"></span>&rdquo;
+        </p>
       </template>
     </div>
-  </div>
+  </template>
 
-  {# All starred repos — Pagefind-indexed #}
-  {% if githubStarred.stars.length %}
-  <div x-data="{ visibleCount: 50 }">
-    <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-4">
-      All Starred
-    </h2>
-
-    <div class="grid gap-3 sm:gap-4 md:grid-cols-2" id="starred-grid">
-      {% for repo in githubStarred.stars %}
-      <article
-        class="starred-card p-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-primary-400 dark:hover:border-primary-600 transition-colors"
-        data-pagefind-body
-        data-index="{{ loop.index0 }}"
-        {% if loop.index0 >= 50 %}x-show="visibleCount > {{ loop.index0 }}" x-cloak{% endif %}
-      >
-        <div class="flex items-center gap-2 mb-1">
-          {% if repo.ownerAvatar %}
-          <img src="{{ repo.ownerAvatar }}" alt="{{ repo.ownerLogin }}" class="w-5 h-5 rounded-full" loading="lazy" data-pagefind-ignore>
-          {% endif %}
-          <h3 class="font-semibold text-surface-900 dark:text-surface-100 truncate" data-pagefind-meta="title">
-            <a href="{{ repo.url }}" class="hover:text-primary-600 dark:hover:text-primary-400" target="_blank" rel="noopener">
-              {{ repo.fullName }}
-            </a>
-          </h3>
-          {% if repo.archived %}
-          <span class="text-xs px-1.5 py-0.5 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded" data-pagefind-ignore>Archived</span>
-          {% endif %}
-        </div>
-
-        {% if repo.description %}
-        <p class="text-sm text-surface-600 dark:text-surface-400 mb-2 line-clamp-2">{{ repo.description }}</p>
-        {% endif %}
-
-        {% if repo.topics.length %}
-        <div class="flex flex-wrap gap-1.5 mb-2">
-          {% for topic in repo.topics %}
-          <span class="text-xs px-2 py-0.5 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 rounded" data-pagefind-filter="topic">{{ topic }}</span>
-          {% endfor %}
-        </div>
-        {% endif %}
-
-        <div class="flex flex-wrap items-center gap-3 text-xs text-surface-500">
-          {% if repo.language %}
-          <span class="flex items-center gap-1" data-pagefind-filter="language">
-            <span class="w-2.5 h-2.5 rounded-full bg-primary-500" data-pagefind-ignore></span>
-            {{ repo.language }}
-          </span>
-          {% endif %}
-          <span class="flex items-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
-            {{ repo.stars }}
-          </span>
-          {% if repo.forks > 0 %}
-          <span class="flex items-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-            {{ repo.forks }}
-          </span>
-          {% endif %}
-          {% if repo.license %}
-          <span>{{ repo.license }}</span>
-          {% endif %}
-          {% if repo.starredAt %}
-          <span data-pagefind-ignore>Starred {{ repo.starredAt | date("MMM d, yyyy") }}</span>
-          {% endif %}
-        </div>
-      </article>
-      {% endfor %}
+  {# Loading state #}
+  <template x-if="loading">
+    <div class="text-center py-12">
+      <div class="inline-block w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+      <p class="mt-4 text-surface-500">Loading starred repositories&hellip;</p>
     </div>
+  </template>
 
-    {# Load More button #}
-    {% if githubStarred.stars.length > 50 %}
-    <div class="mt-6 text-center" x-show="visibleCount < {{ githubStarred.stars.length }}">
-      <button
-        @click="visibleCount = Math.min(visibleCount + 50, {{ githubStarred.stars.length }})"
-        class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
-      >
-        Load More
-        <span class="text-primary-200" x-text="'(' + ({{ githubStarred.stars.length }} - visibleCount) + ' remaining)'"></span>
-      </button>
+  {# Error state #}
+  <template x-if="error">
+    <p class="text-surface-600 dark:text-surface-400" x-text="error"></p>
+  </template>
+
+  {# All starred repos — client-side rendered #}
+  <template x-if="!loading && allStars.length > 0">
+    <div>
+      <div class="grid gap-3 sm:gap-4 md:grid-cols-2" id="starred-grid">
+        <template x-for="repo in visibleStars" :key="repo.fullName">
+          <article class="starred-card p-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
+            <div class="flex items-center gap-2 mb-1">
+              <template x-if="repo.ownerAvatar">
+                <img :src="repo.ownerAvatar" :alt="repo.ownerLogin" class="w-5 h-5 rounded-full" loading="lazy">
+              </template>
+              <h3 class="font-semibold text-surface-900 dark:text-surface-100 truncate">
+                <a :href="repo.url" class="hover:text-primary-600 dark:hover:text-primary-400" target="_blank" rel="noopener" x-text="repo.fullName"></a>
+              </h3>
+              <template x-if="repo.archived">
+                <span class="text-xs px-1.5 py-0.5 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded">Archived</span>
+              </template>
+            </div>
+
+            <template x-if="repo.description">
+              <p class="text-sm text-surface-600 dark:text-surface-400 mb-2 line-clamp-2" x-text="repo.description"></p>
+            </template>
+
+            <template x-if="repo.topics && repo.topics.length">
+              <div class="flex flex-wrap gap-1.5 mb-2">
+                <template x-for="topic in repo.topics" :key="topic">
+                  <span class="text-xs px-2 py-0.5 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 rounded" x-text="topic"></span>
+                </template>
+              </div>
+            </template>
+
+            <div class="flex flex-wrap items-center gap-3 text-xs text-surface-500">
+              <template x-if="repo.language">
+                <span class="flex items-center gap-1">
+                  <span class="w-2.5 h-2.5 rounded-full bg-primary-500"></span>
+                  <span x-text="repo.language"></span>
+                </span>
+              </template>
+              <span class="flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+                <span x-text="repo.stars"></span>
+              </span>
+              <template x-if="repo.forks > 0">
+                <span class="flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                  <span x-text="repo.forks"></span>
+                </span>
+              </template>
+              <template x-if="repo.license">
+                <span x-text="repo.license"></span>
+              </template>
+              <template x-if="repo.starredAt">
+                <span x-text="'Starred ' + formatDate(repo.starredAt)"></span>
+              </template>
+            </div>
+          </article>
+        </template>
+      </div>
+
+      {# Load More button #}
+      <template x-if="!searchQuery && visibleCount < allStars.length">
+        <div class="mt-6 text-center">
+          <button
+            @click="visibleCount = Math.min(visibleCount + 50, allStars.length)"
+            class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+          >
+            Load More
+            <span class="text-primary-200" x-text="'(' + (allStars.length - visibleCount) + ' remaining)'"></span>
+          </button>
+        </div>
+      </template>
     </div>
-    {% endif %}
-  </div>
-  {% else %}
-  <p class="text-surface-600 dark:text-surface-400">No starred repositories found. The cache may still be syncing.</p>
-  {% endif %}
+  </template>
 </div>
 
-{# Alpine.js component for live starred updates #}
+{# Alpine.js component #}
 <script>
   document.addEventListener("alpine:init", () => {
-    Alpine.data("starredLive", () => ({
-      newStars: [],
-      async init() {
-        const buildDate = "{{ githubStarred.buildDate }}";
-        if (!buildDate || buildDate === "") return;
+    Alpine.data("starredPage", () => ({
+      allStars: [],
+      totalCount: 0,
+      lastSync: null,
+      loading: true,
+      error: null,
+      searchQuery: "",
+      visibleCount: 50,
 
+      get filteredStars() {
+        if (!this.searchQuery) return this.allStars;
+        const q = this.searchQuery.toLowerCase();
+        return this.allStars.filter(r =>
+          (r.fullName && r.fullName.toLowerCase().includes(q)) ||
+          (r.description && r.description.toLowerCase().includes(q)) ||
+          (r.language && r.language.toLowerCase().includes(q)) ||
+          (r.topics && r.topics.some(t => t.toLowerCase().includes(q)))
+        );
+      },
+
+      get visibleStars() {
+        if (this.searchQuery) return this.filteredStars;
+        return this.allStars.slice(0, this.visibleCount);
+      },
+
+      formatDate(iso) {
+        if (!iso) return "";
         try {
-          const response = await fetch(`/githubapi/api/starred/recent?since=${encodeURIComponent(buildDate)}`);
-          if (!response.ok) return;
+          return new Date(iso).toLocaleDateString("en-US", {
+            year: "numeric", month: "short", day: "numeric"
+          });
+        } catch { return iso; }
+      },
+
+      async init() {
+        try {
+          const response = await fetch("/githubapi/api/starred/all");
+          if (!response.ok) throw new Error("API returned " + response.status);
           const data = await response.json();
-          this.newStars = data.stars || [];
-        } catch {
-          // Silently fail — live updates are a nice-to-have
+          this.allStars = data.stars || [];
+          this.totalCount = data.totalCount || 0;
+          this.lastSync = data.lastSync || null;
+        } catch (err) {
+          this.error = "Could not load starred repositories. Try refreshing the page.";
+          console.error("[starred]", err);
+        } finally {
+          this.loading = false;
         }
       },
     }));
-  });
-</script>
-
-{# Separate Pagefind instance for starred repos #}
-<link rel="stylesheet" href="/pagefind-starred/pagefind-ui.css" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="/pagefind-starred/pagefind-ui.css"></noscript>
-<script src="/pagefind-starred/pagefind-ui.js" defer></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    if (typeof PagefindUI === "undefined") return;
-    if (typeof _pfStarredQueue === "undefined") return;
-    for (const [sel, opts] of _pfStarredQueue) {
-      new PagefindUI(Object.assign({ element: sel, showSubResults: false, showImages: false, resetStyles: false }, opts));
-    }
   });
 </script>
