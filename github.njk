@@ -259,6 +259,10 @@ withSidebar: true
       </article>
       {% endfor %}
     </div>
+
+    <a href="/github/starred/" class="inline-block mt-4 text-primary-600 dark:text-primary-400 hover:underline">
+      View all {{ githubStarred.totalCount | default(githubActivity.stars | length) }} starred repos &rarr;
+    </a>
     {% else %}
     <p class="text-surface-600 dark:text-surface-400">No starred repositories found.</p>
     {% endif %}

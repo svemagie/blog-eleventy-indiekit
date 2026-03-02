@@ -36,6 +36,8 @@ export default function (eleventyConfig) {
   // Ignore Pagefind output directory
   eleventyConfig.ignores.add("pagefind");
   eleventyConfig.ignores.add("pagefind/**");
+  eleventyConfig.ignores.add("pagefind-starred");
+  eleventyConfig.ignores.add("pagefind-starred/**");
 
   // Ignore interactive assets (served via passthrough copy, not processed as templates)
   eleventyConfig.ignores.add("interactive");
@@ -48,6 +50,8 @@ export default function (eleventyConfig) {
   eleventyConfig.watchIgnores.add("/app/data/site/**");
   eleventyConfig.watchIgnores.add("pagefind");
   eleventyConfig.watchIgnores.add("pagefind/**");
+  eleventyConfig.watchIgnores.add("pagefind-starred");
+  eleventyConfig.watchIgnores.add("pagefind-starred/**");
   eleventyConfig.watchIgnores.add(".cache/og");
   eleventyConfig.watchIgnores.add(".cache/og/**");
   eleventyConfig.watchIgnores.add(".cache/unfurl");
@@ -1039,13 +1043,30 @@ export default function (eleventyConfig) {
       const outputDir = directories?.output || dir.output;
       try {
         console.log(`[pagefind] Indexing ${outputDir} (${runMode})...`);
-        execFileSync("npx", ["pagefind", "--site", outputDir, "--output-subdir", "pagefind", "--glob", "**/*.html"], {
+        execFileSync("npx", ["pagefind", "--site", outputDir, "--output-subdir", "pagefind", "--glob", "**/*.html", "--exclude-selectors", ".starred-card"], {
           stdio: "inherit",
           timeout: 120000,
         });
         console.log("[pagefind] Indexing complete");
       } catch (err) {
         console.error("[pagefind] Indexing failed:", err.message);
+      }
+
+      // Starred repos Pagefind index — separate from main site search
+      try {
+        console.log("[pagefind-starred] Indexing starred repos...");
+        execFileSync("npx", [
+          "pagefind",
+          "--site", outputDir,
+          "--output-subdir", "pagefind-starred",
+          "--glob", "github/starred/index.html",
+        ], {
+          stdio: "inherit",
+          timeout: 120000,
+        });
+        console.log("[pagefind-starred] Indexing complete");
+      } catch (err) {
+        console.error("[pagefind-starred] Indexing failed:", err.message);
       }
     }
 
