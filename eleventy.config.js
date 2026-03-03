@@ -229,17 +229,29 @@ export default function (eleventyConfig) {
   });
 
   // Image optimization - transforms <img> tags automatically
-  // transformOnRequest: in watch/serve mode, process images on-demand instead of all
-  // at once during rebuild — prevents Sharp from saturating memory with parallel decodes.
-  // cacheOptions: cache remote image fetches to disk so restarts don't re-download everything.
-  // concurrency: limit parallel Sharp operations (default scales to CPU count, ~10 on this
-  // server). Each large remote image can consume 20-50MB of native memory outside V8 heap.
+  // PROCESS_REMOTE_IMAGES: set to "true" to let Sharp download and re-encode remote images.
+  // Default "false" — skips remote URLs (adds eleventy:ignore) to avoid OOM from Sharp's
+  // native memory usage when processing hundreds of external images (bookmarks, webmentions).
+  const processRemoteImages = process.env.PROCESS_REMOTE_IMAGES === "true";
+  if (!processRemoteImages) {
+    eleventyConfig.htmlTransformer.addPosthtmlPlugin("html", () => {
+      return (tree) => {
+        tree.match({ tag: "img" }, (node) => {
+          if (node.attrs?.src && /^https?:\/\//.test(node.attrs.src)) {
+            node.attrs["eleventy:ignore"] = "";
+          }
+          return node;
+        });
+        return tree;
+      };
+    }, { priority: 1 }); // priority > 0 runs before image plugin (priority -1)
+  }
+
   eleventyConfig.addPlugin(eleventyImageTransformPlugin, {
     extensions: "html",
     formats: ["webp", "jpeg"],
     widths: ["auto"],
     failOnError: false,
-    transformOnRequest: process.env.ELEVENTY_RUN_MODE !== "build",
     cacheOptions: {
       duration: process.env.ELEVENTY_RUN_MODE === "build" ? "1d" : "30d",
     },
