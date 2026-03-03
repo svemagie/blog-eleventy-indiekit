@@ -91,7 +91,7 @@ withBlogSidebar: true
       <div class="flex flex-wrap gap-3">
         {# Fediverse remote interaction button (self-hosted ActivityPub) #}
         {% if selfHostedApUrl %}
-        <span x-data="fediverseInteract('{{ selfHostedApUrl }}')" class="inline-flex">
+        <span x-data="fediverseInteract('{{ selfHostedApUrl }}', 'interact')" class="inline-flex">
           <a class="u-syndication inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#a730b8]/10 text-[#a730b8] hover:bg-[#a730b8]/20 transition-colors text-sm font-medium cursor-pointer"
              href="{{ selfHostedApUrl }}"
              rel="syndication"
@@ -102,49 +102,9 @@ withBlogSidebar: true
             </svg>
             <span>Fediverse</span>
           </a>
-
-          {# Modal overlay for instance entry #}
-          <template x-if="showModal">
-            <div class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="showModal = false">
-              {# Backdrop #}
-              <div class="fixed inset-0 bg-black/40"
-                   x-transition:enter="transition ease-out duration-200"
-                   x-transition:enter-start="opacity-0"
-                   x-transition:enter-end="opacity-100"
-                   x-transition:leave="transition ease-in duration-150"
-                   x-transition:leave-start="opacity-100"
-                   x-transition:leave-end="opacity-0"
-                   @click="showModal = false"></div>
-              {# Panel #}
-              <div class="relative bg-white dark:bg-surface-800 rounded-xl shadow-xl w-full max-w-sm p-6"
-                   x-transition:enter="transition ease-out duration-200"
-                   x-transition:enter-start="opacity-0 scale-95"
-                   x-transition:enter-end="opacity-100 scale-100"
-                   x-transition:leave="transition ease-in duration-150"
-                   x-transition:leave-start="opacity-100 scale-100"
-                   x-transition:leave-end="opacity-0 scale-95"
-                   @click.stop>
-                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">Fediverse Interaction</h3>
-                <p class="text-sm text-surface-500 dark:text-surface-400 mb-4">Enter your instance to like, boost, or reply.</p>
-                <input x-ref="instanceInput"
-                       x-model="instance"
-                       @keydown.enter.prevent="confirm()"
-                       type="text"
-                       placeholder="mastodon.social"
-                       class="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-[#a730b8] focus:border-transparent text-sm">
-                <div class="flex gap-3 mt-4">
-                  <button @click="showModal = false"
-                          class="flex-1 px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-300 bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 rounded-lg transition-colors">
-                    Cancel
-                  </button>
-                  <button @click="confirm()"
-                          class="flex-1 px-4 py-2 text-sm font-medium text-white bg-[#a730b8] hover:bg-[#a730b8]/80 rounded-lg transition-colors">
-                    Go
-                  </button>
-                </div>
-              </div>
-            </div>
-          </template>
+          {% set modalTitle = "Fediverse Interaction" %}
+          {% set modalDescription = "Choose your instance to like, boost, or reply." %}
+          {% include "components/fediverse-modal.njk" %}
         </span>
         {% endif %}
 

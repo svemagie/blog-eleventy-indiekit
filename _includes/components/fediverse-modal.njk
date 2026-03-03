@@ -1,0 +1,81 @@
+{# Shared fediverse instance picker modal #}
+{# Used by post.njk (interact), fediverse-follow.njk (follow), share.njk (share) #}
+{# Requires: modalTitle, modalDescription variables set before include #}
+<template x-if="showModal">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="showModal = false">
+    {# Backdrop #}
+    <div class="fixed inset-0 bg-black/40"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @click="showModal = false"></div>
+    {# Panel #}
+    <div class="relative bg-white dark:bg-surface-800 rounded-xl shadow-xl w-full max-w-sm p-6"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+      <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">{{ modalTitle }}</h3>
+      <p class="text-sm text-surface-500 dark:text-surface-400 mb-4">{{ modalDescription }}</p>
+
+      {# Saved domains list #}
+      <template x-if="savedDomains.length > 0 && !showInput">
+        <div>
+          <div class="flex flex-col gap-2 mb-3">
+            <template x-for="item in savedDomains" :key="item.domain">
+              <div class="flex items-center gap-2 rounded-lg bg-surface-50 dark:bg-surface-700 hover:bg-surface-100 dark:hover:bg-surface-600 transition-colors">
+                <button class="flex-1 px-3 py-2.5 text-left text-sm font-medium text-surface-900 dark:text-surface-100 cursor-pointer"
+                        @click="useSaved(item.domain)"
+                        x-text="item.domain"></button>
+                <button class="px-2 py-2.5 text-surface-400 hover:text-red-500 transition-colors cursor-pointer"
+                        @click="deleteSaved(item.domain)"
+                        title="Remove">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+            </template>
+          </div>
+          <button class="w-full text-sm text-[#a730b8] hover:text-[#a730b8]/80 cursor-pointer font-medium"
+                  @click="showAddNew()">Use a different instance</button>
+          <div class="flex mt-3">
+            <button @click="showModal = false"
+                    class="w-full px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-300 bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 rounded-lg transition-colors">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </template>
+
+      {# New domain input #}
+      <template x-if="savedDomains.length === 0 || showInput">
+        <div>
+          <input x-ref="instanceInput"
+                 x-model="instance"
+                 @keydown.enter.prevent="confirm()"
+                 type="text"
+                 placeholder="mastodon.social"
+                 class="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-[#a730b8] focus:border-transparent text-sm">
+          <template x-if="error">
+            <p class="text-xs text-red-500 mt-1" x-text="error"></p>
+          </template>
+          <div class="flex gap-3 mt-4">
+            <button @click="showInput ? (showInput = false) : (showModal = false)"
+                    class="flex-1 px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-300 bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 rounded-lg transition-colors"
+                    x-text="showInput && savedDomains.length > 0 ? 'Back' : 'Cancel'">
+            </button>
+            <button @click="confirm()"
+                    class="flex-1 px-4 py-2 text-sm font-medium text-white bg-[#a730b8] hover:bg-[#a730b8]/80 rounded-lg transition-colors">
+              Go
+            </button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</template>
