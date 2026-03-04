@@ -18,7 +18,7 @@ permalink: "digest/{{ digest.slug }}/"
     {{ digest.label }}
   </h1>
   <p class="text-surface-600 dark:text-surface-400 mb-6 sm:mb-8">
-    {{ digest.startDate | dateDisplay }} &ndash; {{ digest.endDate | dateDisplay }}
+    <time datetime="{{ digest.startDate | isoDate }}">{{ digest.startDate | dateDisplay }}</time> &ndash; <time datetime="{{ digest.endDate | isoDate }}">{{ digest.endDate | dateDisplay }}</time>
     <span class="text-sm">({{ digest.posts.length }} post{% if digest.posts.length != 1 %}s{% endif %})</span>
   </p>
 

@@ -9,7 +9,7 @@ withSidebar: true
     <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">GitHub Activity</h1>
     <p class="text-surface-600 dark:text-surface-400">
       My open source contributions and starred repositories.
-      <a href="https://github.com/{{ site.feeds.github }}" class="text-accent-600 dark:text-accent-400 hover:underline" target="_blank" rel="noopener">
+      <a href="https://github.com/{{ site.feeds.github }}" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank" rel="noopener">
         Follow me on GitHub
       </a>
     </p>
@@ -19,7 +19,7 @@ withSidebar: true
   {% if githubActivity.featured.length %}
   <section class="mb-12">
     <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6 flex items-center gap-2">
-      <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
       </svg>
       Featured Projects
@@ -27,7 +27,7 @@ withSidebar: true
 
     <div class="grid gap-4 sm:gap-6 md:grid-cols-2">
       {% for repo in githubActivity.featured %}
-      <article class="p-5 bg-gradient-to-br from-surface-50 to-white dark:from-surface-800 dark:to-surface-800 rounded-xl border-2 border-surface-200 dark:border-surface-700 shadow-sm">
+      <article class="p-5 bg-surface-50 dark:bg-surface-800 rounded-xl border-2 border-surface-200 dark:border-surface-700 shadow-sm">
         <div class="flex items-start justify-between mb-3">
           <h3 class="font-bold text-lg text-surface-900 dark:text-surface-100">
             <a href="{{ repo.url }}" class="hover:text-emerald-600 dark:hover:text-emerald-400" target="_blank" rel="noopener">
@@ -92,7 +92,7 @@ withSidebar: true
   {# Recent Commits Section #}
   <section class="mb-12">
     <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6 flex items-center gap-2">
-      <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>
       Recent Commits
@@ -111,7 +111,7 @@ withSidebar: true
           </a>
           <p class="text-xs text-surface-500 mt-1">
             <a href="{{ commit.repoUrl }}" class="hover:underline" target="_blank" rel="noopener">{{ commit.repo }}</a>
-            · {{ commit.date | date("MMM d, yyyy") }}
+            · <time datetime="{{ commit.date }}">{{ commit.date | date("MMM d, yyyy") }}</time>
           </p>
         </div>
       </div>
@@ -126,7 +126,7 @@ withSidebar: true
   {% if githubActivity.contributions.length %}
   <section class="mb-12">
     <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6 flex items-center gap-2">
-      <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
       </svg>
       Pull Requests & Issues
@@ -136,7 +136,7 @@ withSidebar: true
       {% for item in githubActivity.contributions %}
       <div class="flex items-start gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
         {% if item.type == "pr" %}
-        <span class="flex-shrink-0 px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">PR</span>
+        <span class="flex-shrink-0 px-2 py-1 text-xs font-medium bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 rounded">PR</span>
         {% else %}
         <span class="flex-shrink-0 px-2 py-1 text-xs font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded">Issue</span>
         {% endif %}
@@ -147,7 +147,7 @@ withSidebar: true
           <p class="text-xs text-surface-500 mt-1">
             <a href="{{ item.repoUrl }}" class="hover:underline" target="_blank" rel="noopener">{{ item.repo }}</a>
             #{{ item.number }}
-            · {{ item.date | date("MMM d, yyyy") }}
+            · <time datetime="{{ item.date }}">{{ item.date | date("MMM d, yyyy") }}</time>
           </p>
         </div>
       </div>
@@ -203,7 +203,7 @@ withSidebar: true
       {% endfor %}
     </div>
 
-    <a href="https://github.com/{{ site.feeds.github }}?tab=repositories" class="inline-block mt-4 text-accent-600 dark:text-accent-400 hover:underline">
+    <a href="https://github.com/{{ site.feeds.github }}?tab=repositories" class="inline-block mt-4 text-emerald-600 dark:text-emerald-400 hover:underline">
       View all repositories &rarr;
     </a>
     {% else %}
@@ -214,7 +214,7 @@ withSidebar: true
   {# Starred Repos Section #}
   <section>
     <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6 flex items-center gap-2">
-      <svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+      <svg class="w-6 h-6 text-emerald-500" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/>
       </svg>
       Starred Repositories
@@ -260,7 +260,7 @@ withSidebar: true
       {% endfor %}
     </div>
 
-    <a href="/github/starred/" class="inline-block mt-4 text-accent-600 dark:text-accent-400 hover:underline">
+    <a href="/github/starred/" class="inline-block mt-4 text-emerald-600 dark:text-emerald-400 hover:underline">
       View all {{ githubStarred.totalCount | default(githubActivity.stars | length) }} starred repos &rarr;
     </a>
     {% else %}

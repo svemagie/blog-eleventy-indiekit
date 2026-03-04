@@ -165,7 +165,7 @@
            class="text-accent-600 dark:text-accent-400 hover:underline"
            target="_blank"
            rel="noopener">
-          {{ mention.author.name }} mentioned this on {{ mention.published | date("MMM d, yyyy") }}
+          {{ mention.author.name }} mentioned this on <time datetime="{{ mention.published }}">{{ mention.published | date("MMM d, yyyy") }}</time>
         </a>
       </li>
       {% endfor %}

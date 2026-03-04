@@ -1,93 +1,152 @@
 # Design System — rmendes.net
 
-## Direction: Workshop Terminal
+## Palette
 
-**Feel:** A well-configured terminal in a warm room. Structure is precise and technical. Warmth comes from surfaces and content, not decorative color. Color is signal, not decoration.
+**Surfaces:** Warm stone — not yellow, not cold. The difference is felt, not seen.
 
-**Signature:** Chromatically quiet at rest, vivid in context. The base is warm monochrome. Color enters when content demands it — music pages glow purple, code pages pulse emerald, social feeds carry brand colors. You feel the shift as you navigate between worlds.
+| Token | Hex | Role |
+|-------|-----|------|
+| surface-50 | `#faf8f5` | Canvas (light) |
+| surface-100 | `#f4f2ee` | Cards, elevated surfaces (light) |
+| surface-200 | `#e8e5df` | Standard borders, dividers |
+| surface-300 | `#d5d0c8` | Strong borders, input borders |
+| surface-400 | `#a09a90` | Muted text, placeholders |
+| surface-500 | `#7a746a` | Secondary text |
+| surface-600 | `#5c5750` | Supporting text |
+| surface-700 | `#3f3b35` | Dark mode borders |
+| surface-800 | `#2a2722` | Cards, elevated surfaces (dark) |
+| surface-900 | `#1c1b19` | Canvas (dark) |
+| surface-950 | `#0f0e0d` | Deepest dark |
 
-## Intent
+**Accent (Warm Amber):** Default interactive color — links, CTAs, focus rings.
 
-**Who:** Visitors to a DevOps engineer's personal site — peers, recruiters, fellow IndieWeb enthusiasts, RSS subscribers. They're reading, browsing, discovering.
-
-**What:** Read posts, explore interests, follow feeds, understand who this person is.
-
-**How it should feel:** Like opening a well-used notebook in a workshop. Technical precision meets personal warmth. Not corporate, not cold, not decorative.
-
-## Surfaces — Warm Stone
-
-Warm neutral tones. Not yellow — just not cold. The difference is felt, not seen.
-
-| Token | Light | Dark | Role |
-|-------|-------|------|------|
-| 50 | `#faf8f5` | — | Canvas background |
-| 100 | `#f4f2ee` | — | Card surfaces |
-| 200 | `#e8e5df` | — | Borders, dividers |
-| 300 | `#d5d0c8` | — | Strong borders |
-| 400 | `#a09a90` | — | Muted/placeholder text |
-| 500 | `#7a746a` | — | Secondary text |
-| 600 | `#5c5750` | — | — |
-| 700 | `#3f3b35` | — | Dark text secondary |
-| 800 | `#2a2722` | — | Card surfaces (dark) |
-| 900 | `#1c1b19` | — | Canvas (dark) |
-| 950 | `#0f0e0d` | — | Deepest dark |
-
-## Text Hierarchy
-
-| Level | Light | Dark | Usage |
-|-------|-------|------|-------|
-| Primary | surface-900 `#1c1b19` | surface-50 `#faf8f5` | Headlines, body |
-| Secondary | surface-600 `#5c5750` | surface-400 `#a09a90` | Supporting text |
-| Muted | surface-400 `#a09a90` | surface-600 `#5c5750` | Metadata, timestamps |
-| Faint | surface-300 `#d5d0c8` | surface-700 `#3f3b35` | Disabled, decorative |
-
-## Interactive — Accent (Warm Amber)
-
-Default interactive color for generic links, CTAs, focus rings. Terminal amber warmth.
-
-| Weight | Value | Usage |
-|--------|-------|-------|
-| 400 | `#fbbf24` | Dark mode links, hover states |
-| 500 | `#f59e0b` | — |
-| 600 | `#d97706` | Light mode links, buttons |
-| 700 | `#b45309` | Light mode hover |
+| Token | Hex | Usage |
+|-------|-----|-------|
+| accent-400 | `#fbbf24` | Dark mode: links, hover |
+| accent-500 | `#f59e0b` | — |
+| accent-600 | `#d97706` | Light mode: links, buttons |
+| accent-700 | `#b45309` | Light mode: hover, pressed |
 
 ## Domain Colors
 
-Each section of the site owns its chromatic identity. These override accent on their respective pages.
+Every section of the site has a color identity. On domain pages, links, hover states, and card borders use the domain color instead of amber.
 
-| Domain | Tailwind Color | Pages |
-|--------|---------------|-------|
-| Writing/Blog | amber (= accent) | blog, articles, notes, homepage |
-| Code/GitHub | emerald | github, repo widgets |
-| Music | violet | funkwhale, listening, last.fm |
-| Bluesky | `#0085ff` | social-activity bluesky tab |
-| Mastodon | `#a730b8` | social-activity mastodon tab |
-| Bookmarks | amber | bookmarks page |
-| Likes | rose | likes page |
-| Replies | sky | replies page |
-| Reposts | emerald | reposts page |
-| Photos | violet | photos page |
-| RSS/Podcasts | orange | podroll, subscribe, RSS links |
-| CV | neutral (no accent) | cv page |
+### Domain Map (complete — every page accounted for)
+
+| Domain | Tailwind color | Light text | Dark text | Pages |
+|--------|---------------|------------|-----------|-------|
+| **Writing** | amber (= accent) | amber-700 | amber-400 | `/blog/`, `/articles/`, `/notes/`, `/bookmarks/`, `/digest/`, `/news/`, `/categories/`, individual posts |
+| **Social** | rose | rose-600 | rose-400 | `/likes/`, `/replies/`, `/reposts/`, `/interactions/` |
+| **Code** | emerald | emerald-600 | emerald-400 | `/github/`, `/github/starred/` |
+| **Music** | purple | purple-600 | purple-400 | `/funkwhale/`, `/listening/` |
+| **Video** | red | red-600 | red-400 | `/youtube/` |
+| **Reading** | orange | orange-600 | orange-400 | `/blogroll/`, `/podroll/`, `/readlater/` |
+| **Neutral** | — (use accent) | — | — | `/` (home), `/about/`, `/cv/`, `/slashes/`, `/search/`, `/changelog/`, `/404` |
+
+### Brand Colors (hardcoded hex — not domain colors)
+
+These are third-party brand colors used in syndication badges and social widgets. Not part of the domain system.
+
+| Brand | Hex | Where |
+|-------|-----|-------|
+| Mastodon | `#a730b8` | Syndication badges, social-activity widget |
+| Bluesky | `#0085ff` | Syndication badges, social-activity widget |
+| LinkedIn | `#0a66c2` | Syndication badges |
+| IndieNews | `#ff5c00` | Syndication badges |
+| Mastodon alt | `#6364ff` | Syndication badges |
+
+### Domain Prominence (medium)
+
+On a domain page, these elements adopt the domain color:
+- **Page title** — tinted text or accent underline
+- **Links** — `text-[domain]-600 dark:text-[domain]-400`
+- **Hover states** — `hover:text-[domain]-700 dark:hover:text-[domain]-300`
+- **Card borders on hover** — `hover:border-[domain]-400 dark:hover:border-[domain]-600`
+- **Post-type badges** — domain-colored background/text
+
+These stay neutral (accent or surface) regardless of domain:
+- Header/navigation
+- Sidebar widget containers
+- Footer
+- Global UI (search, theme toggle)
+
+## Depth
+
+**Subtle shadows.** One consistent shadow level for elevated surfaces. Borders + shadow together.
+
+| Element | Treatment |
+|---------|-----------|
+| Cards, widgets | `shadow-sm` + `border border-surface-200 dark:border-surface-700` |
+| Avatars, album art | `shadow-lg` (depth gives images presence against flat surfaces) |
+| Modals | `shadow-xl` (overlay needs clear elevation) |
+| Hover on cards | No shadow change — border color shift only |
+
+**Gradients are allowed** for:
+- Now-playing cards (domain color tinted: `bg-gradient-to-br from-[color]-500/10`)
+- YouTube hero/live cards
+- Icon containers in reading pages (`from-[color]-400 to-[color]-600`)
+
+Gradients are NOT used for:
+- Standard cards, widgets, or page backgrounds
 
 ## Typography
 
-- **Body:** Inter — clean, technical sans-serif
-- **Metadata:** `font-mono` for dates, timestamps, stats, version numbers
-- **Headlines:** Inter bold, tight tracking
+| Role | Style | Usage |
+|------|-------|-------|
+| Headlines | Inter, `font-bold` | Page titles, section headings |
+| Body | Inter, normal weight | Paragraphs, descriptions |
+| Labels | Inter, `font-medium` or `font-semibold` | Badges, nav items, metadata labels |
+| **Dates/timestamps** | **`font-mono text-sm`** | Every `<time>` element, stat numbers, version numbers |
+| Code | `font-mono` | Commit SHAs, code blocks, technical identifiers |
 
-## Depth Strategy
+### Date treatment rule
 
-**Borders only.** No drop shadows. Low-opacity warm borders define surfaces. Hierarchy comes from surface color shifts, not elevation effects.
+Every rendered date (via `dateDisplay` or `date()` filter) gets `font-mono`. This adds technical texture throughout the site — like timestamps in a log.
 
 ## Spacing
 
-Base: 4px (Tailwind default). No custom scale needed.
+Base: 4px (Tailwind default rem scale).
+
+Extracted dominant patterns:
+- Component internal: `p-4` (cards), `p-3` (compact), `p-5` (featured)
+- Gaps: `gap-2` (tight lists), `gap-3` (standard), `gap-4` (spacious)
+- Section separation: `mb-6` to `mb-8`
+- Micro: `px-2 py-0.5` (badges), `px-3 py-1.5` (pills)
+
+## Border Radius
+
+| Element | Radius |
+|---------|--------|
+| Cards, inputs, buttons | `rounded-lg` (dominant: 124×) |
+| Avatars, status dots, badges | `rounded-full` (89×) |
+| Featured/hero cards | `rounded-xl` (21×) |
+| Now-playing sections | `rounded-xl sm:rounded-2xl` |
+
+## Interaction States
+
+Every interactive element needs:
+- **hover:** color shift (`transition-colors` — already dominant at 93×)
+- **focus:** visible ring (`focus:ring-2 focus:ring-accent-500` or domain equivalent)
+- **active:** not currently implemented — add where it matters (buttons)
+
+Card hover pattern: border color shifts to domain color, no shadow change.
 
 ## Dark Mode
 
-- Surfaces invert (dark warm canvas, lighter warm cards)
-- Domain colors use their 400-weight for dark mode (lighter/brighter)
-- Borders use warm low-opacity rgba
-- No shadows in either mode
+- Class-based: `darkMode: "class"` — toggled via button in header
+- Surfaces invert: light canvas (`surface-50`) → dark canvas (`surface-900`)
+- Cards: `surface-100` → `surface-800`
+- Domain colors shift to 400-weight (brighter) in dark mode
+- Borders: `surface-200` → `surface-700`
+- Shadows remain `shadow-sm` (less visible but still present for subtle lift)
+
+## What Needs Implementation
+
+Audit findings — these are the gaps between this system and the current code:
+
+1. **font-mono on dates** — 80+ date elements need `font-mono text-sm` added
+2. **Domain colors on section pages** — page titles, links, hovers, card borders need domain color on their respective pages
+3. **Shadow standardization** — currently mixed; standardize to the levels defined above
+4. **Gradient cleanup** — remove `to-white` (github.njk), standardize gradient pattern
+5. **Focus states** — add `focus:ring-2` to all interactive elements (currently only 10 across 6 files)
+6. **Active states** — add to buttons

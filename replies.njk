@@ -25,17 +25,17 @@ permalink: "replies/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNum
   {% if paginatedReplies.length > 0 %}
   <ul class="post-list">
     {% for post in paginatedReplies %}
-    <li class="h-entry post-card border-l-[3px] border-l-sky-400 dark:border-l-sky-500">
+    <li class="h-entry post-card border-l-[3px] border-l-rose-400 dark:border-l-rose-500">
       <div class="post-header flex items-start gap-3">
         <div class="flex-shrink-0 mt-1">
-          <svg class="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
           </svg>
         </div>
         <div class="flex-1 min-w-0">
           {% if post.data.title %}
           <h2 class="p-name text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">
-            <a class="hover:text-sky-600 dark:hover:text-sky-400" href="{{ post.url }}">{{ post.data.title }}</a>
+            <a class="hover:text-rose-600 dark:hover:text-rose-400" href="{{ post.url }}">{{ post.data.title }}</a>
           </h2>
           {% endif %}
           <div class="post-meta">
@@ -91,7 +91,7 @@ permalink: "replies/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNum
           <div class="e-content prose dark:prose-invert prose-sm mt-3 max-w-none">
             {{ post.templateContent | safe }}
           </div>
-          <a class="u-url text-sm text-sky-600 dark:text-sky-400 hover:underline mt-3 inline-block" href="{{ post.url }}">Permalink</a>
+          <a class="u-url text-sm text-rose-600 dark:text-rose-400 hover:underline mt-3 inline-block" href="{{ post.url }}">Permalink</a>
         </div>
       </div>
     </li>

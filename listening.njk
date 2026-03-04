@@ -14,7 +14,7 @@ withSidebar: true
       {% endif %}
       {% if funkwhaleActivity.instanceUrl and lastfmActivity.profileUrl %} and {% endif %}
       {% if lastfmActivity.profileUrl %}
-      <a href="{{ lastfmActivity.profileUrl }}" class="text-red-600 dark:text-red-400 hover:underline" target="_blank" rel="noopener">Last.fm</a>
+      <a href="{{ lastfmActivity.profileUrl }}" class="text-purple-600 dark:text-purple-400 hover:underline" target="_blank" rel="noopener">Last.fm</a>
       {% endif %}
     </p>
   </header>
@@ -75,11 +75,11 @@ withSidebar: true
             <div class="flex items-center gap-2 mb-2">
               <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full">Funkwhale</span>
               {% if fwNowPlaying.status == 'now-playing' %}
-              <span class="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium bg-green-500/20 text-green-700 dark:text-green-400 rounded-full">
+              <span class="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full">
                 <span class="flex gap-0.5 items-end h-3">
-                  <span class="w-0.5 bg-green-500 animate-pulse" style="height: 30%; animation-delay: 0s;"></span>
-                  <span class="w-0.5 bg-green-500 animate-pulse" style="height: 70%; animation-delay: 0.2s;"></span>
-                  <span class="w-0.5 bg-green-500 animate-pulse" style="height: 50%; animation-delay: 0.4s;"></span>
+                  <span class="w-0.5 bg-purple-500 animate-pulse" style="height: 30%; animation-delay: 0s;"></span>
+                  <span class="w-0.5 bg-purple-500 animate-pulse" style="height: 70%; animation-delay: 0.2s;"></span>
+                  <span class="w-0.5 bg-purple-500 animate-pulse" style="height: 50%; animation-delay: 0.4s;"></span>
                 </span>
                 Now Playing
               </span>
@@ -125,13 +125,13 @@ withSidebar: true
 
           <div class="flex-1 min-w-0 w-full sm:w-auto">
             <div class="flex items-center gap-2 mb-2">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-red-500/20 text-red-700 dark:text-red-400 rounded-full">Last.fm</span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full">Last.fm</span>
               {% if lfmNowPlaying.status == 'now-playing' %}
-              <span class="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium bg-green-500/20 text-green-700 dark:text-green-400 rounded-full">
+              <span class="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full">
                 <span class="flex gap-0.5 items-end h-3">
-                  <span class="w-0.5 bg-green-500 animate-pulse" style="height: 30%; animation-delay: 0s;"></span>
-                  <span class="w-0.5 bg-green-500 animate-pulse" style="height: 70%; animation-delay: 0.2s;"></span>
-                  <span class="w-0.5 bg-green-500 animate-pulse" style="height: 50%; animation-delay: 0.4s;"></span>
+                  <span class="w-0.5 bg-purple-500 animate-pulse" style="height: 30%; animation-delay: 0s;"></span>
+                  <span class="w-0.5 bg-purple-500 animate-pulse" style="height: 70%; animation-delay: 0.2s;"></span>
+                  <span class="w-0.5 bg-purple-500 animate-pulse" style="height: 50%; animation-delay: 0.4s;"></span>
                 </span>
                 Now Playing
               </span>
@@ -141,13 +141,13 @@ withSidebar: true
               </span>
               {% endif %}
               {% if lfmNowPlaying.loved %}
-              <span class="text-red-500" title="Loved">&#9829;</span>
+              <span class="text-purple-500" title="Loved">&#9829;</span>
               {% endif %}
             </div>
 
             <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-100 truncate">
               {% if lfmNowPlaying.trackUrl %}
-              <a href="{{ lfmNowPlaying.trackUrl }}" class="hover:text-red-600 dark:hover:text-red-400" target="_blank" rel="noopener">{{ lfmNowPlaying.track }}</a>
+              <a href="{{ lfmNowPlaying.trackUrl }}" class="hover:text-purple-600 dark:hover:text-purple-400" target="_blank" rel="noopener">{{ lfmNowPlaying.track }}</a>
               {% else %}
               {{ lfmNowPlaying.track }}
               {% endif %}
@@ -169,7 +169,7 @@ withSidebar: true
   {% if funkwhaleActivity.stats or lastfmActivity.stats %}
   <section class="mb-12">
     <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6 flex items-center gap-2">
-      <svg class="w-6 h-6 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
       </svg>
       Listening Statistics
@@ -217,9 +217,9 @@ withSidebar: true
 
       {# Last.fm Stats #}
       {% if lastfmActivity.stats %}
-      <div x-show="activeSource === 'all' || activeSource === 'lastfm'" class="bg-surface-50 dark:bg-surface-800 rounded-xl p-6 border border-red-200 dark:border-red-800">
-        <h3 class="text-lg font-semibold text-red-700 dark:text-red-400 mb-4 flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-red-500"></span>
+      <div x-show="activeSource === 'all' || activeSource === 'lastfm'" class="bg-surface-50 dark:bg-surface-800 rounded-xl p-6 border border-purple-200 dark:border-purple-800">
+        <h3 class="text-lg font-semibold text-purple-700 dark:text-purple-400 mb-4 flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-purple-500"></span>
           Last.fm
         </h3>
         <div class="grid grid-cols-3 gap-4 text-center">
@@ -324,7 +324,7 @@ withSidebar: true
       {% if lastfmActivity.scrobbles.length %}
       <div x-show="activeSource === 'all' || activeSource === 'lastfm'">
         {% for scrobble in lastfmActivity.scrobbles | head(10) %}
-        <div class="flex items-center gap-4 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-red-400 dark:hover:border-red-600 transition-colors mb-2">
+        <div class="flex items-center gap-4 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-purple-400 dark:hover:border-purple-600 transition-colors mb-2">
           {% if scrobble.coverUrl %}
           <img src="{{ scrobble.coverUrl }}" alt="" class="w-12 h-12 rounded object-cover flex-shrink-0" loading="lazy" eleventy:ignore>
           {% else %}
@@ -338,19 +338,19 @@ withSidebar: true
           <div class="flex-1 min-w-0">
             <h3 class="font-medium text-surface-900 dark:text-surface-100 truncate">
               {% if scrobble.trackUrl %}
-              <a href="{{ scrobble.trackUrl }}" class="hover:text-red-600 dark:hover:text-red-400" target="_blank" rel="noopener">{{ scrobble.track }}</a>
+              <a href="{{ scrobble.trackUrl }}" class="hover:text-purple-600 dark:hover:text-purple-400" target="_blank" rel="noopener">{{ scrobble.track }}</a>
               {% else %}
               {{ scrobble.track }}
               {% endif %}
               {% if scrobble.loved %}
-              <span class="text-red-500 ml-1" title="Loved">&#9829;</span>
+              <span class="text-purple-500 ml-1" title="Loved">&#9829;</span>
               {% endif %}
             </h3>
             <p class="text-sm text-surface-600 dark:text-surface-400 truncate">{{ scrobble.artist }}</p>
           </div>
 
           <div class="text-right flex-shrink-0">
-            <span class="inline-block px-2 py-0.5 text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full mb-1">Last.fm</span>
+            <span class="inline-block px-2 py-0.5 text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full mb-1">Last.fm</span>
             <span class="text-xs text-surface-500 block">{{ scrobble.relativeTime }}</span>
             <button
               class="share-post-btn mt-1"
@@ -387,7 +387,7 @@ withSidebar: true
   {% if lastfmActivity.loved.length %}
   <section class="mb-12" x-show="activeSource === 'all' || activeSource === 'lastfm'">
     <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6 flex items-center gap-2">
-      <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+      <svg class="w-6 h-6 text-purple-500" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
       </svg>
       Loved Tracks
@@ -401,7 +401,7 @@ withSidebar: true
         <img src="{{ track.coverUrl }}" alt="" class="w-14 h-14 rounded object-cover flex-shrink-0" loading="lazy" eleventy:ignore>
         {% else %}
         <div class="w-14 h-14 rounded bg-surface-200 dark:bg-surface-700 flex items-center justify-center flex-shrink-0">
-          <svg class="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
           </svg>
         </div>
@@ -410,7 +410,7 @@ withSidebar: true
         <div class="flex-1 min-w-0">
           <h3 class="font-medium text-surface-900 dark:text-surface-100 truncate">
             {% if track.trackUrl %}
-            <a href="{{ track.trackUrl }}" class="hover:text-red-600 dark:hover:text-red-400" target="_blank" rel="noopener">{{ track.track }}</a>
+            <a href="{{ track.trackUrl }}" class="hover:text-purple-600 dark:hover:text-purple-400" target="_blank" rel="noopener">{{ track.track }}</a>
             {% else %}
             {{ track.track }}
             {% endif %}
@@ -418,7 +418,7 @@ withSidebar: true
           <p class="text-sm text-surface-600 dark:text-surface-400 truncate">{{ track.artist }}</p>
         </div>
 
-        <span class="text-red-500 flex-shrink-0">&#9829;</span>
+        <span class="text-purple-500 flex-shrink-0">&#9829;</span>
         <button
           class="share-post-btn flex-shrink-0"
           data-share-url="{{ track.trackUrl }}"

@@ -25,17 +25,17 @@ permalink: "reposts/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNum
   {% if paginatedReposts.length > 0 %}
   <ul class="post-list">
     {% for post in paginatedReposts %}
-    <li class="h-entry post-card border-l-[3px] border-l-green-400 dark:border-l-green-500">
+    <li class="h-entry post-card border-l-[3px] border-l-rose-400 dark:border-l-rose-500">
       <div class="post-header flex items-start gap-3">
         <div class="flex-shrink-0 mt-1">
-          <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
         </div>
         <div class="flex-1 min-w-0">
           {% if post.data.title %}
           <h2 class="p-name text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">
-            <a class="hover:text-green-600 dark:hover:text-green-400" href="{{ post.url }}">{{ post.data.title }}</a>
+            <a class="hover:text-rose-600 dark:hover:text-rose-400" href="{{ post.url }}">{{ post.data.title }}</a>
           </h2>
           {% endif %}
           <div class="post-meta">
@@ -67,7 +67,7 @@ permalink: "reposts/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNum
             {{ post.templateContent | safe }}
           </div>
           {% endif %}
-          <a class="u-url text-sm text-green-600 dark:text-green-400 hover:underline mt-3 inline-block" href="{{ post.url }}">Permalink</a>
+          <a class="u-url text-sm text-rose-600 dark:text-rose-400 hover:underline mt-3 inline-block" href="{{ post.url }}">Permalink</a>
         </div>
       </div>
     </li>

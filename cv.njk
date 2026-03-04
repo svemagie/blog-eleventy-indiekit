@@ -127,7 +127,7 @@ pagefindIgnore: true
     {# Last Updated #}
     {% if cv.lastUpdated %}
     <p class="text-sm text-surface-500 text-center mt-8">
-      Last updated: {{ cv.lastUpdated | date("PPP") }}
+      Last updated: <time datetime="{{ cv.lastUpdated }}">{{ cv.lastUpdated | date("PPP") }}</time>
     </p>
     {% endif %}
 

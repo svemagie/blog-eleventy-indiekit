@@ -466,6 +466,14 @@
   }
 }
 
+/* Active states — subtle press feedback on buttons */
+@layer base {
+  button:active:not(:disabled),
+  .pagination-link:active:not(.disabled) {
+    transform: scale(0.97);
+  }
+}
+
 /* Video embeds */
 @layer components {
   .video-embed {
@@ -517,6 +525,13 @@
   .content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 500px;
+  }
+}
+
+/* Dates — monospace for technical texture (system.md: every <time> gets font-mono) */
+@layer base {
+  time {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
 }
 
