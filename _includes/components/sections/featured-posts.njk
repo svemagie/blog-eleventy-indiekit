@@ -247,5 +247,13 @@
     </article>
     {% endfor %}
   </div>
+
+  {% if collections.featuredPosts.length > maxItems %}
+  <div class="mt-4 text-center">
+    <a href="/featured/" class="inline-flex items-center gap-1 text-sm text-accent-600 dark:text-accent-400 hover:underline font-medium">
+      View all {{ collections.featuredPosts.length }} featured posts &rarr;
+    </a>
+  </div>
+  {% endif %}
 </section>
 {% endif %}
