@@ -108,6 +108,38 @@
   body {
     @apply bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-100;
   }
+
+  /* P1: Date typography — all <time> elements get monospace for technical texture */
+  time {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+
+  /* P2: Focus-visible states — keyboard-only focus rings for accessibility (WCAG 2.4.7) */
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  summary:focus-visible {
+    @apply outline-none ring-2 ring-amber-500/70 ring-offset-2 ring-offset-surface-50 rounded-sm;
+  }
+
+  .dark button:focus-visible,
+  .dark [role="button"]:focus-visible,
+  .dark summary:focus-visible {
+    @apply ring-offset-surface-900;
+  }
+
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-2 ring-amber-500/70 border-transparent;
+  }
+
+  a:focus-visible {
+    @apply outline-none ring-2 ring-amber-500/70 ring-offset-1 ring-offset-surface-50 rounded-sm;
+  }
+
+  .dark a:focus-visible {
+    @apply ring-offset-surface-900;
+  }
 }
 
 /* Layout styles */
@@ -888,7 +920,7 @@ body[data-indiekit-auth="true"] .share-post-btn:hover {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); /* shadow-sm */
   z-index: 50;
   min-width: 120px;
   overflow: hidden;
