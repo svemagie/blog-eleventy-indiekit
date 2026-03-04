@@ -41,7 +41,7 @@ permalink: /readlater/
             <select
               x-model="selectedSource"
               @change="fetchData()"
-              class="appearance-none bg-white dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg pl-3 pr-8 py-2 text-sm focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+              class="appearance-none bg-surface-50 dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg pl-3 pr-8 py-2 text-sm focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
             >
               <option value="">All sources</option>
               <template x-for="src in sources" :key="src">
@@ -58,7 +58,7 @@ permalink: /readlater/
               x-model.debounce.300ms="searchQuery"
               @input="fetchData()"
               placeholder="Search..."
-              class="w-full bg-white dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
+              class="w-full bg-surface-50 dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
             />
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -66,7 +66,7 @@ permalink: /readlater/
           </div>
           <button
             @click="toggleSort()"
-            class="inline-flex items-center gap-1 px-3 py-2 bg-white dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg text-sm hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors"
+            class="inline-flex items-center gap-1 px-3 py-2 bg-surface-50 dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg text-sm hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors"
             :title="sortDir === 'desc' ? 'Newest first' : 'Oldest first'"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +80,7 @@ permalink: /readlater/
       {# Items List #}
       <div x-show="!loading" class="space-y-4">
         <template x-for="item in items" :key="item.id">
-          <article class="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 sm:p-5 hover:border-accent-400 dark:hover:border-accent-600 transition-colors">
+          <article class="bg-surface-50 dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 sm:p-5 hover:border-accent-400 dark:hover:border-accent-600 transition-colors">
             <div class="flex items-start gap-4">
               <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-accent-400 to-accent-600 flex items-center justify-center">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

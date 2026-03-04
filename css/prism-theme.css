@@ -37,12 +37,12 @@ pre[class*="language-"] {
 }
 
 pre[class*="language-"] {
-  background: #f6f8fa;
+  background: #f4f2ee;
   border: 1px solid #e1e4e8;
 }
 
 :not(pre) > code[class*="language-"] {
-  background: #f6f8fa;
+  background: #f4f2ee;
 }
 
 .token.comment,

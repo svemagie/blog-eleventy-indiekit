@@ -72,7 +72,7 @@
       class="widget-collapsible mb-4"
       x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : {{ defaultOpen }} }"
     >
-      <div class="bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden {{ widgetBorder }}">
+      <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden {{ widgetBorder }}">
         <button
           class="widget-header w-full p-4"
           @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)"
@@ -167,7 +167,7 @@
   {# Author Card Compact #}
   {% set widgetKey = "post-fb-author-card-compact" %}
   <div class="widget-collapsible mb-4" x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : true }">
-    <div class="bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
+    <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("user", "w-5 h-5 text-surface-500") }} Author</h3>
         <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -181,7 +181,7 @@
   {# Table of Contents #}
   {% set widgetKey = "post-fb-toc" %}
   <div class="widget-collapsible mb-4" x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : true }">
-    <div class="bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
+    <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("list", "w-5 h-5 text-surface-500") }} Table of Contents</h3>
         <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -195,7 +195,7 @@
   {# Post Categories #}
   {% set widgetKey = "post-fb-post-categories" %}
   <div class="widget-collapsible mb-4" x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : true }">
-    <div class="bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
+    <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("tag", "w-5 h-5 text-surface-500") }} Categories</h3>
         <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -209,7 +209,7 @@
   {# Recent Posts #}
   {% set widgetKey = "post-fb-recent-posts" %}
   <div class="widget-collapsible mb-4" x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : false }">
-    <div class="bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
+    <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("list", "w-5 h-5 text-surface-500") }} Recent Posts</h3>
         <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -223,7 +223,7 @@
   {# Webmentions #}
   {% set widgetKey = "post-fb-webmentions" %}
   <div class="widget-collapsible mb-4" x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : false }">
-    <div class="bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
+    <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("share", "w-5 h-5 text-surface-500") }} Webmentions</h3>
         <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -237,7 +237,7 @@
   {# Share #}
   {% set widgetKey = "post-fb-share" %}
   <div class="widget-collapsible mb-4" x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : false }">
-    <div class="bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
+    <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("share", "w-5 h-5 text-surface-500") }} Share</h3>
         <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -251,7 +251,7 @@
   {# Subscribe #}
   {% set widgetKey = "post-fb-subscribe" %}
   <div class="widget-collapsible mb-4" x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : false }">
-    <div class="bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden border-l-[3px] border-l-orange-400 dark:border-l-orange-500">
+    <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden border-l-[3px] border-l-orange-400 dark:border-l-orange-500">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("rss", "w-5 h-5 text-orange-500") }} Subscribe</h3>
         <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -265,7 +265,7 @@
   {# Recent Comments #}
   {% set widgetKey = "post-fb-recent-comments" %}
   <div class="widget-collapsible mb-4" x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : false }">
-    <div class="bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
+    <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("chat", "w-5 h-5 text-surface-500") }} Recent Comments</h3>
         <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>

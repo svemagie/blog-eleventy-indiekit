@@ -66,7 +66,7 @@ permalink: /podroll/
       {# Episodes List #}
       <div x-show="episodes.length > 0" class="space-y-4">
         <template x-for="episode in filteredEpisodes" :key="episode.id">
-          <article class="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 sm:p-6 hover:border-accent-400 dark:hover:border-accent-600 transition-colors">
+          <article class="bg-surface-50 dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 sm:p-6 hover:border-accent-400 dark:hover:border-accent-600 transition-colors">
             {# Episode Header #}
             <div class="flex items-start gap-4 mb-4">
               <div class="flex-1 min-w-0">

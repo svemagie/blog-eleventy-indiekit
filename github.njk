@@ -30,7 +30,7 @@ withSidebar: true
       <article class="p-5 bg-gradient-to-br from-surface-50 to-white dark:from-surface-800 dark:to-surface-800 rounded-xl border-2 border-surface-200 dark:border-surface-700 shadow-sm">
         <div class="flex items-start justify-between mb-3">
           <h3 class="font-bold text-lg text-surface-900 dark:text-surface-100">
-            <a href="{{ repo.url }}" class="hover:text-surface-600 dark:hover:text-surface-400" target="_blank" rel="noopener">
+            <a href="{{ repo.url }}" class="hover:text-emerald-600 dark:hover:text-emerald-400" target="_blank" rel="noopener">
               {{ repo.fullName }}
             </a>
           </h3>
@@ -75,7 +75,7 @@ withSidebar: true
             {% for commit in repo.commits %}
             <li class="flex items-start gap-2 text-sm min-w-0">
               <code class="flex-shrink-0 text-xs font-mono bg-surface-100 dark:bg-surface-700 px-1.5 py-0.5 rounded">
-                <a href="{{ commit.url }}" class="text-surface-600 dark:text-surface-400 hover:underline" target="_blank" rel="noopener">{{ commit.sha }}</a>
+                <a href="{{ commit.url }}" class="text-emerald-600 dark:text-emerald-400 hover:underline font-mono text-xs" target="_blank" rel="noopener">{{ commit.sha }}</a>
               </code>
               <span class="text-surface-700 dark:text-surface-300 truncate min-w-0 flex-1">{{ commit.message }}</span>
             </li>
@@ -101,12 +101,12 @@ withSidebar: true
     {% if githubActivity.commits.length %}
     <div class="space-y-3">
       {% for commit in githubActivity.commits %}
-      <div class="flex items-start gap-3 p-3 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
+      <div class="flex items-start gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
         <code class="text-xs font-mono bg-surface-100 dark:bg-surface-700 px-2 py-1 rounded">
           {{ commit.sha }}
         </code>
         <div class="flex-1 min-w-0">
-          <a href="{{ commit.url }}" class="text-surface-900 dark:text-surface-100 hover:text-surface-600 dark:hover:text-surface-400" target="_blank" rel="noopener">
+          <a href="{{ commit.url }}" class="text-surface-900 dark:text-surface-100 hover:text-emerald-600 dark:hover:text-emerald-400" target="_blank" rel="noopener">
             {{ commit.message }}
           </a>
           <p class="text-xs text-surface-500 mt-1">
@@ -134,14 +134,14 @@ withSidebar: true
 
     <div class="space-y-3">
       {% for item in githubActivity.contributions %}
-      <div class="flex items-start gap-3 p-3 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
+      <div class="flex items-start gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
         {% if item.type == "pr" %}
         <span class="flex-shrink-0 px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">PR</span>
         {% else %}
         <span class="flex-shrink-0 px-2 py-1 text-xs font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded">Issue</span>
         {% endif %}
         <div class="flex-1 min-w-0">
-          <a href="{{ item.url }}" class="text-surface-900 dark:text-surface-100 hover:text-surface-600 dark:hover:text-surface-400" target="_blank" rel="noopener">
+          <a href="{{ item.url }}" class="text-surface-900 dark:text-surface-100 hover:text-emerald-600 dark:hover:text-emerald-400" target="_blank" rel="noopener">
             {{ item.title }}
           </a>
           <p class="text-xs text-surface-500 mt-1">
@@ -168,9 +168,9 @@ withSidebar: true
     {% if githubRepos.length %}
     <div class="grid gap-3 sm:gap-4 md:grid-cols-2">
       {% for repo in githubRepos | head(6) %}
-      <article class="p-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
+      <article class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
         <h3 class="font-semibold text-surface-900 dark:text-surface-100 mb-1">
-          <a href="{{ repo.html_url }}" class="hover:text-surface-600 dark:hover:text-surface-400" target="_blank" rel="noopener">
+          <a href="{{ repo.html_url }}" class="hover:text-emerald-600 dark:hover:text-emerald-400" target="_blank" rel="noopener">
             {{ repo.name }}
           </a>
         </h3>
@@ -223,9 +223,9 @@ withSidebar: true
     {% if githubActivity.stars.length %}
     <div class="grid gap-3 sm:gap-4 md:grid-cols-2">
       {% for repo in githubActivity.stars | head(10) %}
-      <article class="p-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-surface-400 dark:hover:border-surface-600 transition-colors">
+      <article class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-surface-400 dark:hover:border-surface-600 transition-colors">
         <h3 class="font-semibold text-surface-900 dark:text-surface-100 mb-1">
-          <a href="{{ repo.url }}" class="hover:text-surface-600 dark:hover:text-surface-400" target="_blank" rel="noopener">
+          <a href="{{ repo.url }}" class="hover:text-emerald-600 dark:hover:text-emerald-400" target="_blank" rel="noopener">
             {{ repo.name }}
           </a>
         </h3>

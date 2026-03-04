@@ -13,7 +13,7 @@
          x-transition:leave-end="opacity-0"
          @click="showModal = false"></div>
     {# Panel #}
-    <div class="relative bg-white dark:bg-surface-800 rounded-xl shadow-xl w-full max-w-sm p-6"
+    <div class="relative bg-surface-50 dark:bg-surface-800 rounded-xl shadow-xl w-full max-w-sm p-6"
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
@@ -60,7 +60,7 @@
                  @keydown.enter.prevent="confirm()"
                  type="text"
                  placeholder="mastodon.social"
-                 class="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-[#a730b8] focus:border-transparent text-sm">
+                 class="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-lg bg-surface-50 dark:bg-surface-700 text-surface-900 dark:text-surface-100 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-[#a730b8] focus:border-transparent text-sm">
           <template x-if="error">
             <p class="text-xs text-red-500 mt-1" x-text="error"></p>
           </template>

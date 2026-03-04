@@ -65,7 +65,7 @@ permalink: /blogroll/
         <template x-for="blog in blogs" :key="blog.id">
           <a
             :href="blog.siteUrl || blog.feedUrl"
-            class="block bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 hover:border-accent-400 dark:hover:border-accent-600 transition-colors group"
+            class="block bg-surface-50 dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 hover:border-accent-400 dark:hover:border-accent-600 transition-colors group"
             target="_blank"
             rel="noopener"
           >
@@ -109,7 +109,7 @@ permalink: /blogroll/
       {# Category Items Tab (one for each category) #}
       <div x-show="activeTab.startsWith('category:') && !loading" class="space-y-4">
         <template x-for="item in categoryItems" :key="item.id">
-          <article class="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 sm:p-6 hover:border-accent-400 dark:hover:border-accent-600 transition-colors">
+          <article class="bg-surface-50 dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 p-4 sm:p-6 hover:border-accent-400 dark:hover:border-accent-600 transition-colors">
             <div class="flex items-start gap-4">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1">

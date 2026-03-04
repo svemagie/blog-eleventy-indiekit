@@ -87,7 +87,7 @@ withSidebar: true
         <div class="flex-shrink-0">
           {% if channelLiveStatus and channelLiveStatus.isLive %}
           <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-red-500 text-white text-sm font-semibold rounded-full animate-pulse">
-            <span class="w-2 h-2 bg-white rounded-full"></span>
+            <span class="w-2 h-2 bg-surface-50 rounded-full"></span>
             LIVE
           </span>
           {% elif channelLiveStatus and channelLiveStatus.isUpcoming %}
@@ -149,7 +149,7 @@ withSidebar: true
           {% if channelLiveStatus.isLive %}
           <div class="absolute top-4 left-4">
             <span class="inline-flex items-center gap-1.5 px-2 py-1 bg-red-500 text-white text-xs font-bold rounded">
-              <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+              <span class="w-1.5 h-1.5 bg-surface-50 rounded-full animate-pulse"></span>
               LIVE
             </span>
           </div>
@@ -173,7 +173,7 @@ withSidebar: true
       {% if channelVideos and channelVideos.length %}
       <div class="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {% for video in channelVideos | head(9) %}
-        <article class="group bg-white dark:bg-surface-800 rounded-xl overflow-hidden border border-surface-200 dark:border-surface-700 hover:border-red-400 dark:hover:border-red-600 transition-colors">
+        <article class="group bg-surface-50 dark:bg-surface-800 rounded-xl overflow-hidden border border-surface-200 dark:border-surface-700 hover:border-red-400 dark:hover:border-red-600 transition-colors">
           <a href="{{ video.url }}" class="block" target="_blank" rel="noopener">
             <div class="relative aspect-video">
               {% if video.thumbnail %}
@@ -198,7 +198,7 @@ withSidebar: true
               </span>
               {% elif video.isLive %}
               <span class="absolute bottom-2 right-2 px-1.5 py-0.5 bg-red-500 text-white text-xs font-bold rounded flex items-center gap-1">
-                <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                <span class="w-1.5 h-1.5 bg-surface-50 rounded-full animate-pulse"></span>
                 LIVE
               </span>
               {% endif %}

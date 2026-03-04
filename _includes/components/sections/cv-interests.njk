@@ -12,7 +12,7 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     {% for category, items in cv.interests %}
     {% if not filterType or (cv.interestTypes and cv.interestTypes[category] == filterType) or not cv.interestTypes or not cv.interestTypes[category] %}
-    <div class="p-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
+    <div class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
       <h3 class="font-semibold text-sm uppercase tracking-wide text-surface-600 dark:text-surface-400 mb-2">
         {{ category }}
       </h3>
