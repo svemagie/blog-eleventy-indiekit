@@ -856,12 +856,13 @@ export default function (eleventyConfig) {
       .slice(0, 5);
   });
 
-  // Featured posts — curated selection via `featured: true` frontmatter
+  // Featured posts — curated selection via `pinned: true` frontmatter
+  // Property named "pinned" to avoid conflict with "featured" (hero image) in MF2/Micropub
   eleventyConfig.addCollection("featuredPosts", function (collectionApi) {
     return collectionApi
       .getFilteredByGlob("content/**/*.md")
       .filter(isPublished)
-      .filter((item) => item.data.featured === true)
+      .filter((item) => item.data.pinned === true || item.data.pinned === "true")
       .sort((a, b) => b.date - a.date);
   });
 
