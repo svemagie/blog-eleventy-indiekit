@@ -77,6 +77,45 @@ export default function (eleventyConfig) {
     slugify: (s) => s.toLowerCase().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, ""),
     level: [2, 3, 4],
   });
+
+  // Hashtag plugin: converts #tag to category links on-site
+  // Syndication targets (Bluesky, Mastodon) handle raw #tag natively via facet detection
+  md.inline.ruler.push("hashtag", (state, silent) => {
+    const pos = state.pos;
+    if (state.src.charCodeAt(pos) !== 0x23 /* # */) return false;
+
+    // Must be at start of string or preceded by whitespace/punctuation (not part of a URL fragment or hex color)
+    if (pos > 0) {
+      const prevChar = state.src.charAt(pos - 1);
+      if (!/[\s()\[\]{},;:!?"'«»""'']/.test(prevChar)) return false;
+    }
+
+    // Match hashtag: # followed by letter/underscore, then word chars (letters, digits, underscores)
+    const tail = state.src.slice(pos + 1);
+    const match = tail.match(/^([a-zA-Z_]\w*)/);
+    if (!match) return false;
+
+    const tag = match[1];
+
+    // Skip pure hex color codes (3, 4, 6, or 8 hex digits with nothing else)
+    if (/^[0-9a-fA-F]{3,8}$/.test(tag)) return false;
+
+    if (!silent) {
+      const slug = tag.toLowerCase().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
+      const tokenOpen = state.push("link_open", "a", 1);
+      tokenOpen.attrSet("href", `/categories/${slug}/`);
+      tokenOpen.attrSet("class", "p-category hashtag");
+
+      const tokenText = state.push("text", "", 0);
+      tokenText.content = `#${tag}`;
+
+      state.push("link_close", "a", -1);
+    }
+
+    state.pos = pos + 1 + tag.length;
+    return true;
+  });
+
   eleventyConfig.setLibrary("md", md);
 
   // Syntax highlighting for fenced code blocks (```lang)

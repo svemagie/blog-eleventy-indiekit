@@ -330,9 +330,17 @@
     @apply text-sm text-surface-600 dark:text-surface-400 flex flex-wrap gap-2 items-center;
   }
 
-  /* Category tags */
+  /* Category tags (post metadata pills) */
   .p-category {
     @apply inline-block px-2 py-0.5 text-xs bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 rounded border border-surface-200 dark:border-surface-700 hover:border-surface-400 dark:hover:border-surface-500 transition-colors;
+  }
+
+  /* Inline hashtags in post content — styled as subtle links, not pills */
+  .e-content a.hashtag,
+  .prose a.hashtag {
+    @apply text-accent-600 dark:text-accent-400 no-underline hover:underline font-medium;
+    /* Override prose default link styling (no border-bottom, no color shift) */
+    text-decoration: none;
   }
 
   /* Webmention facepile - overlapping avatar display */
