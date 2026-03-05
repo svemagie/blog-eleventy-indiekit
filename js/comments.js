@@ -19,6 +19,7 @@ document.addEventListener("alpine:init", () => {
     statusMessage: "",
     statusType: "info",
     maxLength: 2000,
+    showForm: false,
 
     async init() {
       await this.checkSession();

@@ -1,4 +1,5 @@
 {# Comments section — shown on post pages before webmentions #}
+{# Collapsed when empty, auto-opens when comments exist #}
 {% set absoluteUrl = site.url + page.url %}
 
 <is-land on:visible>
@@ -6,91 +7,103 @@
          x-data="commentsSection('{{ absoluteUrl }}')"
          x-init="init()">
 
-  <h2 class="text-xl font-bold mb-4">Comments</h2>
+  <details class="group" x-bind:open="comments.length > 0 || showForm">
+    <summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden" @click="showForm = true">
+      <h2 class="text-lg font-semibold text-surface-700 dark:text-surface-300">
+        Comments
+        <span x-show="comments.length > 0" x-text="'(' + comments.length + ')'" class="text-sm font-normal" x-cloak></span>
+      </h2>
+      <svg class="w-4 h-4 text-surface-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </summary>
 
-  {# Status messages #}
-  <div x-show="statusMessage" x-cloak
-       x-bind:class="statusType === 'error' ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400' :
-                      statusType === 'success' ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' :
-                      'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'"
-       class="p-3 rounded-lg mb-4 text-sm">
-    <span x-text="statusMessage"></span>
-  </div>
-
-  {# Sign-in form (shown when not authenticated) #}
-  <div x-show="!user" x-cloak>
-    <p class="text-sm text-surface-600 dark:text-surface-400 mb-3">Sign in with your website to comment:</p>
-    <form x-on:submit.prevent="startAuth()" class="flex gap-2 items-end flex-wrap">
-      <div class="flex-1 min-w-[200px]">
-        <label for="comment-me" class="block text-sm font-medium mb-1">Your website</label>
-        <input id="comment-me" type="url" x-model="meUrl"
-               placeholder="https://yourdomain.com" required
-               class="w-full px-3 py-2 border rounded-lg dark:bg-surface-800 dark:border-surface-600">
+    <div class="mt-4">
+      {# Status messages #}
+      <div x-show="statusMessage" x-cloak
+           x-bind:class="statusType === 'error' ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400' :
+                          statusType === 'success' ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' :
+                          'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'"
+           class="p-3 rounded-lg mb-4 text-sm">
+        <span x-text="statusMessage"></span>
       </div>
-      <button type="submit" class="button" x-bind:disabled="authLoading">
-        <span x-show="!authLoading">Sign In</span>
-        <span x-show="authLoading" x-cloak>Signing in...</span>
-      </button>
-    </form>
-  </div>
 
-  {# Comment form (shown when authenticated) #}
-  <div x-show="user" x-cloak>
-    <div class="flex items-center gap-2 mb-3 text-sm text-surface-600 dark:text-surface-400">
-      <span>Signed in as</span>
-      <a x-bind:href="user?.url" class="font-medium hover:underline" x-text="user?.name || user?.url" target="_blank" rel="noopener"></a>
-      <button x-on:click="signOut()" class="text-xs underline hover:no-underline">Sign out</button>
-    </div>
-
-    <form x-on:submit.prevent="submitComment()">
-      <textarea x-model="commentText" rows="4" required
-                placeholder="Share your thoughts... (supports **bold**, *italic*, and [links](url))"
-                class="w-full px-3 py-2 border rounded-lg mb-2 dark:bg-surface-800 dark:border-surface-600"
-                x-bind:maxlength="maxLength"></textarea>
-      <div class="flex items-center justify-between">
-        <span class="text-xs text-surface-500" x-text="commentText.length + '/' + maxLength"></span>
-        <button type="submit" class="button" x-bind:disabled="submitting">
-          <span x-show="!submitting">Post Comment</span>
-          <span x-show="submitting" x-cloak>Posting...</span>
-        </button>
-      </div>
-    </form>
-  </div>
-
-  {# Comment list #}
-  <div class="mt-6 space-y-4">
-    <template x-if="loading">
-      <p class="text-sm text-surface-500">Loading comments...</p>
-    </template>
-
-    <template x-for="comment in comments" x-bind:key="comment.published">
-      <div class="p-4 bg-surface-100 dark:bg-surface-800 rounded-lg">
-        <div class="flex items-start gap-3">
-          <template x-if="comment.author?.photo">
-            <img x-bind:src="comment.author.photo" x-bind:alt="comment.author.name"
-                 class="w-8 h-8 rounded-full flex-shrink-0" loading="lazy">
-          </template>
-          <template x-if="!comment.author?.photo">
-            <div class="w-8 h-8 rounded-full bg-surface-200 dark:bg-surface-700 flex-shrink-0 flex items-center justify-center text-xs font-bold"
-                 x-text="(comment.author?.name || '?')[0].toUpperCase()">
-            </div>
-          </template>
-          <div class="flex-1">
-            <div class="flex items-center gap-2">
-              <a x-bind:href="comment.author?.url" class="font-medium text-sm hover:underline" target="_blank" rel="noopener"
-                 x-text="comment.author?.name || comment.author?.url"></a>
-              <time class="text-xs text-surface-500" x-bind:datetime="comment.published"
-                    x-text="new Date(comment.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })"></time>
-            </div>
-            <div class="mt-1 text-sm prose dark:prose-invert" x-html="comment.content?.html || comment.content?.text"></div>
+      {# Sign-in form (shown when not authenticated) #}
+      <div x-show="!user" x-cloak>
+        <p class="text-sm text-surface-600 dark:text-surface-400 mb-3">Sign in with your website to comment:</p>
+        <form x-on:submit.prevent="startAuth()" class="flex gap-2 items-end flex-wrap">
+          <div class="flex-1 min-w-[200px]">
+            <label for="comment-me" class="block text-sm font-medium mb-1">Your website</label>
+            <input id="comment-me" type="url" x-model="meUrl"
+                   placeholder="https://yourdomain.com" required
+                   class="w-full px-3 py-2 border rounded-lg dark:bg-surface-800 dark:border-surface-600">
           </div>
-        </div>
+          <button type="submit" class="button" x-bind:disabled="authLoading">
+            <span x-show="!authLoading">Sign In</span>
+            <span x-show="authLoading" x-cloak>Signing in...</span>
+          </button>
+        </form>
       </div>
-    </template>
 
-    <template x-if="!loading && comments.length === 0">
-      <p class="text-sm text-surface-500">No comments yet. Be the first to share your thoughts!</p>
-    </template>
-  </div>
+      {# Comment form (shown when authenticated) #}
+      <div x-show="user" x-cloak>
+        <div class="flex items-center gap-2 mb-3 text-sm text-surface-600 dark:text-surface-400">
+          <span>Signed in as</span>
+          <a x-bind:href="user?.url" class="font-medium hover:underline" x-text="user?.name || user?.url" target="_blank" rel="noopener"></a>
+          <button x-on:click="signOut()" class="text-xs underline hover:no-underline">Sign out</button>
+        </div>
+
+        <form x-on:submit.prevent="submitComment()">
+          <textarea x-model="commentText" rows="4" required
+                    placeholder="Share your thoughts... (supports **bold**, *italic*, and [links](url))"
+                    class="w-full px-3 py-2 border rounded-lg mb-2 dark:bg-surface-800 dark:border-surface-600"
+                    x-bind:maxlength="maxLength"></textarea>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-surface-500" x-text="commentText.length + '/' + maxLength"></span>
+            <button type="submit" class="button" x-bind:disabled="submitting">
+              <span x-show="!submitting">Post Comment</span>
+              <span x-show="submitting" x-cloak>Posting...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {# Comment list #}
+      <div class="mt-6 space-y-4">
+        <template x-if="loading">
+          <p class="text-sm text-surface-500">Loading comments...</p>
+        </template>
+
+        <template x-for="comment in comments" x-bind:key="comment.published">
+          <div class="p-4 bg-surface-100 dark:bg-surface-800 rounded-lg">
+            <div class="flex items-start gap-3">
+              <template x-if="comment.author?.photo">
+                <img x-bind:src="comment.author.photo" x-bind:alt="comment.author.name"
+                     class="w-8 h-8 rounded-full flex-shrink-0" loading="lazy">
+              </template>
+              <template x-if="!comment.author?.photo">
+                <div class="w-8 h-8 rounded-full bg-surface-200 dark:bg-surface-700 flex-shrink-0 flex items-center justify-center text-xs font-bold"
+                     x-text="(comment.author?.name || '?')[0].toUpperCase()">
+                </div>
+              </template>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <a x-bind:href="comment.author?.url" class="font-medium text-sm hover:underline" target="_blank" rel="noopener"
+                     x-text="comment.author?.name || comment.author?.url"></a>
+                  <time class="text-xs text-surface-500" x-bind:datetime="comment.published"
+                        x-text="new Date(comment.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })"></time>
+                </div>
+                <div class="mt-1 text-sm prose dark:prose-invert" x-html="comment.content?.html || comment.content?.text"></div>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <template x-if="!loading && comments.length === 0">
+          <p class="text-sm text-surface-500">No comments yet. Be the first to share your thoughts!</p>
+        </template>
+      </div>
+    </div>
+  </details>
 </section>
 </is-land>

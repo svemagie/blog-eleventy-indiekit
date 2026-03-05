@@ -3,8 +3,20 @@ layout: layouts/base.njk
 withBlogSidebar: true
 ---
 <article class="h-entry post" x-data="lightbox" @keydown.window="onKeydown($event)">
+  {# Support both camelCase (Indiekit Eleventy preset) and underscore (legacy) property names #}
+  {% set bookmarkedUrl = bookmarkOf or bookmark_of %}
+  {% set likedUrl = likeOf or like_of %}
+  {% set replyTo = inReplyTo or in_reply_to %}
+  {% set repostedUrl = repostOf or repost_of %}
+
   {% if title %}
   <h1 class="p-name text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-3 sm:mb-4">{{ title }}</h1>
+  {% else %}
+  <div class="flex items-center gap-2 mb-1">
+    <span class="text-sm font-medium text-surface-500 dark:text-surface-400">
+      {% if replyTo %}&#8617; Reply{% elif likedUrl %}&#9829; Like{% elif repostedUrl %}&#9851; Repost{% elif bookmarkedUrl %}&#128278; Bookmark{% else %}&#9998; Note{% endif %}
+    </span>
+  </div>
   {% endif %}
 
   <div class="post-meta mb-4 sm:mb-6">
@@ -27,12 +39,6 @@ withBlogSidebar: true
 
   {# Bridgy syndication content - controls what gets posted to social networks #}
   {# For interaction types (bookmarks, likes, replies, reposts), include the target URL #}
-  {# Support both camelCase (Indiekit Eleventy preset) and underscore (legacy) property names #}
-  {% set bookmarkedUrl = bookmarkOf or bookmark_of %}
-  {% set likedUrl = likeOf or like_of %}
-  {% set replyTo = inReplyTo or in_reply_to %}
-  {% set repostedUrl = repostOf or repost_of %}
-
   {% set bridgySummary = description or summary or (content | ogDescription(280)) %}
   {% set interactionUrl = bookmarkedUrl or likedUrl or replyTo or repostedUrl %}
 
@@ -53,44 +59,31 @@ withBlogSidebar: true
   </div>
   {% endif %}
 
-  <div class="e-content prose prose-surface dark:prose-invert max-w-none">
+  {% set isInteraction = replyTo or likedUrl or repostedUrl or bookmarkedUrl %}
+  {% set hasContent = content and content | striptags | trim %}
+  <div class="e-content prose prose-surface dark:prose-invert max-w-none{% if isInteraction and hasContent %} border-l-[3px] border-l-accent-500 dark:border-l-accent-400 pl-4{% endif %}">
     {{ content | safe }}
   </div>
 
-  {# AI usage disclosure #}
+  {# AI usage disclosure — collapsed by default #}
   {% set aiTextLevel = aiTextLevel or ai_text_level %}
   {% set aiCodeLevel = aiCodeLevel or ai_code_level %}
   {% set aiTools = aiTools or ai_tools %}
   {% set aiDescription = aiDescription or ai_description %}
   {% if aiTextLevel or aiCodeLevel or aiTools %}
-  <aside class="mt-6 p-4 rounded-lg bg-surface-50 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700">
-    <div class="flex items-center gap-2 mb-2">
-      <svg class="w-4 h-4 text-surface-500 dark:text-surface-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+  <details class="mt-4 text-xs text-surface-500 dark:text-surface-400">
+    <summary class="cursor-pointer hover:text-surface-600 dark:hover:text-surface-300 list-none flex items-center gap-1.5 [&::-webkit-details-marker]:hidden">
+      <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714a2.25 2.25 0 00.659 1.591L19 14.5M14.25 3.104c.251.023.501.05.75.082M19 14.5l-2.47 2.47a2.25 2.25 0 01-1.59.659H9.06a2.25 2.25 0 01-1.591-.659L5 14.5m14 0V17a2 2 0 01-2 2H7a2 2 0 01-2-2v-2.5"/>
       </svg>
-      <strong class="text-sm font-semibold text-surface-700 dark:text-surface-300">AI Usage</strong>
-    </div>
-    <div class="flex flex-wrap gap-3 text-xs text-surface-600 dark:text-surface-400">
-      {% if aiTextLevel %}
-      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-100 dark:bg-surface-700">
-        Text: {% if aiTextLevel === "0" %}None{% elif aiTextLevel === "1" %}Editorial{% elif aiTextLevel === "2" %}Co-drafted{% elif aiTextLevel === "3" %}AI-generated{% endif %}
+      <span>AI:
+        {% if aiTextLevel %}Text {% if aiTextLevel === "0" %}None{% elif aiTextLevel === "1" %}Editorial{% elif aiTextLevel === "2" %}Co-drafted{% elif aiTextLevel === "3" %}AI-generated{% endif %}{% endif %}{% if aiCodeLevel %}{% if aiTextLevel %} · {% endif %}Code {% if aiCodeLevel === "0" %}Human{% elif aiCodeLevel === "1" %}AI-assisted{% elif aiCodeLevel === "2" %}AI-generated{% endif %}{% endif %}{% if aiTools %}{% if aiTextLevel or aiCodeLevel %} · {% endif %}{{ aiTools }}{% endif %}
       </span>
-      {% endif %}
-      {% if aiCodeLevel %}
-      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-100 dark:bg-surface-700">
-        Code: {% if aiCodeLevel === "0" %}Human{% elif aiCodeLevel === "1" %}AI-assisted{% elif aiCodeLevel === "2" %}AI-generated{% endif %}
-      </span>
-      {% endif %}
-      {% if aiTools %}
-      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-100 dark:bg-surface-700">
-        Tools: {{ aiTools }}
-      </span>
-      {% endif %}
-    </div>
+    </summary>
     {% if aiDescription %}
-    <p class="mt-2 text-xs text-surface-500 dark:text-surface-400">{{ aiDescription }}</p>
+    <p class="mt-1 pl-5">{{ aiDescription }}</p>
     {% endif %}
-  </aside>
+  </details>
   {% endif %}
 
   {# Rich reply context with h-cite microformat #}
