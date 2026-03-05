@@ -106,14 +106,6 @@ withSidebar: true
 </section>
 {% endif %}
 
-{# Posting Activity — contribution graph #}
-{% if collections.posts and collections.posts.length %}
-<section class="mb-8 sm:mb-12">
-  <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6">Posting Activity</h2>
-  {% postGraph collections.posts %}
-</section>
-{% endif %}
-
 {# Explore — quick links to key sections #}
 <section class="mb-8 sm:mb-12">
   <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6">Explore</h2>
@@ -149,3 +141,11 @@ withSidebar: true
 </section>
 
 {% endif %} {# end two-tier fallback #}
+
+{# Posting Activity — contribution graph (shown on all homepage variants) #}
+{% if collections.posts and collections.posts.length %}
+<section class="mb-8 sm:mb-12">
+  <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6">Posting Activity</h2>
+  {% postGraph collections.posts %}
+</section>
+{% endif %}
