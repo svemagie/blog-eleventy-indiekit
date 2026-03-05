@@ -45,17 +45,17 @@
       {% endif %}
 
       {# Social Links #}
-      {% from "components/social-icon.njk" import socialIcon %}
+      {% from "components/social-icon.njk" import socialIcon, socialIconColorClass %}
       {% if heroConfig.showSocial != false and socialLinks %}
       <div class="flex flex-wrap gap-3">
         {% for link in socialLinks %}
         <a
           href="{{ link.url }}"
           rel="{{ link.rel }} noopener"
-          class="inline-flex items-center gap-2 px-3 py-2 text-sm bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
+          class="inline-flex items-center gap-2 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
           target="_blank"
         >
-          {{ socialIcon(link.icon, "w-5 h-5") }}
+          <span class="{{ socialIconColorClass(link.icon) }}">{{ socialIcon(link.icon, "w-5 h-5") }}</span>
           <span class="text-sm font-medium">{{ link.name }}</span>
         </a>
         {% endfor %}

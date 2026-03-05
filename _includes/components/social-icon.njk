@@ -1,11 +1,56 @@
 {#
   Social Icon Macro
-  Usage: {% from "components/social-icon.njk" import socialIcon %}
+  Usage: {% from "components/social-icon.njk" import socialIcon, socialIconColorClass %}
          {{ socialIcon("github", "w-5 h-5") }}
+         <span class="{{ socialIconColorClass('github') }}">{{ socialIcon("github", "w-5 h-5") }}</span>
 
   SVG paths sourced from Simple Icons (simpleicons.org) - CC0 1.0 Universal
   All icons render at 24x24 viewBox with fill="currentColor"
+  Brand colors from official brand guidelines
 #}
+
+{# Returns Tailwind color classes for an icon's brand color (light + dark) #}
+{% macro socialIconColorClass(name) %}
+{%- if name == "activitypub" -%}text-[#f1027e]
+{%- elif name == "github" -%}text-[#181717] dark:text-[#e6edf3]
+{%- elif name == "gitlab" -%}text-[#FC6D26]
+{%- elif name == "forgejo" -%}text-[#609926]
+{%- elif name == "codeberg" -%}text-[#2185D0]
+{%- elif name == "mastodon" -%}text-[#6364FF]
+{%- elif name == "bluesky" -%}text-[#0085FF]
+{%- elif name == "pixelfed" -%}text-[#6C42C9]
+{%- elif name == "linkedin" -%}text-[#0A66C2]
+{%- elif name == "twitter" -%}text-[#000000] dark:text-[#e7e9ea]
+{%- elif name == "threads" -%}text-[#000000] dark:text-[#f5f5f5]
+{%- elif name == "youtube" -%}text-[#FF0000]
+{%- elif name == "twitch" -%}text-[#9146FF]
+{%- elif name == "spotify" -%}text-[#1DB954]
+{%- elif name == "bandcamp" -%}text-[#629aa9]
+{%- elif name == "soundcloud" -%}text-[#FF5500]
+{%- elif name == "rss" -%}text-[#F26522]
+{%- elif name == "discord" -%}text-[#5865F2]
+{%- elif name == "signal" -%}text-[#3A76F0]
+{%- elif name == "telegram" -%}text-[#26A5E4]
+{%- elif name == "matrix" -%}text-[#000000] dark:text-[#e6e6e6]
+{%- elif name == "reddit" -%}text-[#FF4500]
+{%- elif name == "hackernews" -%}text-[#FF6600]
+{%- elif name == "funkwhale" -%}text-[#0D47A1]
+{%- elif name == "lastfm" -%}text-[#D51007]
+{%- elif name == "peertube" -%}text-[#F1680D]
+{%- elif name == "bookwyrm" -%}text-[#002200] dark:text-[#78b578]
+{%- elif name == "indieweb" -%}text-[#FF5C00]
+{%- elif name == "email" -%}text-surface-600 dark:text-surface-400
+{%- elif name == "website" -%}text-surface-600 dark:text-surface-400
+{%- elif name == "keybase" -%}text-[#33A0FF]
+{%- elif name == "orcid" -%}text-[#A6CE39]
+{%- elif name == "flickr" -%}text-[#0063DC]
+{%- elif name == "xmpp" -%}text-[#002B5C] dark:text-[#5badff]
+{%- elif name == "sourcehut" -%}text-[#000000] dark:text-[#e0e0e0]
+{%- elif name == "facebook" -%}text-[#0866FF]
+{%- elif name == "instagram" -%}text-[#E4405F]
+{%- else -%}text-surface-600 dark:text-surface-400
+{%- endif -%}
+{% endmacro %}
 
 {% macro socialIcon(name, cssClass) %}
 {%- if name == "github" -%}
@@ -25,7 +70,7 @@
 {%- elif name == "mastodon" -%}
 <svg class="{{ cssClass }}" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M23.268 5.313c-.35-2.578-2.617-4.61-5.304-5.004C17.51.242 15.792 0 11.813 0h-.03c-3.98 0-4.835.242-5.288.309C3.882.692 1.496 2.518.917 5.127.64 6.412.61 7.837.661 9.143c.074 1.874.088 3.745.26 5.611.118 1.24.325 2.47.62 3.68.55 2.237 2.777 4.098 4.96 4.857 2.336.792 4.849.923 7.256.38.265-.061.527-.132.786-.213.585-.184 1.27-.39 1.774-.753a.057.057 0 0 0 .023-.043v-1.809a.052.052 0 0 0-.02-.041.053.053 0 0 0-.046-.01 20.282 20.282 0 0 1-4.709.545c-2.73 0-3.463-1.284-3.674-1.818a5.593 5.593 0 0 1-.319-1.433.053.053 0 0 1 .066-.054c1.517.363 3.072.546 4.632.546.376 0 .75 0 1.125-.01 1.57-.044 3.224-.124 4.768-.422.038-.008.077-.015.11-.024 2.435-.464 4.753-1.92 4.989-5.604.008-.145.03-1.52.03-1.67.002-.512.167-3.63-.024-5.545zm-3.748 9.195h-2.561V8.29c0-1.309-.55-1.976-1.67-1.976-1.23 0-1.846.79-1.846 2.35v3.403h-2.546V8.663c0-1.56-.617-2.35-1.848-2.35-1.112 0-1.668.668-1.668 1.977v6.218H4.822V8.102c0-1.31.337-2.35 1.011-3.12.696-.77 1.608-1.164 2.74-1.164 1.311 0 2.302.5 2.962 1.498l.638 1.06.638-1.06c.66-.999 1.65-1.498 2.96-1.498 1.13 0 2.043.395 2.74 1.164.675.77 1.012 1.81 1.012 3.12v6.406z"></path></svg>
 {%- elif name == "activitypub" -%}
-<svg class="{{ cssClass }}" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.055 0v3.726l-8.845 5.1 1.012 1.748 7.833-4.52V12l-7.833 4.52-1.012 1.749 8.845 5.1V24h1.89v-.63l8.845-5.1-1.012-1.75-7.833 4.52V12l7.833-4.52 1.012-1.749L12.945.63V0z"></path></svg>
+<svg class="{{ cssClass }}" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.09 4.43L24 10.73v2.51L13.09 19.58v-2.51L21.83 12 13.09 6.98v-2.55zM13.09 9.49L17.44 12l-4.35 2.51V9.49z"/><path d="M10.91 4.43L0 10.73v2.51l8.74-5.03v10.09l2.18 1.28V4.43zM6.56 12L2.18 14.51l4.35 2.51V12z"/></svg>
 {%- elif name == "pixelfed" -%}
 <svg class="{{ cssClass }}" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 14.842c-.46 2.838-3.074 4.742-5.912 4.282a5.15 5.15 0 0 1-1.297-.416v1.55a.615.615 0 0 1-.615.615H7.363a.615.615 0 0 1-.615-.615V8.435a.615.615 0 0 1 .615-.615h2.707a.615.615 0 0 1 .615.615v.34a5.15 5.15 0 0 1 1.297-.416c2.838-.46 5.452 1.444 5.912 4.282a5.152 5.152 0 0 1 0 2.201zm-4.037-.474a2.36 2.36 0 1 0-.742-4.662 2.36 2.36 0 0 0 .742 4.662z"></path></svg>
 {%- elif name == "twitter" -%}
