@@ -140,12 +140,18 @@ withSidebar: true
   </div>
 </section>
 
-{% endif %} {# end two-tier fallback #}
-
-{# Posting Activity — contribution graph (shown on all homepage variants) #}
+{# Posting Activity — contribution graph (Tier 2 default only) #}
 {% if collections.posts and collections.posts.length %}
 <section class="mb-8 sm:mb-12">
   <h2 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4 sm:mb-6">Posting Activity</h2>
   {% postGraph collections.posts %}
+  <a href="/graph/" class="text-sm text-accent-600 dark:text-accent-400 hover:underline mt-4 inline-flex items-center gap-1">
+    View full history
+    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+  </a>
 </section>
 {% endif %}
+
+{% endif %} {# end two-tier fallback #}

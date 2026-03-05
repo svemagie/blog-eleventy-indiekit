@@ -49,6 +49,8 @@
   {% include "components/sections/funkwhale.njk" ignore missing %}
 {% elif section.type == "lastfm" %}
   {% include "components/sections/lastfm.njk" ignore missing %}
+{% elif section.type == "posting-activity" %}
+  {% include "components/sections/posting-activity.njk" ignore missing %}
 {% else %}
   <!-- Unknown section type: {{ section.type }} -->
 {% endif %}
