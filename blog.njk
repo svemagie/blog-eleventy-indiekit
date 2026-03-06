@@ -22,20 +22,13 @@ permalink: "blog/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber
   </p>
 
   {% if paginatedPosts.length > 0 %}
-  <filter-container oninit leave-url-alone>
-    <div class="flex flex-wrap gap-3 mb-6">
-      <select data-filter-key="type" class="px-3 py-1.5 text-sm bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-lg">
-        <option value="">All Types</option>
-        <option value="article">Articles</option>
-        <option value="note">Notes</option>
-        <option value="photo">Photos</option>
-        <option value="bookmark">Bookmarks</option>
-        <option value="like">Likes</option>
-        <option value="reply">Replies</option>
-        <option value="repost">Reposts</option>
-      </select>
-      <span data-filter-results class="text-sm text-surface-500 dark:text-surface-400 self-center"></span>
-    </div>
+  <nav class="flex flex-wrap gap-2 mb-6" aria-label="Filter by post type">
+    <a href="/blog/" class="px-3 py-1.5 text-sm font-medium rounded-full bg-accent-600 text-white dark:bg-accent-500">All Posts <span class="opacity-75">({{ collections.posts.length }})</span></a>
+    {% for pt in enabledPostTypes %}
+    {% set collName = pt.label | lower %}
+    <a href="{{ pt.path }}" class="px-3 py-1.5 text-sm font-medium rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700 border border-surface-200 dark:border-surface-700 transition-colors">{{ pt.label }}{% if collections[collName] %} <span class="text-surface-400 dark:text-surface-500">({{ collections[collName].length }})</span>{% endif %}</a>
+    {% endfor %}
+  </nav>
   <ul class="post-list">
     {% for post in paginatedPosts %}
     {# Detect post type from frontmatter properties #}
@@ -44,7 +37,6 @@ permalink: "blog/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber
     {% set repostedUrl = post.data.repostOf or post.data.repost_of %}
     {% set replyToUrl = post.data.inReplyTo or post.data.in_reply_to %}
     {% set hasPhotos = post.data.photo and post.data.photo.length %}
-    {% set _postType %}{% if likedUrl %}like{% elif bookmarkedUrl %}bookmark{% elif repostedUrl %}repost{% elif replyToUrl %}reply{% elif hasPhotos %}photo{% elif post.data.title %}article{% else %}note{% endif %}{% endset %}
     {% set borderClass = "" %}
     {% if likedUrl %}
       {% set borderClass = "border-l-[3px] border-l-red-400 dark:border-l-red-500" %}
@@ -59,7 +51,7 @@ permalink: "blog/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber
     {% else %}
       {% set borderClass = "border-l-[3px] border-l-surface-300 dark:border-l-surface-600" %}
     {% endif %}
-    <li class="h-entry post-card {{ borderClass }}" data-filter-type="{{ _postType | trim }}">
+    <li class="h-entry post-card {{ borderClass }}">
 
       {% if likedUrl %}
       {# ── Like card ── #}
@@ -341,7 +333,6 @@ permalink: "blog/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber
     </li>
     {% endfor %}
   </ul>
-  </filter-container>
 
   {# Pagination controls #}
   {% if pagination.pages.length > 1 %}

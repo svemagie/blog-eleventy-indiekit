@@ -283,14 +283,43 @@ permalink: /interactions/
         <p>No webmentions found for this filter.</p>
       </div>
 
-      {# Pagination / Load more #}
-      <div x-show="hasMore" class="text-center pt-4">
-        <button
-          @click="loadMore()"
-          :disabled="loadingMore"
-          class="px-4 py-2 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 rounded-lg text-sm transition-colors disabled:opacity-50">
-          <span x-text="loadingMore ? 'Loading...' : 'Load More'"></span>
-        </button>
+      {# Pagination controls #}
+      <div x-show="totalPages > 1" class="pt-6">
+        <nav class="pagination" aria-label="Webmentions pagination">
+          <div class="pagination-info">
+            Page <span x-text="currentPage"></span> of <span x-text="totalPages"></span>
+            <span class="text-surface-400 dark:text-surface-500 ml-1">(<span x-text="filteredWebmentions.length"></span> total)</span>
+          </div>
+          <div class="pagination-links">
+            <button
+              @click="goToPage(currentPage - 1)"
+              :disabled="currentPage <= 1"
+              class="pagination-link"
+              :class="currentPage <= 1 ? 'disabled' : ''">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              Previous
+            </button>
+
+            <template x-for="p in pageNumbers" :key="p">
+              <button
+                @click="typeof p === 'number' && goToPage(p)"
+                :disabled="p === '…'"
+                :class="p === currentPage ? 'bg-accent-600 text-white dark:bg-accent-500' : p === '…' ? 'cursor-default opacity-50' : 'bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700'"
+                class="px-3 py-1.5 text-sm rounded-lg transition-colors"
+                x-text="p">
+              </button>
+            </template>
+
+            <button
+              @click="goToPage(currentPage + 1)"
+              :disabled="currentPage >= totalPages"
+              class="pagination-link"
+              :class="currentPage >= totalPages ? 'disabled' : ''">
+              Next
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+          </div>
+        </nav>
       </div>
     </div>
 
@@ -316,14 +345,13 @@ function interactionsApp() {
   return {
     activeTab: 'inbound',
     loading: false,
-    loadingMore: false,
     error: null,
     notConfigured: false,
     webmentions: [],
     filterType: 'all',
-    page: 0,
-    perPage: 50,
-    hasMore: true,
+    currentPage: 1,
+    displayPerPage: 20,
+    fetchPerPage: 200,
     refreshInterval: null,
 
     get likes() {
@@ -351,14 +379,41 @@ function interactionsApp() {
       return this.webmentions.filter(wm => wm['wm-property'] === this.filterType);
     },
 
+    get totalPages() {
+      return Math.max(1, Math.ceil(this.filteredWebmentions.length / this.displayPerPage));
+    },
+
     get paginatedWebmentions() {
-      // Client-side pagination of filtered results
-      return this.filteredWebmentions;
+      const start = (this.currentPage - 1) * this.displayPerPage;
+      return this.filteredWebmentions.slice(start, start + this.displayPerPage);
+    },
+
+    get pageNumbers() {
+      const total = this.totalPages;
+      const current = this.currentPage;
+      if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+      const pages = [];
+      pages.push(1);
+      if (current > 3) pages.push('…');
+      for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
+        pages.push(i);
+      }
+      if (current < total - 2) pages.push('…');
+      pages.push(total);
+      return pages;
+    },
+
+    goToPage(page) {
+      if (page < 1 || page > this.totalPages) return;
+      this.currentPage = page;
+      // Scroll to top of inbound tab
+      this.$el.closest('[x-show]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     },
 
     async init() {
+      // Reset page when filter changes
+      this.$watch('filterType', () => { this.currentPage = 1; });
       await this.fetchWebmentions();
-      // Auto-refresh every 5 minutes (skip if not configured)
       if (!this.notConfigured) {
         this.refreshInterval = setInterval(() => this.fetchWebmentions(true), 5 * 60 * 1000);
       }
@@ -367,46 +422,60 @@ function interactionsApp() {
     async fetchWebmentions(silent = false) {
       if (!silent) {
         this.loading = true;
-        this.page = 0;
         this.webmentions = [];
-        this.hasMore = true;
       }
       this.error = null;
 
       try {
-        // Fetch from both webmention-io and conversations APIs in parallel
-        const wmUrl = `/webmentions/api/mentions?per-page=${this.perPage}&page=${this.page}`;
-        const convUrl = `/conversations/api/mentions?per-page=${this.perPage}&page=${this.page}`;
+        // Fetch all available webmentions by paging through the APIs
+        let allWm = [];
+        let allConv = [];
+        let wmPage = 0;
+        let wmDone = false;
+        let wmConfigured = true;
 
-        const [wmResult, convResult] = await Promise.allSettled([
-          fetch(wmUrl).then(r => {
-            if (r.status === 404) return { children: [], notConfigured: true };
-            if (!r.ok) throw new Error(`HTTP ${r.status}`);
-            return r.json();
-          }),
-          fetch(convUrl).then(r => {
-            if (!r.ok) return { children: [] };
-            return r.json();
-          }).catch(() => ({ children: [] })),
-        ]);
+        // Fetch all pages from both APIs
+        while (!wmDone) {
+          const [wmResult, convResult] = await Promise.allSettled([
+            fetch(`/webmentions/api/mentions?per-page=${this.fetchPerPage}&page=${wmPage}`).then(r => {
+              if (r.status === 404) return { children: [], notConfigured: true };
+              if (!r.ok) throw new Error(`HTTP ${r.status}`);
+              return r.json();
+            }),
+            fetch(`/conversations/api/mentions?per-page=${this.fetchPerPage}&page=${wmPage}`).then(r => {
+              if (!r.ok) return { children: [] };
+              return r.json();
+            }).catch(() => ({ children: [] })),
+          ]);
 
-        const wmData = wmResult.status === 'fulfilled' ? wmResult.value : { children: [] };
-        const convData = convResult.status === 'fulfilled' ? convResult.value : { children: [] };
+          const wmData = wmResult.status === 'fulfilled' ? wmResult.value : { children: [] };
+          const convData = convResult.status === 'fulfilled' ? convResult.value : { children: [] };
 
-        // Check if webmention-io is configured
-        if (wmData.notConfigured && (!convData.children || !convData.children.length)) {
+          if (wmData.notConfigured) wmConfigured = false;
+
+          allWm = allWm.concat(wmData.children || []);
+          allConv = allConv.concat(convData.children || []);
+
+          // Stop if both APIs returned fewer than a full page
+          const wmCount = (wmData.children || []).length;
+          const convCount = (convData.children || []).length;
+          if (wmCount < this.fetchPerPage && convCount < this.fetchPerPage) {
+            wmDone = true;
+          } else {
+            wmPage++;
+            // Safety cap to prevent infinite loops
+            if (wmPage > 20) wmDone = true;
+          }
+        }
+
+        if (!wmConfigured && allConv.length === 0) {
           this.notConfigured = true;
           return;
         }
         this.notConfigured = false;
 
-        // Merge and deduplicate - conversations items (with platform field) take priority
-        const merged = this.mergeAndDeduplicate(
-          wmData.children || [],
-          convData.children || []
-        );
+        const merged = this.mergeAndDeduplicate(allWm, allConv);
 
-        // Sort by date, newest first
         merged.sort((a, b) => {
           const dateA = new Date(a.published || a['wm-received'] || 0);
           const dateB = new Date(b.published || b['wm-received'] || 0);
@@ -414,7 +483,7 @@ function interactionsApp() {
         });
 
         this.webmentions = merged;
-        this.hasMore = (wmData.children || []).length === this.perPage;
+        if (!silent) this.currentPage = 1;
       } catch (err) {
         this.error = `Failed to load webmentions: ${err.message}`;
         console.error('[Interactions]', err);
@@ -426,22 +495,18 @@ function interactionsApp() {
     detectPlatform(item) {
       const source = item['wm-source'] || '';
       const authorUrl = item.author?.url || '';
-      // Bridgy source URLs: brid.gy/{action}/{platform}/...
       if (source.includes('brid.gy/') && source.includes('/mastodon/')) return 'mastodon';
       if (source.includes('brid.gy/') && source.includes('/bluesky/')) return 'bluesky';
-      // Author URL heuristics
       if (authorUrl.includes('bsky.app')) return 'bluesky';
       if (authorUrl.includes('mstdn') || authorUrl.includes('mastodon') || authorUrl.includes('social.')) return 'mastodon';
       return null;
     },
 
     mergeAndDeduplicate(wmItems, convItems) {
-      // Build a Set of source URLs from conversations for dedup
       const convUrls = new Set(convItems.map(c => c.url).filter(Boolean));
       const seen = new Set();
       const result = [];
 
-      // Add all conversations items first (they have richer metadata)
       for (const item of convItems) {
         const key = item['wm-id'] || item.url;
         if (key && !seen.has(key)) {
@@ -450,16 +515,11 @@ function interactionsApp() {
         }
       }
 
-      // Add webmention-io items that aren't duplicated by conversations
       for (const item of wmItems) {
         const wmKey = item['wm-id'];
         if (seen.has(wmKey)) continue;
-
-        // Also check if this webmention's source URL matches a conversations item
-        // (same interaction from Bridgy webmention AND direct poll)
         if (item.url && convUrls.has(item.url)) continue;
 
-        // Infer platform from Bridgy source URL or author URL
         if (!item.platform) {
           const detected = this.detectPlatform(item);
           if (detected) item.platform = detected;
@@ -470,36 +530,6 @@ function interactionsApp() {
       }
 
       return result;
-    },
-
-    async loadMore() {
-      this.loadingMore = true;
-      this.page++;
-
-      try {
-        const wmUrl = `/webmentions/api/mentions?per-page=${this.perPage}&page=${this.page}`;
-        const convUrl = `/conversations/api/mentions?per-page=${this.perPage}&page=${this.page}`;
-
-        const [wmResult, convResult] = await Promise.allSettled([
-          fetch(wmUrl).then(r => r.ok ? r.json() : { children: [] }),
-          fetch(convUrl).then(r => r.ok ? r.json() : { children: [] }).catch(() => ({ children: [] })),
-        ]);
-
-        const wmData = wmResult.status === 'fulfilled' ? wmResult.value : { children: [] };
-        const convData = convResult.status === 'fulfilled' ? convResult.value : { children: [] };
-
-        const merged = this.mergeAndDeduplicate(
-          wmData.children || [],
-          convData.children || []
-        );
-
-        this.webmentions = [...this.webmentions, ...merged];
-        this.hasMore = (wmData.children || []).length === this.perPage;
-      } catch (err) {
-        this.error = `Failed to load more: ${err.message}`;
-      } finally {
-        this.loadingMore = false;
-      }
     },
 
     formatDate(dateStr) {
@@ -518,7 +548,6 @@ function interactionsApp() {
       if (!url) return '';
       try {
         const u = new URL(url);
-        // Return just the pathname, trimmed
         let path = u.pathname;
         if (path.length > 50) {
           path = path.slice(0, 47) + '...';

@@ -133,4 +133,18 @@ withSidebar: true
   {# Hidden metadata for microformats #}
   <a class="u-url hidden" href="{{ page.url }}"></a>
   <data class="p-author h-card hidden" value="{{ site.author.name }}"></data>
+
+  {# Pagefind filter metadata #}
+  <div hidden>
+    <span data-pagefind-filter="type">Page</span>
+    {% if category %}
+      {% if category is string %}
+      <span data-pagefind-filter="category">{{ category }}</span>
+      {% else %}
+      {% for cat in category %}
+      <span data-pagefind-filter="category">{{ cat }}</span>
+      {% endfor %}
+      {% endif %}
+    {% endif %}
+  </div>
 </article>

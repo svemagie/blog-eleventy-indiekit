@@ -386,6 +386,52 @@ export default function (eleventyConfig) {
     return content;
   });
 
+  // Auto-unfurl standalone external links in note content
+  // Finds <a> tags that are the primary content of a <p> tag and injects OG preview cards
+  eleventyConfig.addTransform("auto-unfurl-notes", async function (content, outputPath) {
+    if (!outputPath || !outputPath.endsWith(".html")) return content;
+    // Only process note pages (individual + listing)
+    if (!outputPath.includes("/notes/")) return content;
+
+    // Match <p> tags whose content is short text + a single external <a> as the last element
+    // Pattern: <p>optional short text <a href="https://external.example">...</a></p>
+    const linkParagraphRe = /<p>([^<]{0,80})?<a\s+href="(https?:\/\/[^"]+)"[^>]*>[^<]*<\/a>\s*<\/p>/g;
+    const siteHost = new URL(siteUrl).hostname;
+    const matches = [];
+
+    let match;
+    while ((match = linkParagraphRe.exec(content)) !== null) {
+      const url = match[2];
+      try {
+        const linkHost = new URL(url).hostname;
+        // Skip same-domain links and common non-content URLs
+        if (linkHost === siteHost || linkHost.endsWith("." + siteHost)) continue;
+        matches.push({ fullMatch: match[0], url, index: match.index });
+      } catch {
+        continue;
+      }
+    }
+
+    if (matches.length === 0) return content;
+
+    // Unfurl all matched URLs in parallel (uses cache, throttles network)
+    const cards = await Promise.all(matches.map(m => prefetchUrl(m.url)));
+
+    // Replace in reverse order to preserve indices
+    let result = content;
+    for (let i = matches.length - 1; i >= 0; i--) {
+      const m = matches[i];
+      const card = cards[i];
+      // Skip if unfurl returned just a fallback link (no OG data)
+      if (!card || !card.includes("unfurl-card")) continue;
+      // Insert the unfurl card after the paragraph
+      const insertPos = m.index + m.fullMatch.length;
+      result = result.slice(0, insertPos) + "\n" + card + "\n" + result.slice(insertPos);
+    }
+
+    return result;
+  });
+
   // HTML minification — only during initial build, skip during watch rebuilds
   eleventyConfig.addTransform("htmlmin", async function (content, outputPath) {
     if (outputPath && outputPath.endsWith(".html") && process.env.ELEVENTY_RUN_MODE === "build") {
