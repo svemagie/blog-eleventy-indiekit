@@ -22,6 +22,7 @@
     {% elif widget.type == "author-card" %}{% set widgetTitle = "Author" %}
     {% elif widget.type == "author-card-compact" %}{% set widgetTitle = "Author" %}
     {% elif widget.type == "subscribe" %}{% set widgetTitle = "Subscribe" %}
+    {% elif widget.type == "ai-usage" %}{% set widgetTitle = "AI Transparency" %}
     {% elif widget.type == "custom-html" %}{% set widgetTitle = (widget.config.title if widget.config and widget.config.title) or "Custom" %}
     {% else %}{% set widgetTitle = widget.type %}
     {% endif %}
@@ -53,6 +54,8 @@
       {% set widgetIcon = "search" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
     {% elif widget.type == "webmentions" %}
       {% set widgetIcon = "share" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+    {% elif widget.type == "ai-usage" %}
+      {% set widgetIcon = "zap" %}{% set widgetIconClass = "w-5 h-5 text-amber-500" %}{% set widgetBorder = "border-l-[3px] border-l-amber-400 dark:border-l-amber-500" %}
     {% else %}
       {% set widgetIcon = "" %}{% set widgetIconClass = "" %}{% set widgetBorder = "" %}
     {% endif %}
@@ -125,6 +128,8 @@
             {% include "components/widgets/webmentions.njk" %}
           {% elif widget.type == "fediverse-follow" %}
             {% include "components/widgets/fediverse-follow.njk" %}
+          {% elif widget.type == "ai-usage" %}
+            {% include "components/widgets/ai-usage.njk" ignore missing %}
           {% elif widget.type == "custom-html" %}
             {% set wConfig = widget.config or {} %}
             <is-land on:visible>
