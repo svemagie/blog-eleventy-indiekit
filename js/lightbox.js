@@ -96,6 +96,23 @@ document.addEventListener("alpine:init", () => {
       if (e.key === "Escape") this.close();
       if (e.key === "ArrowRight") this.next();
       if (e.key === "ArrowLeft") this.prev();
+      if (e.key === "Tab") {
+        const dialog = document.querySelector('[role="dialog"][aria-modal="true"]');
+        if (!dialog) return;
+        const focusable = Array.from(
+          dialog.querySelectorAll('button, [tabindex]:not([tabindex="-1"])')
+        ).filter((el) => el.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     },
   }));
 });

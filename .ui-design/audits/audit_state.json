@@ -1,0 +1,30 @@
+{
+  "audit_id": "indiekit-eleventy-theme_20260307_r2",
+  "target": "entire indiekit-eleventy-theme codebase",
+  "wcag_level": "AA",
+  "focus_areas": ["all"],
+  "status": "complete",
+  "started_at": "2026-03-07T00:00:00Z",
+  "completed_at": "2026-03-07T00:00:00Z",
+  "files_audited": 95,
+  "issues_found": {
+    "critical": 0,
+    "serious": 1,
+    "moderate": 3,
+    "minor": 1
+  },
+  "criteria_checked": 28,
+  "criteria_passed": 26,
+  "compliance_status": "substantially_compliant",
+  "previous_audit": {
+    "audit_id": "indiekit-eleventy-theme_20260307",
+    "issues_found": {
+      "critical": 8,
+      "serious": 12,
+      "moderate": 22,
+      "minor": 8
+    },
+    "criteria_passed": 15,
+    "compliance_status": "needs_improvement"
+  }
+}

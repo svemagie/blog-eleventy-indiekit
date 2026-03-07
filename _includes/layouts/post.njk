@@ -24,16 +24,16 @@ withBlogSidebar: true
       {{ date | dateDisplay }}
     </time></time-difference>
     {% if category %}
-    <span class="post-categories">
+    <ul class="post-categories" role="list" aria-label="Categories">
       {# Handle both string and array categories #}
       {% if category is string %}
-      <a href="/categories/{{ category | slugify }}/" class="p-category">{{ category }}</a>
+      <li><a href="/categories/{{ category | slugify }}/" class="p-category">{{ category }}</a></li>
       {% else %}
       {% for cat in category %}
-      <a href="/categories/{{ cat | slugify }}/" class="p-category">{{ cat }}</a>
+      <li><a href="/categories/{{ cat | slugify }}/" class="p-category">{{ cat }}</a></li>
       {% endfor %}
       {% endif %}
-    </span>
+    </ul>
     {% endif %}
   </div>
 
@@ -54,7 +54,7 @@ withBlogSidebar: true
       {% if photoUrl and photoUrl[0] != '/' and 'http' not in photoUrl %}
         {% set photoUrl = '/' + photoUrl %}
       {% endif %}
-      <img src="{{ photoUrl }}" alt="{{ img.alt | default('Photo') }}" class="u-photo rounded-lg max-w-full" loading="lazy" eleventy:ignore>
+      <img src="{{ photoUrl }}" alt="{{ img.alt | default('Photo from: ' + title) }}" class="u-photo rounded-lg max-w-full" loading="lazy" eleventy:ignore>
     {% endfor %}
   </div>
   {% endif %}

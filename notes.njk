@@ -48,7 +48,7 @@ permalink: "notes/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumbe
         {{ post.templateContent | safe }}
       </div>
       <div class="post-footer mt-3">
-        <a href="{{ post.url }}" class="text-sm text-teal-600 dark:text-teal-400 hover:underline">
+        <a href="{{ post.url }}" class="text-sm text-teal-600 dark:text-teal-400 hover:underline" aria-label="Permalink: {{ post.data.title or ('Note from ' + (post.date | dateDisplay)) }}">
           Permalink
         </a>
       </div>

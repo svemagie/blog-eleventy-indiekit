@@ -91,7 +91,7 @@ permalink: "replies/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNum
           <div class="e-content prose dark:prose-invert prose-sm mt-3 max-w-none">
             {{ post.templateContent | safe }}
           </div>
-          <a class="u-url text-sm text-sky-600 dark:text-sky-400 hover:underline mt-3 inline-block" href="{{ post.url }}">Permalink</a>
+          <a class="u-url text-sm text-sky-600 dark:text-sky-400 hover:underline mt-3 inline-block" href="{{ post.url }}" aria-label="Permalink: {{ post.data.title or ('Reply from ' + (post.date | dateDisplay)) }}">Permalink</a>
         </div>
       </div>
     </li>

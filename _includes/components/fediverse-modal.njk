@@ -2,7 +2,17 @@
 {# Used by post.njk (interact), fediverse-follow.njk (follow), share.njk (share) #}
 {# Requires: modalTitle, modalDescription variables set before include #}
 <template x-if="showModal">
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="showModal = false">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+       @keydown.escape.window="showModal = false"
+       x-init="$nextTick(() => { const input = $el.querySelector('input'); if (input) input.focus(); })"
+       @keydown.tab="
+         const focusable = [...$el.querySelectorAll('button, input, a, [tabindex]:not([tabindex=\"-1\"])')].filter(el => !el.closest('[x-show]') || el.closest('[x-show]').style.display !== 'none');
+         if (!focusable.length) return;
+         const first = focusable[0];
+         const last = focusable[focusable.length - 1];
+         if ($event.shiftKey && document.activeElement === first) { $event.preventDefault(); last.focus(); }
+         else if (!$event.shiftKey && document.activeElement === last) { $event.preventDefault(); first.focus(); }
+       ">
     {# Backdrop #}
     <div class="fixed inset-0 bg-black/40"
          x-transition:enter="transition ease-out duration-200"

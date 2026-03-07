@@ -6,7 +6,7 @@
   <nav class="toc" aria-label="Table of contents">
     <ul class="space-y-1 text-sm">
       {% for item in toc %}
-      <li class="{% if item.level > 2 %}ml-{{ (item.level - 2) * 3 }}{% endif %}">
+      <li class="{% if item.level == 3 %}ml-3{% elif item.level == 4 %}ml-6{% elif item.level == 5 %}ml-9{% elif item.level == 6 %}ml-12{% endif %}">
         <a href="#{{ item.slug }}" class="text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:underline transition-colors">
           {{ item.text }}
         </a>

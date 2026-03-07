@@ -137,7 +137,7 @@ permalink: "featured/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
       <div class="e-content prose dark:prose-invert prose-sm mt-3 max-w-none">{{ post.templateContent | safe }}</div>
       {% endif %}
       <div class="post-footer mt-3">
-        <a href="{{ post.url }}" class="text-sm text-accent-600 dark:text-accent-400 hover:underline">Permalink</a>
+        <a href="{{ post.url }}" class="text-sm text-accent-600 dark:text-accent-400 hover:underline" aria-label="Permalink: {{ post.data.title or ('Post from ' + (post.date | dateDisplay)) }}">Permalink</a>
       </div>
       {% endif %}
 

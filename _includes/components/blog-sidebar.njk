@@ -145,7 +145,7 @@
           {% elif widget.type == "custom-html" %}
             {% set wConfig = widget.config or {} %}
             <is-land on:visible>
-            <div class="widget">
+            <div class="widget" role="region" aria-label="Custom content">
               {% if wConfig.content %}
               <div class="prose dark:prose-invert prose-sm max-w-none">
                 {{ wConfig.content | safe }}

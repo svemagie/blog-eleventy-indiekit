@@ -104,6 +104,7 @@ permalink: /podroll/
                 preload="none"
                 class="w-full h-10 rounded-lg"
                 :src="episode.enclosure?.url"
+                :aria-label="'Play: ' + episode.title"
               >
                 Your browser does not support the audio element.
               </audio>

@@ -9,9 +9,13 @@
   </h3>
 
   {# Source tabs - only shown when multiple sources exist #}
-  <div x-show="tabs.length > 1" class="flex gap-1 mt-3 mb-2 border-b border-surface-200 dark:border-surface-700">
+  <div x-show="tabs.length > 1" class="flex gap-1 mt-3 mb-2 border-b border-surface-200 dark:border-surface-700" role="tablist" aria-label="Blogroll sources">
     <template x-for="tab in tabs" :key="tab.key">
       <button
+        role="tab"
+        :id="'blogroll-tab-' + tab.key"
+        :aria-selected="(activeTab === tab.key).toString()"
+        aria-controls="blogroll-panel"
         @click="activeTab = tab.key"
         :class="activeTab === tab.key
           ? 'border-b-2 border-accent-600 text-accent-600 dark:text-accent-400 dark:border-accent-400'
@@ -22,7 +26,7 @@
     </template>
   </div>
 
-  <ul x-show="filteredBlogs.length > 0" class="space-y-2" :class="tabs.length > 1 ? '' : 'mt-3'">
+  <ul x-show="filteredBlogs.length > 0" class="space-y-2" :class="tabs.length > 1 ? '' : 'mt-3'" role="tabpanel" id="blogroll-panel" :aria-labelledby="'blogroll-tab-' + activeTab">
     <template x-for="blog in filteredBlogs.slice(0, 8)" :key="blog.id">
       <li>
         <a

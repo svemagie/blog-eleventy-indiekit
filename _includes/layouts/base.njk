@@ -330,7 +330,7 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
         {# Navigate #}
         <div>
-          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-400 mb-3">Navigate</h4>
+          <p class="text-sm font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-400 mb-3" role="heading" aria-level="2">Navigate</p>
           <ul class="space-y-2">
             <li><a href="/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline">Home</a></li>
             <li><a href="/about/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline">About</a></li>
@@ -340,7 +340,7 @@
         </div>
         {# Content #}
         <div>
-          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-400 mb-3">Content</h4>
+          <p class="text-sm font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-400 mb-3" role="heading" aria-level="2">Content</p>
           <ul class="space-y-2">
             <li><a href="/blog/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline">Blog</a></li>
             {% for pt in enabledPostTypes %}
@@ -351,16 +351,16 @@
         </div>
         {# Connect #}
         <div>
-          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-400 mb-3">Connect</h4>
+          <p class="text-sm font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-400 mb-3" role="heading" aria-level="2">Connect</p>
           <ul class="space-y-2">
             {% for social in site.social %}
-            <li><a href="{{ social.url }}" rel="{{ social.rel }}" target="_blank" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline">{{ social.name }}</a></li>
+            <li><a href="{{ social.url }}" rel="{{ social.rel }}" target="_blank" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline" aria-label="{{ social.name }} (opens in new tab)">{{ social.name }}</a></li>
             {% endfor %}
           </ul>
         </div>
         {# Meta #}
         <div>
-          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-400 mb-3">Meta</h4>
+          <p class="text-sm font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-400 mb-3" role="heading" aria-level="2">Meta</p>
           <ul class="space-y-2">
             <li><a href="/feed.xml" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline">RSS Feed</a></li>
             <li><a href="/feed.json" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline">JSON Feed</a></li>

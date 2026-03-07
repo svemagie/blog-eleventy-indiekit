@@ -59,7 +59,7 @@ permalink: "photos/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumb
       {% if post.templateContent %}
       <div class="e-content photo-caption prose dark:prose-invert prose-sm mt-3 max-w-none">{{ post.templateContent | safe }}</div>
       {% endif %}
-      <a class="u-url text-sm text-purple-600 dark:text-purple-400 hover:underline mt-3 inline-block" href="{{ post.url }}">Permalink</a>
+      <a class="u-url text-sm text-purple-600 dark:text-purple-400 hover:underline mt-3 inline-block" href="{{ post.url }}" aria-label="Permalink: {{ post.data.title or ('Photo from ' + (post.date | dateDisplay)) }}">Permalink</a>
     </li>
     {% endfor %}
   </ul>

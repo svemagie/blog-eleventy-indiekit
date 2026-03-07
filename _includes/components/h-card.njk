@@ -74,7 +74,7 @@
   <div class="mt-2 flex flex-wrap gap-3 text-sm">
     {% if authorEmail %}
     {# Display text obfuscated to deter spam harvesters; href kept plain for browser compatibility #}
-    <a href="mailto:{{ authorEmail }}" class="u-email text-accent-600 dark:text-accent-400 hover:underline" itemprop="email">
+    <a href="mailto:{{ authorEmail }}" class="u-email text-accent-600 dark:text-accent-400 hover:underline" itemprop="email" aria-label="Email {{ authorEmail }}">
       ✉️ {{ authorEmail | obfuscateEmail | safe }}
     </a>
     {% endif %}

@@ -637,7 +637,7 @@
     transition: opacity 0.15s;
   }
   .prose :is(h2, h3, h4):hover > a.header-anchor::after {
-    opacity: 0.6;
+    opacity: 1;
   }
 
   .post-list li {

@@ -68,7 +68,7 @@
             {{ post.templateContent | safe }}
           </div>
           {% endif %}
-          <a class="u-url text-xs text-accent-600 dark:text-accent-400 hover:underline mt-2 inline-block" href="{{ post.url }}">Permalink</a>
+          <a class="u-url text-xs text-accent-600 dark:text-accent-400 hover:underline mt-2 inline-block" href="{{ post.url }}" aria-label="Permalink: {{ post.data.title or (post.date | dateDisplay) }}">Permalink</a>
         </div>
       </div>
 
@@ -101,7 +101,7 @@
             {{ post.templateContent | safe }}
           </div>
           {% endif %}
-          <a class="u-url text-xs text-accent-600 dark:text-accent-400 hover:underline mt-2 inline-block" href="{{ post.url }}">Permalink</a>
+          <a class="u-url text-xs text-accent-600 dark:text-accent-400 hover:underline mt-2 inline-block" href="{{ post.url }}" aria-label="Permalink: {{ post.data.title or (post.date | dateDisplay) }}">Permalink</a>
         </div>
       </div>
 
@@ -129,7 +129,7 @@
             {{ post.templateContent | safe }}
           </div>
           {% endif %}
-          <a class="u-url text-xs text-accent-600 dark:text-accent-400 hover:underline mt-2 inline-block" href="{{ post.url }}">Permalink</a>
+          <a class="u-url text-xs text-accent-600 dark:text-accent-400 hover:underline mt-2 inline-block" href="{{ post.url }}" aria-label="Permalink: {{ post.data.title or (post.date | dateDisplay) }}">Permalink</a>
         </div>
       </div>
 
@@ -157,7 +157,7 @@
             {{ post.templateContent | safe }}
           </div>
           {% endif %}
-          <a class="u-url text-xs text-accent-600 dark:text-accent-400 hover:underline mt-2 inline-block" href="{{ post.url }}">Permalink</a>
+          <a class="u-url text-xs text-accent-600 dark:text-accent-400 hover:underline mt-2 inline-block" href="{{ post.url }}" aria-label="Permalink: {{ post.data.title or (post.date | dateDisplay) }}">Permalink</a>
         </div>
       </div>
 
@@ -184,7 +184,7 @@
                 {% set photoUrl = '/' + photoUrl %}
               {% endif %}
               <a href="{{ post.url }}" class="photo-link">
-                <img src="{{ photoUrl }}" alt="{{ img.alt | default('Photo') }}" class="u-photo rounded max-h-48 object-cover" loading="lazy" eleventy:ignore>
+                <img src="{{ photoUrl }}" alt="{{ img.alt | default('Photo from: ' + post.data.title) }}" class="u-photo rounded max-h-48 object-cover" loading="lazy" eleventy:ignore>
               </a>
             {% endfor %}
           </div>
@@ -193,7 +193,7 @@
             {{ post.templateContent | safe }}
           </div>
           {% endif %}
-          <a class="u-url text-xs text-accent-600 dark:text-accent-400 hover:underline mt-2 inline-block" href="{{ post.url }}">Permalink</a>
+          <a class="u-url text-xs text-accent-600 dark:text-accent-400 hover:underline mt-2 inline-block" href="{{ post.url }}" aria-label="Permalink: {{ post.data.title or (post.date | dateDisplay) }}">Permalink</a>
         </div>
       </div>
 
@@ -239,7 +239,7 @@
         {{ post.templateContent | safe }}
       </div>
       {% endif %}
-      <a href="{{ post.url }}" class="text-xs text-accent-600 dark:text-accent-400 hover:underline mt-2 inline-block">
+      <a href="{{ post.url }}" class="text-xs text-accent-600 dark:text-accent-400 hover:underline mt-2 inline-block" aria-label="Permalink: {{ post.data.title or (post.date | dateDisplay) }}">
         Permalink
       </a>
       {% endif %}

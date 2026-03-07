@@ -10,7 +10,7 @@
 {% set bookmarkedUrl = bookmarkOf or bookmark_of %}
 
 {% if replyTo or likedUrl or repostedUrl or bookmarkedUrl %}
-<aside class="reply-context mb-6">
+<aside class="reply-context mb-6" aria-label="Reply context">
   {% if replyTo %}
   <div class="u-in-reply-to h-cite">
     <p class="text-sm text-surface-600 dark:text-surface-400 mb-2 flex items-center gap-2">
