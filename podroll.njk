@@ -14,10 +14,10 @@ permalink: /podroll/
     <p class="text-surface-600 dark:text-surface-400">
       My podcast subscriptions - recent episodes from <span x-text="sources.length" class="font-medium font-mono"></span> podcasts
     </p>
-    <p class="text-xs text-surface-500 mt-2" x-show="status?.episodes?.lastSync">
+    <p class="text-xs text-surface-600 dark:text-surface-400 mt-2" x-show="status?.episodes?.lastSync">
       Last synced: <span class="font-mono" x-text="formatDate(status?.episodes?.lastSync, 'full')"></span>
-      <button @click="refresh()" class="ml-2 text-orange-600 hover:text-orange-700 dark:text-orange-400 transition-colors rounded" :disabled="loading">
-        <svg class="w-3 h-3 inline" :class="{ 'animate-spin': loading }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button @click="refresh()" class="ml-2 text-orange-600 hover:text-orange-700 dark:text-orange-400 transition-colors rounded" :disabled="loading" aria-label="Refresh episodes">
+        <svg class="w-3 h-3 inline" :class="{ 'animate-spin': loading }" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
         </svg>
       </button>
@@ -28,8 +28,8 @@ permalink: /podroll/
     {# Main Content - Episodes #}
     <div class="main-content">
       {# Loading State #}
-      <div x-show="loading && episodes.length === 0" class="text-center py-12">
-        <svg class="w-8 h-8 mx-auto text-orange-600 animate-spin mb-4" fill="none" viewBox="0 0 24 24">
+      <div x-show="loading && episodes.length === 0" class="text-center py-12" role="status">
+        <svg class="w-8 h-8 mx-auto text-orange-600 animate-spin mb-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
@@ -37,7 +37,7 @@ permalink: /podroll/
       </div>
 
       {# Error State #}
-      <div x-show="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+      <div x-show="error" role="alert" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
         <p class="text-red-700 dark:text-red-400" x-text="error"></p>
         <button @click="refresh()" class="mt-2 text-sm text-red-600 hover:text-red-700 underline">Try again</button>
       </div>
@@ -45,7 +45,9 @@ permalink: /podroll/
       {# Filter by Podcast #}
       <div x-show="episodes.length > 0" class="mb-6">
         <div class="relative">
+          <label for="podroll-filter" class="sr-only">Filter by podcast</label>
           <select
+            id="podroll-filter"
             x-model="filterPodcast"
             class="w-full sm:w-auto appearance-none bg-surface-100 dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg px-4 py-2 pr-10 text-sm text-surface-700 dark:text-surface-300"
           >
@@ -54,7 +56,7 @@ permalink: /podroll/
               <option :value="source.title" x-text="source.title"></option>
             </template>
           </select>
-          <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-surface-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-surface-600 dark:text-surface-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>
         </div>
@@ -70,7 +72,7 @@ permalink: /podroll/
                 <h2 class="font-semibold text-lg text-surface-900 dark:text-surface-100 mb-1">
                   <a :href="episode.url" class="hover:text-orange-600 dark:hover:text-orange-400 transition-colors" target="_blank" rel="noopener" x-text="episode.title"></a>
                 </h2>
-                <div class="flex flex-wrap items-center gap-2 text-sm text-surface-500">
+                <div class="flex flex-wrap items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
                   <a
                     x-show="episode.podcast"
                     :href="episode.podcast?.url || '#'"
@@ -130,7 +132,7 @@ permalink: /podroll/
               <a
                 x-show="episode.podcast?.feedUrl"
                 :href="episode.podcast?.feedUrl"
-                class="inline-flex items-center gap-2 text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors"
+                class="inline-flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300 transition-colors"
                 target="_blank"
                 rel="noopener"
                 title="Subscribe to feed"
@@ -187,11 +189,11 @@ permalink: /podroll/
 
       {# Empty State #}
       <div x-show="!loading && episodes.length === 0 && !error" class="text-center py-12">
-        <svg class="w-16 h-16 mx-auto text-surface-300 dark:text-surface-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-16 h-16 mx-auto text-surface-300 dark:text-surface-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
         </svg>
         <p class="text-surface-600 dark:text-surface-400 text-lg">No podcast episodes yet.</p>
-        <p class="text-surface-500 text-sm mt-2">Episodes will appear once the sync completes.</p>
+        <p class="text-surface-600 dark:text-surface-400 text-sm mt-2">Episodes will appear once the sync completes.</p>
       </div>
     </div>
 
@@ -204,10 +206,10 @@ permalink: /podroll/
             <path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/>
           </svg>
           Subscriptions
-          <span class="text-sm font-normal font-mono text-surface-500" x-text="'(' + sources.length + ')'"></span>
+          <span class="text-sm font-normal font-mono text-surface-600 dark:text-surface-400" x-text="'(' + sources.length + ')'"></span>
         </h3>
 
-        <div x-show="sources.length === 0 && !loading" class="text-sm text-surface-500 text-center py-4">
+        <div x-show="sources.length === 0 && !loading" class="text-sm text-surface-600 dark:text-surface-400 text-center py-4">
           No subscriptions loaded yet.
         </div>
 
@@ -225,7 +227,7 @@ permalink: /podroll/
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-medium text-surface-900 dark:text-surface-100 truncate" x-text="source.title"></p>
-                  <p x-show="source.category" class="text-xs text-surface-500 truncate" x-text="source.category"></p>
+                  <p x-show="source.category" class="text-xs text-surface-600 dark:text-surface-400 truncate" x-text="source.category"></p>
                 </div>
                 <a
                   :href="source.xmlUrl"

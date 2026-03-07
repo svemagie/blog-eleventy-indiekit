@@ -39,17 +39,17 @@
     {% elif widget.type == "fediverse-follow" %}
       {% set widgetIcon = "user-plus" %}{% set widgetIconClass = "w-5 h-5 text-[#a730b8]" %}{% set widgetBorder = "border-l-[3px] border-l-[#a730b8]" %}
     {% elif widget.type == "author-card" %}
-      {% set widgetIcon = "user" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+      {% set widgetIcon = "user" %}{% set widgetIconClass = "w-5 h-5 text-surface-600 dark:text-surface-400" %}{% set widgetBorder = "" %}
     {% elif widget.type == "recent-posts" %}
-      {% set widgetIcon = "list" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+      {% set widgetIcon = "list" %}{% set widgetIconClass = "w-5 h-5 text-surface-600 dark:text-surface-400" %}{% set widgetBorder = "" %}
     {% elif widget.type == "categories" %}
-      {% set widgetIcon = "tag" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+      {% set widgetIcon = "tag" %}{% set widgetIconClass = "w-5 h-5 text-surface-600 dark:text-surface-400" %}{% set widgetBorder = "" %}
     {% elif widget.type == "recent-comments" %}
-      {% set widgetIcon = "chat" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+      {% set widgetIcon = "chat" %}{% set widgetIconClass = "w-5 h-5 text-surface-600 dark:text-surface-400" %}{% set widgetBorder = "" %}
     {% elif widget.type == "search" %}
-      {% set widgetIcon = "search" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+      {% set widgetIcon = "search" %}{% set widgetIconClass = "w-5 h-5 text-surface-600 dark:text-surface-400" %}{% set widgetBorder = "" %}
     {% elif widget.type == "webmentions" %}
-      {% set widgetIcon = "share" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+      {% set widgetIcon = "share" %}{% set widgetIconClass = "w-5 h-5 text-surface-600 dark:text-surface-400" %}{% set widgetBorder = "" %}
     {% elif widget.type == "ai-usage" %}
       {% set widgetIcon = "zap" %}{% set widgetIconClass = "w-5 h-5 text-amber-500" %}{% set widgetBorder = "border-l-[3px] border-l-amber-400 dark:border-l-amber-500" %}
     {% else %}
@@ -78,6 +78,7 @@
             class="widget-chevron"
             :class="open && 'rotate-180'"
             fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>

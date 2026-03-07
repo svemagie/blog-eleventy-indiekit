@@ -62,7 +62,7 @@
         </div>
         <div class="flex items-center gap-2 shrink-0">
           {% if item.startDate %}
-          <span class="text-xs text-surface-500 hidden sm:inline font-mono">
+          <span class="text-xs text-surface-600 dark:text-surface-400 hidden sm:inline font-mono">
             {{ item.startDate }}{% if item.endDate %} – {{ item.endDate }}{% else %} – Present{% endif %}
           </span>
           {% endif %}
@@ -89,7 +89,7 @@
         class="px-4 pb-4"
       >
         {% if item.startDate %}
-        <p class="text-xs text-surface-500 mb-1 sm:hidden font-mono">
+        <p class="text-xs text-surface-600 dark:text-surface-400 mb-1 sm:hidden font-mono">
           {{ item.startDate }}{% if item.endDate %} – {{ item.endDate }}{% else %} – Present{% endif %}
         </p>
         {% endif %}

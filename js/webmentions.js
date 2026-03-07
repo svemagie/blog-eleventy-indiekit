@@ -197,22 +197,26 @@
     items.forEach((item) => {
       const author = item.author || {};
 
+      const li = document.createElement('li');
+      li.className = 'inline';
+
       const link = document.createElement('a');
       link.href = author.url || '#';
       link.className = 'facepile-avatar';
-      link.title = author.name || 'Anonymous';
+      link.setAttribute('aria-label', (author.name || 'Anonymous') + ' (opens in new tab)');
       link.target = '_blank';
       link.rel = 'noopener';
       link.dataset.new = 'true';
 
       const img = document.createElement('img');
       img.src = author.photo || '/images/default-avatar.svg';
-      img.alt = author.name || 'Anonymous';
+      img.alt = '';
       img.className = 'w-8 h-8 rounded-full ring-2 ring-white dark:ring-surface-900';
       img.loading = 'lazy';
 
       link.appendChild(img);
-      row.appendChild(link);
+      li.appendChild(link);
+      row.appendChild(li);
     });
   }
 
@@ -278,7 +282,7 @@
 
       const dateLink = document.createElement('a');
       dateLink.href = item.url || '#';
-      dateLink.className = 'text-xs text-surface-500 hover:underline';
+      dateLink.className = 'text-xs text-surface-600 dark:text-surface-400 hover:underline';
       dateLink.target = '_blank';
       dateLink.rel = 'noopener';
 
@@ -396,8 +400,9 @@
     header.className = 'text-sm font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wide mb-3';
     header.textContent = `0 ${type === 'likes' ? 'Likes' : 'Reposts'}`;
 
-    const row = document.createElement('div');
+    const row = document.createElement('ul');
     row.className = 'facepile';
+    row.setAttribute('role', 'list');
 
     section.appendChild(header);
     section.appendChild(row);
@@ -446,6 +451,8 @@
     const section = document.createElement('section');
     section.className = 'webmentions mt-8 pt-8 border-t border-surface-200 dark:border-surface-700';
     section.id = 'webmentions';
+    section.setAttribute('aria-live', 'polite');
+    section.setAttribute('aria-label', 'Webmentions');
 
     const header = document.createElement('h2');
     header.className = 'text-xl font-bold text-surface-900 dark:text-surface-100 mb-6';

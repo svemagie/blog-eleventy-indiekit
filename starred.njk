@@ -38,7 +38,7 @@ eleventyExcludeFromCollections: true
   <template x-if="loading">
     <div class="text-center py-12">
       <div class="inline-block w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
-      <p class="mt-4 text-surface-500">Loading starred repositories&hellip;</p>
+      <p class="mt-4 text-surface-600 dark:text-surface-400">Loading starred repositories&hellip;</p>
     </div>
   </template>
 
@@ -53,13 +53,15 @@ eleventyExcludeFromCollections: true
 
       {# ===== TAB BAR ===== #}
       <div class="mb-4 -mx-4 px-4 overflow-x-auto scrollbar-thin">
-        <div class="flex gap-1 min-w-max border-b border-surface-200 dark:border-surface-700">
+        <div class="flex gap-1 min-w-max border-b border-surface-200 dark:border-surface-700" role="tablist" aria-label="Starred repository lists">
           {# All tab #}
           <button
             @click="activeTab = 'all'; resetView()"
             :class="activeTab === 'all'
               ? 'border-emerald-600 text-emerald-700 dark:text-emerald-400'
-              : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:border-surface-300'"
+              : 'border-transparent text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300 hover:border-surface-300'"
+            :aria-selected="(activeTab === 'all').toString()"
+            role="tab"
             class="px-3 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors"
           >
             All
@@ -72,7 +74,9 @@ eleventyExcludeFromCollections: true
               @click="activeTab = list.slug; resetView()"
               :class="activeTab === list.slug
                 ? 'border-emerald-600 text-emerald-700 dark:text-emerald-400'
-                : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:border-surface-300'"
+                : 'border-transparent text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300 hover:border-surface-300'"
+              :aria-selected="(activeTab === list.slug).toString()"
+              role="tab"
               class="px-3 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors"
             >
               <span x-text="list.name"></span>
@@ -85,7 +89,9 @@ eleventyExcludeFromCollections: true
             @click="activeTab = 'uncategorized'; resetView()"
             :class="activeTab === 'uncategorized'
               ? 'border-emerald-600 text-emerald-700 dark:text-emerald-400'
-              : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:border-surface-300'"
+              : 'border-transparent text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300 hover:border-surface-300'"
+            :aria-selected="(activeTab === 'uncategorized').toString()"
+            role="tab"
             class="px-3 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors"
           >
             Uncategorized
@@ -177,7 +183,7 @@ eleventyExcludeFromCollections: true
       </div>
 
       {# ===== RESULTS SUMMARY ===== #}
-      <div class="mb-4 text-sm text-surface-500">
+      <div class="mb-4 text-sm text-surface-600 dark:text-surface-400">
         <span x-text="resultSummary"></span>
       </div>
 
@@ -207,12 +213,12 @@ eleventyExcludeFromCollections: true
                   <span class="text-xs px-2 py-0.5 bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 rounded" x-text="topic"></span>
                 </template>
                 <template x-if="repo.topics.length > 5">
-                  <span class="text-xs px-2 py-0.5 bg-surface-100 dark:bg-surface-700 text-surface-500 rounded" x-text="'+' + (repo.topics.length - 5)"></span>
+                  <span class="text-xs px-2 py-0.5 bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-400 rounded" x-text="'+' + (repo.topics.length - 5)"></span>
                 </template>
               </div>
             </template>
 
-            <div class="flex flex-wrap items-center gap-3 text-xs text-surface-500">
+            <div class="flex flex-wrap items-center gap-3 text-xs text-surface-600 dark:text-surface-400">
               <template x-if="repo.language">
                 <span class="flex items-center gap-1">
                   <span class="w-2.5 h-2.5 rounded-full" :style="'background:' + languageColor(repo.language)"></span>
@@ -243,7 +249,7 @@ eleventyExcludeFromCollections: true
       {# ===== EMPTY FILTERED STATE ===== #}
       <template x-if="sortedStars.length === 0">
         <div class="text-center py-12">
-          <p class="text-surface-500">No repos match your current filters.</p>
+          <p class="text-surface-600 dark:text-surface-400">No repos match your current filters.</p>
           <button @click="clearFilters()" class="mt-2 text-sm text-emerald-600 dark:text-emerald-400 hover:underline">Clear all filters</button>
         </div>
       </template>

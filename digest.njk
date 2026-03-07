@@ -39,7 +39,7 @@ permalink: "digest/{{ digest.slug }}/"
     <section class="mb-8">
       <h2 class="text-lg sm:text-xl font-semibold text-surface-800 dark:text-surface-200 mb-4 border-b border-surface-200 dark:border-surface-700 pb-2">
         {{ typeInfo.label }}
-        <span class="text-sm font-normal text-surface-500 dark:text-surface-400">({{ typePosts.length }})</span>
+        <span class="text-sm font-normal text-surface-600 dark:text-surface-400">({{ typePosts.length }})</span>
       </h2>
       <ul class="space-y-4">
         {% for post in typePosts %}
@@ -50,7 +50,7 @@ permalink: "digest/{{ digest.slug }}/"
               <span class="text-red-500 flex-shrink-0">&#x2764;</span>
               <div>
                 <a href="{{ targetUrl }}" class="text-accent-600 dark:text-accent-400 hover:underline break-all">{{ targetUrl }}</a>
-                <div class="text-sm text-surface-500 dark:text-surface-400 mt-1">
+                <div class="text-sm text-surface-600 dark:text-surface-400 mt-1">
                   <time class="dt-published font-mono text-sm" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
                   &middot; <a href="{{ post.url }}" class="hover:underline">Permalink</a>
                 </div>
@@ -67,7 +67,7 @@ permalink: "digest/{{ digest.slug }}/"
                 {% else %}
                   <a href="{{ targetUrl }}" class="text-accent-600 dark:text-accent-400 hover:underline break-all">{{ targetUrl }}</a>
                 {% endif %}
-                <div class="text-sm text-surface-500 dark:text-surface-400 mt-1">
+                <div class="text-sm text-surface-600 dark:text-surface-400 mt-1">
                   <time class="dt-published font-mono text-sm" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
                   &middot; <a href="{{ post.url }}" class="hover:underline">Permalink</a>
                 </div>
@@ -80,7 +80,7 @@ permalink: "digest/{{ digest.slug }}/"
               <span class="text-green-500 flex-shrink-0">&#x1F501;</span>
               <div>
                 <a href="{{ targetUrl }}" class="text-accent-600 dark:text-accent-400 hover:underline break-all">{{ targetUrl }}</a>
-                <div class="text-sm text-surface-500 dark:text-surface-400 mt-1">
+                <div class="text-sm text-surface-600 dark:text-surface-400 mt-1">
                   <time class="dt-published font-mono text-sm" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
                   &middot; <a href="{{ post.url }}" class="hover:underline">Permalink</a>
                 </div>
@@ -103,7 +103,7 @@ permalink: "digest/{{ digest.slug }}/"
               {% elif post.templateContent %}
                 <p class="text-surface-700 dark:text-surface-300 text-sm">{{ post.templateContent | striptags | truncate(120) }}</p>
               {% endif %}
-              <div class="text-sm text-surface-500 dark:text-surface-400 mt-1">
+              <div class="text-sm text-surface-600 dark:text-surface-400 mt-1">
                 <time class="dt-published font-mono text-sm" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
                 &middot; <a href="{{ post.url }}" class="hover:underline">Permalink</a>
               </div>
@@ -117,7 +117,7 @@ permalink: "digest/{{ digest.slug }}/"
               {% if post.templateContent %}
               <p class="text-surface-700 dark:text-surface-300 text-sm mt-1">{{ post.templateContent | striptags | truncate(200) }}</p>
               {% endif %}
-              <div class="text-sm text-surface-500 dark:text-surface-400 mt-1">
+              <div class="text-sm text-surface-600 dark:text-surface-400 mt-1">
                 <time class="dt-published font-mono text-sm" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
                 &middot; <a href="{{ post.url }}" class="hover:underline">Permalink</a>
               </div>
@@ -126,7 +126,7 @@ permalink: "digest/{{ digest.slug }}/"
           {% else %}
             <div>
               <p class="text-surface-700 dark:text-surface-300">{{ post.templateContent | striptags | truncate(200) }}</p>
-              <div class="text-sm text-surface-500 dark:text-surface-400 mt-1">
+              <div class="text-sm text-surface-600 dark:text-surface-400 mt-1">
                 <time class="dt-published font-mono text-sm" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
                 &middot; <a href="{{ post.url }}" class="hover:underline">Permalink</a>
               </div>

@@ -43,7 +43,7 @@ withSidebar: true
         <p class="text-sm text-surface-600 dark:text-surface-400 mb-4">{{ repo.description }}</p>
         {% endif %}
 
-        <div class="flex flex-wrap items-center gap-3 text-sm text-surface-500 mb-4">
+        <div class="flex flex-wrap items-center gap-3 text-sm text-surface-600 dark:text-surface-400 mb-4">
           {% if repo.language %}
           <span class="flex items-center gap-1">
             <span class="w-3 h-3 rounded-full bg-surface-500"></span>
@@ -109,7 +109,7 @@ withSidebar: true
           <a href="{{ commit.url }}" class="text-surface-900 dark:text-surface-100 hover:text-emerald-600 dark:hover:text-emerald-400" target="_blank" rel="noopener">
             {{ commit.message }}
           </a>
-          <p class="text-xs text-surface-500 mt-1">
+          <p class="text-xs text-surface-600 dark:text-surface-400 mt-1">
             <a href="{{ commit.repoUrl }}" class="hover:underline" target="_blank" rel="noopener">{{ commit.repo }}</a>
             · <time class="font-mono" datetime="{{ commit.date }}">{{ commit.date | date("MMM d, yyyy") }}</time>
           </p>
@@ -144,7 +144,7 @@ withSidebar: true
           <a href="{{ item.url }}" class="text-surface-900 dark:text-surface-100 hover:text-emerald-600 dark:hover:text-emerald-400" target="_blank" rel="noopener">
             {{ item.title }}
           </a>
-          <p class="text-xs text-surface-500 mt-1">
+          <p class="text-xs text-surface-600 dark:text-surface-400 mt-1">
             <a href="{{ item.repoUrl }}" class="hover:underline" target="_blank" rel="noopener">{{ item.repo }}</a>
             #{{ item.number }}
             · <time class="font-mono" datetime="{{ item.date }}">{{ item.date | date("MMM d, yyyy") }}</time>
@@ -179,7 +179,7 @@ withSidebar: true
         <p class="text-sm text-surface-600 dark:text-surface-400 mb-3">{{ repo.description | truncate(100) }}</p>
         {% endif %}
 
-        <div class="flex flex-wrap items-center gap-3 text-sm text-surface-500">
+        <div class="flex flex-wrap items-center gap-3 text-sm text-surface-600 dark:text-surface-400">
           {% if repo.language %}
           <span class="flex items-center gap-1">
             <span class="w-3 h-3 rounded-full bg-surface-500"></span>
@@ -242,7 +242,7 @@ withSidebar: true
           {% endfor %}
         </div>
 
-        <div class="flex flex-wrap items-center gap-3 text-sm text-surface-500">
+        <div class="flex flex-wrap items-center gap-3 text-sm text-surface-600 dark:text-surface-400">
           {% if repo.language %}
           <span class="flex items-center gap-1">
             <span class="w-3 h-3 rounded-full bg-surface-500"></span>

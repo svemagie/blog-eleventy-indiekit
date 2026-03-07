@@ -78,7 +78,7 @@ pagefindIgnore: true
           {% endif %}
           {# Contact details #}
           {% if cvLocality or cvCountry or cvOrg or cvUrl or cvEmail or cvKeyUrl %}
-          <div class="flex flex-wrap gap-x-4 gap-y-1 mt-4 text-sm text-surface-500 dark:text-surface-400">
+          <div class="flex flex-wrap gap-x-4 gap-y-1 mt-4 text-sm text-surface-600 dark:text-surface-400">
             {% if cvLocality or cvCountry %}
             <span>{% if cvLocality %}{{ cvLocality }}{% endif %}{% if cvLocality and cvCountry %}, {% endif %}{% if cvCountry %}{{ cvCountry }}{% endif %}</span>
             {% endif %}
@@ -126,7 +126,7 @@ pagefindIgnore: true
 
     {# Last Updated #}
     {% if cv.lastUpdated %}
-    <p class="text-sm text-surface-500 text-center mt-8">
+    <p class="text-sm text-surface-600 dark:text-surface-400 text-center mt-8">
       Last updated: <time class="font-mono text-sm" datetime="{{ cv.lastUpdated }}">{{ cv.lastUpdated | date("PPP") }}</time>
     </p>
     {% endif %}

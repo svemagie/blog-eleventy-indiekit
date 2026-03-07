@@ -15,11 +15,13 @@ withSidebar: true
   {# Multi-channel tabs #}
   {% if youtubeChannel.isMultiChannel and youtubeChannel.channels.length > 1 %}
   <div class="mb-6">
-    <div class="flex flex-wrap gap-2 border-b border-surface-200 dark:border-surface-700">
+    <div class="flex flex-wrap gap-2 border-b border-surface-200 dark:border-surface-700" role="tablist" aria-label="YouTube channels">
       {% for channel in youtubeChannel.channels %}
       <button
         @click="activeChannel = {{ loop.index0 }}"
         :class="activeChannel === {{ loop.index0 }} ? 'border-red-500 text-red-600 dark:text-red-400' : 'border-transparent text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100'"
+        :aria-selected="(activeChannel === {{ loop.index0 }}).toString()"
+        role="tab" id="yt-tab-{{ loop.index0 }}" aria-controls="yt-panel-{{ loop.index0 }}"
         class="px-4 py-2 font-medium border-b-2 -mb-px transition-colors"
       >
         {{ channel.configName or channel.title }}
@@ -31,7 +33,7 @@ withSidebar: true
 
   {# Channel sections #}
   {% for channel in youtubeChannel.channels %}
-  <div x-show="activeChannel === {{ loop.index0 }}" {% if not loop.first %}x-cloak{% endif %}>
+  <div x-show="activeChannel === {{ loop.index0 }}" {% if not loop.first %}x-cloak{% endif %} role="tabpanel" id="yt-panel-{{ loop.index0 }}" aria-labelledby="yt-tab-{{ loop.index0 }}">
     {# Channel Header #}
     <section class="mb-8">
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 p-4 sm:p-6 bg-gradient-to-br from-red-500/10 to-red-600/5 dark:from-red-900/20 dark:to-red-800/10 rounded-xl sm:rounded-2xl border border-red-500/20">
@@ -57,7 +59,7 @@ withSidebar: true
             </a>
           </h2>
           {% if channel.customUrl %}
-          <p class="text-sm text-surface-500">{{ channel.customUrl }}</p>
+          <p class="text-sm text-surface-600 dark:text-surface-400">{{ channel.customUrl }}</p>
           {% endif %}
           <div class="flex flex-wrap items-center gap-4 mt-2 text-sm text-surface-600 dark:text-surface-400">
             <span class="flex items-center gap-1">
@@ -220,7 +222,7 @@ withSidebar: true
                 {{ video.title }}
               </a>
             </h3>
-            <div class="flex items-center gap-3 text-sm text-surface-500">
+            <div class="flex items-center gap-3 text-sm text-surface-600 dark:text-surface-400">
               <span class="flex items-center gap-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>

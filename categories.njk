@@ -32,7 +32,7 @@ eleventyComputed:
   {% endfor %}
 
   {% if categoryPosts.length > 0 %}
-  <p class="text-sm text-surface-500 dark:text-surface-400 mb-4">{{ categoryPosts.length }} post{% if categoryPosts.length != 1 %}s{% endif %}</p>
+  <p class="text-sm text-surface-600 dark:text-surface-400 mb-4">{{ categoryPosts.length }} post{% if categoryPosts.length != 1 %}s{% endif %}</p>
   <ul class="post-list">
     {% for post in categoryPosts %}
     {% set postType = post.inputPath | replace("./content/", "") %}

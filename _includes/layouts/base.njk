@@ -135,18 +135,19 @@
       }
     })();
   </script>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
   <header class="site-header">
     <div class="container header-container">
       <a href="/" class="site-title">{{ site.name }}</a>
 
       {# Mobile menu button #}
       <button id="menu-toggle" type="button" class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
-        <svg class="menu-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <svg class="menu-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
           <line x1="3" y1="6" x2="21" y2="6"/>
           <line x1="3" y1="12" x2="21" y2="12"/>
           <line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
-        <svg class="close-icon hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <svg class="close-icon hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
           <line x1="18" y1="6" x2="6" y2="18"/>
           <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
@@ -159,33 +160,33 @@
           <a href="/about/">About</a>
           <a href="/now/">Now</a>
           {# Blog dropdown #}
-          <div class="nav-dropdown" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-            <a href="/blog/" class="nav-dropdown-trigger">
+          <div class="nav-dropdown" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @focusin="open = true" @focusout="!$el.contains($event.relatedTarget) && (open = false)" @keydown.escape="open = false">
+            <a href="/blog/" class="nav-dropdown-trigger" :aria-expanded="open.toString()" aria-haspopup="true">
               Blog
-              <svg class="w-3 h-3 ml-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-3 h-3 ml-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
             </a>
-            <div class="nav-dropdown-menu" x-show="open" x-transition x-cloak>
-              <a href="/blog/">All Posts</a>
+            <div class="nav-dropdown-menu" x-show="open" x-transition x-cloak role="menu">
+              <a href="/blog/" role="menuitem">All Posts</a>
               {% for pt in enabledPostTypes %}
-              <a href="{{ pt.path }}">{{ pt.label }}</a>
+              <a href="{{ pt.path }}" role="menuitem">{{ pt.label }}</a>
               {% endfor %}
             </div>
           </div>
           {# Pages dropdown #}
-          <div class="nav-dropdown" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-            <a href="/slashes/" class="nav-dropdown-trigger">
+          <div class="nav-dropdown" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @focusin="open = true" @focusout="!$el.contains($event.relatedTarget) && (open = false)" @keydown.escape="open = false">
+            <a href="/slashes/" class="nav-dropdown-trigger" :aria-expanded="open.toString()" aria-haspopup="true">
               Pages
-              <svg class="w-3 h-3 ml-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-3 h-3 ml-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
             </a>
-            <div class="nav-dropdown-menu" x-show="open" x-transition x-cloak>
-              {% if blogrollStatus and blogrollStatus.source == "indiekit" %}<a href="/blogroll/">Blogroll</a>{% endif %}
-              {% if podrollStatus and podrollStatus.source == "indiekit" %}<a href="/podroll/">Podroll</a>{% endif %}
-              {% if newsActivity and newsActivity.source == "indiekit" %}<a href="/news/">News</a>{% endif %}
-              <a href="/slashes/">All Pages</a>
+            <div class="nav-dropdown-menu" x-show="open" x-transition x-cloak role="menu">
+              {% if blogrollStatus and blogrollStatus.source == "indiekit" %}<a href="/blogroll/" role="menuitem">Blogroll</a>{% endif %}
+              {% if podrollStatus and podrollStatus.source == "indiekit" %}<a href="/podroll/" role="menuitem">Podroll</a>{% endif %}
+              {% if newsActivity and newsActivity.source == "indiekit" %}<a href="/news/" role="menuitem">News</a>{% endif %}
+              <a href="/slashes/" role="menuitem">All Pages</a>
             </div>
           </div>
           <a href="/interactions/">Interactions</a>
@@ -196,23 +197,23 @@
              x-transition
              @indiekit:auth.window="show = $event.detail.loggedIn"
              class="admin-nav-link">
-            <svg class="w-4 h-4 inline -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="w-4 h-4 inline -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
             </svg>
             Dashboard
           </a>
         </nav>
         <a href="/search/" aria-label="Search" title="Search" class="p-2 rounded-lg text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
           </svg>
         </a>
         <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-          <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <circle cx="12" cy="12" r="5"/>
             <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
           </svg>
-          <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
         </button>
@@ -226,13 +227,13 @@
       <a href="/now/">Now</a>
       {# Blog section #}
       <div class="mobile-nav-section">
-        <button type="button" class="mobile-nav-toggle" @click="blogOpen = !blogOpen">
+        <button type="button" class="mobile-nav-toggle" @click="blogOpen = !blogOpen" :aria-expanded="blogOpen.toString()" aria-controls="mobile-blog-submenu">
           Blog
-          <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': blogOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': blogOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>
         </button>
-        <div class="mobile-nav-submenu" x-show="blogOpen" x-collapse>
+        <div id="mobile-blog-submenu" class="mobile-nav-submenu" x-show="blogOpen" x-collapse>
           <a href="/blog/">All Posts</a>
           {% for pt in enabledPostTypes %}
           <a href="{{ pt.path }}">{{ pt.label }}</a>
@@ -241,13 +242,13 @@
       </div>
       {# Pages section #}
       <div class="mobile-nav-section">
-        <button type="button" class="mobile-nav-toggle" @click="pagesOpen = !pagesOpen">
+        <button type="button" class="mobile-nav-toggle" @click="pagesOpen = !pagesOpen" :aria-expanded="pagesOpen.toString()" aria-controls="mobile-pages-submenu">
           Pages
-          <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': pagesOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': pagesOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>
         </button>
-        <div class="mobile-nav-submenu" x-show="pagesOpen" x-collapse>
+        <div id="mobile-pages-submenu" class="mobile-nav-submenu" x-show="pagesOpen" x-collapse>
           {% if blogrollStatus and blogrollStatus.source == "indiekit" %}<a href="/blogroll/">Blogroll</a>{% endif %}
           {% if podrollStatus and podrollStatus.source == "indiekit" %}<a href="/podroll/">Podroll</a>{% endif %}
           {% if newsActivity and newsActivity.source == "indiekit" %}<a href="/news/">News</a>{% endif %}
@@ -267,11 +268,11 @@
       <button type="button" class="mobile-theme-toggle" aria-label="Toggle dark mode">
         <span class="theme-label">Theme</span>
         <span class="theme-icons">
-          <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <circle cx="12" cy="12" r="5"/>
             <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
           </svg>
-          <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
         </span>
@@ -279,7 +280,7 @@
     </nav>
   </header>
 
-  <main class="container py-8" data-pagefind-body>
+  <main class="container py-8" id="main-content" data-pagefind-body>
     {# Skeleton loader — shown until Tailwind stylesheet loads #}
     <div class="page-skeleton" aria-hidden="true">
       <div style="display:flex;gap:1.5rem;align-items:flex-start;margin-bottom:2rem">
@@ -329,7 +330,7 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
         {# Navigate #}
         <div>
-          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-3">Navigate</h4>
+          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-400 mb-3">Navigate</h4>
           <ul class="space-y-2">
             <li><a href="/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline">Home</a></li>
             <li><a href="/about/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline">About</a></li>
@@ -339,7 +340,7 @@
         </div>
         {# Content #}
         <div>
-          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-3">Content</h4>
+          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-400 mb-3">Content</h4>
           <ul class="space-y-2">
             <li><a href="/blog/" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline">Blog</a></li>
             {% for pt in enabledPostTypes %}
@@ -350,7 +351,7 @@
         </div>
         {# Connect #}
         <div>
-          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-3">Connect</h4>
+          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-400 mb-3">Connect</h4>
           <ul class="space-y-2">
             {% for social in site.social %}
             <li><a href="{{ social.url }}" rel="{{ social.rel }}" target="_blank" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline">{{ social.name }}</a></li>
@@ -359,7 +360,7 @@
         </div>
         {# Meta #}
         <div>
-          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-3">Meta</h4>
+          <h4 class="text-sm font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-400 mb-3">Meta</h4>
           <ul class="space-y-2">
             <li><a href="/feed.xml" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline">RSS Feed</a></li>
             <li><a href="/feed.json" class="text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:underline">JSON Feed</a></li>
@@ -367,7 +368,7 @@
           </ul>
         </div>
       </div>
-      <p class="text-center text-sm text-surface-500 dark:text-surface-400">Powered by <a href="https://getindiekit.com" class="hover:text-surface-900 dark:hover:text-surface-100 hover:underline">Indiekit</a> + <a href="https://11ty.dev" class="hover:text-surface-900 dark:hover:text-surface-100 hover:underline">Eleventy</a></p>
+      <p class="text-center text-sm text-surface-600 dark:text-surface-400">Powered by <a href="https://getindiekit.com" class="hover:text-surface-900 dark:hover:text-surface-100 hover:underline">Indiekit</a> + <a href="https://11ty.dev" class="hover:text-surface-900 dark:hover:text-surface-100 hover:underline">Eleventy</a></p>
     </div>
   </footer>
   <script>
@@ -469,43 +470,43 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 translate-y-4"
-         class="fab-menu">
+         class="fab-menu" role="menu" aria-label="Create new post">
       {% if mpUrl %}
-      <a href="/posts/edit?url={{ mpUrl | urlencode }}" @click="open = false" class="fab-menu-item" rel="nofollow">
-        <svg class="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <a href="/posts/edit?url={{ mpUrl | urlencode }}" @click="open = false" class="fab-menu-item" rel="nofollow" role="menuitem">
+        <svg class="w-5 h-5 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
           <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
         </svg>
         <span>Edit this post</span>
       </a>
-      <div class="fab-menu-divider"></div>
+      <div class="fab-menu-divider" role="separator"></div>
       {% endif %}
-      <a href="/posts/create?type=page" @click="open = false" class="fab-menu-item" rel="nofollow">
-        <svg class="w-5 h-5 text-surface-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <a href="/posts/create?type=page" @click="open = false" class="fab-menu-item" rel="nofollow" role="menuitem">
+        <svg class="w-5 h-5 text-surface-600 dark:text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
         </svg>
         <span>Page</span>
       </a>
-      <a href="/posts/create?type=bookmark" @click="open = false" class="fab-menu-item" rel="nofollow">
-        <svg class="w-5 h-5 text-surface-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <a href="/posts/create?type=bookmark" @click="open = false" class="fab-menu-item" rel="nofollow" role="menuitem">
+        <svg class="w-5 h-5 text-surface-600 dark:text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
         </svg>
         <span>Bookmark</span>
       </a>
-      <a href="/posts/create?type=photo" @click="open = false" class="fab-menu-item" rel="nofollow">
-        <svg class="w-5 h-5 text-surface-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <a href="/posts/create?type=photo" @click="open = false" class="fab-menu-item" rel="nofollow" role="menuitem">
+        <svg class="w-5 h-5 text-surface-600 dark:text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
         </svg>
         <span>Photo</span>
       </a>
-      <a href="/posts/create?type=article" @click="open = false" class="fab-menu-item" rel="nofollow">
-        <svg class="w-5 h-5 text-surface-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <a href="/posts/create?type=article" @click="open = false" class="fab-menu-item" rel="nofollow" role="menuitem">
+        <svg class="w-5 h-5 text-surface-600 dark:text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
         </svg>
         <span>Article</span>
       </a>
-      <a href="/posts/create?type=note" @click="open = false" class="fab-menu-item" rel="nofollow">
-        <svg class="w-5 h-5 text-surface-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <a href="/posts/create?type=note" @click="open = false" class="fab-menu-item" rel="nofollow" role="menuitem">
+        <svg class="w-5 h-5 text-surface-600 dark:text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
         </svg>
         <span>Note</span>
@@ -515,8 +516,9 @@
     <button @click="open = !open"
             class="fab-button"
             :aria-expanded="open"
-            aria-label="Create new post">
-      <svg class="w-7 h-7 transition-transform duration-200" :class="{ 'rotate-45': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round">
+            aria-label="Create new post"
+            aria-haspopup="menu">
+      <svg class="w-7 h-7 transition-transform duration-200" :class="{ 'rotate-45': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
     </button>

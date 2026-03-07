@@ -14,6 +14,7 @@
          @click="showModal = false"></div>
     {# Panel #}
     <div class="relative bg-surface-50 dark:bg-surface-800 rounded-xl shadow-xl w-full max-w-sm p-6"
+         role="dialog" aria-modal="true" aria-labelledby="fediverse-modal-title"
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
@@ -21,8 +22,8 @@
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
          @click.stop>
-      <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">{{ modalTitle }}</h3>
-      <p class="text-sm text-surface-500 dark:text-surface-400 mb-4">{{ modalDescription }}</p>
+      <h3 id="fediverse-modal-title" class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">{{ modalTitle }}</h3>
+      <p class="text-sm text-surface-600 dark:text-surface-400 mb-4">{{ modalDescription }}</p>
 
       {# Saved domains list #}
       <template x-if="savedDomains.length > 0 && !showInput">
@@ -35,8 +36,8 @@
                         x-text="item.domain"></button>
                 <button class="px-2 py-2.5 text-surface-400 hover:text-red-500 transition-colors cursor-pointer"
                         @click="deleteSaved(item.domain)"
-                        title="Remove">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        :aria-label="'Remove ' + item.domain">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
               </div>
             </template>
@@ -55,14 +56,16 @@
       {# New domain input #}
       <template x-if="savedDomains.length === 0 || showInput">
         <div>
-          <input x-ref="instanceInput"
+          <label for="fediverse-instance-input" class="sr-only">Fediverse instance domain</label>
+          <input id="fediverse-instance-input"
+                 x-ref="instanceInput"
                  x-model="instance"
                  @keydown.enter.prevent="confirm()"
                  type="text"
                  placeholder="mastodon.social"
                  class="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-lg bg-surface-50 dark:bg-surface-800 text-surface-900 dark:text-surface-100 placeholder-surface-400 text-sm">
           <template x-if="error">
-            <p class="text-xs text-red-500 mt-1" x-text="error"></p>
+            <p class="text-xs text-red-500 mt-1" x-text="error" role="alert"></p>
           </template>
           <div class="flex gap-3 mt-4">
             <button @click="showInput ? (showInput = false) : (showModal = false)"

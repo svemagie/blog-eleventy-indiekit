@@ -53,7 +53,7 @@ permalink: "likes/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumbe
           {% set likedUrl = post.data.likeOf or post.data.like_of %}
           {% if likedUrl %}
           {% unfurl likedUrl %}
-          <a class="u-like-of text-xs text-surface-400 dark:text-surface-500 hover:underline break-all mt-1 inline-block" href="{{ likedUrl }}">
+          <a class="u-like-of text-xs text-surface-600 dark:text-surface-400 hover:underline break-all mt-1 inline-block" href="{{ likedUrl }}">
             {{ likedUrl }}
           </a>
           {% endif %}
@@ -82,7 +82,7 @@ permalink: "likes/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumbe
         Previous
       </a>
       {% else %}
-      <span class="pagination-link disabled">
+      <span class="pagination-link disabled" aria-disabled="true">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         Previous
       </span>
@@ -94,7 +94,7 @@ permalink: "likes/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumbe
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
       </a>
       {% else %}
-      <span class="pagination-link disabled">
+      <span class="pagination-link disabled" aria-disabled="true">
         Next
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
       </span>

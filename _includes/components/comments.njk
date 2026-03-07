@@ -21,6 +21,7 @@
     <div class="mt-4">
       {# Status messages #}
       <div x-show="statusMessage" x-cloak
+           role="alert"
            x-bind:class="statusType === 'error' ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400' :
                           statusType === 'success' ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' :
                           'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'"
@@ -54,12 +55,13 @@
         </div>
 
         <form x-on:submit.prevent="submitComment()">
-          <textarea x-model="commentText" rows="4" required
+          <label for="comment-text" class="sr-only">Your comment</label>
+          <textarea id="comment-text" x-model="commentText" rows="4" required
                     placeholder="Share your thoughts... (supports **bold**, *italic*, and [links](url))"
                     class="w-full px-3 py-2 border rounded-lg mb-2 dark:bg-surface-800 dark:border-surface-700 dark:text-surface-100"
                     x-bind:maxlength="maxLength"></textarea>
           <div class="flex items-center justify-between">
-            <span class="text-xs text-surface-500" x-text="commentText.length + '/' + maxLength"></span>
+            <span class="text-xs text-surface-600 dark:text-surface-400" x-text="commentText.length + '/' + maxLength"></span>
             <button type="submit" class="button" x-bind:disabled="submitting">
               <span x-show="!submitting">Post Comment</span>
               <span x-show="submitting" x-cloak>Posting...</span>
@@ -71,7 +73,7 @@
       {# Comment list #}
       <div class="mt-6 space-y-4">
         <template x-if="loading">
-          <p class="text-sm text-surface-500">Loading comments...</p>
+          <p class="text-sm text-surface-600 dark:text-surface-400">Loading comments...</p>
         </template>
 
         <template x-for="comment in comments" x-bind:key="comment.published">
@@ -90,7 +92,7 @@
                 <div class="flex items-center gap-2">
                   <a x-bind:href="comment.author?.url" class="font-medium text-sm hover:underline" target="_blank" rel="noopener"
                      x-text="comment.author?.name || comment.author?.url"></a>
-                  <time class="text-xs text-surface-500 font-mono" x-bind:datetime="comment.published"
+                  <time class="text-xs text-surface-600 dark:text-surface-400 font-mono" x-bind:datetime="comment.published"
                         x-text="new Date(comment.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })"></time>
                 </div>
                 <div class="mt-1 text-sm prose dark:prose-invert" x-html="comment.content?.html || comment.content?.text"></div>
@@ -100,7 +102,7 @@
         </template>
 
         <template x-if="!loading && comments.length === 0">
-          <p class="text-sm text-surface-500">No comments yet. Be the first to share your thoughts!</p>
+          <p class="text-sm text-surface-600 dark:text-surface-400">No comments yet. Be the first to share your thoughts!</p>
         </template>
       </div>
     </div>

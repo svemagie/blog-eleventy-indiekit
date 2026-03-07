@@ -33,7 +33,7 @@ eleventyImport:
         <p class="text-surface-600 dark:text-surface-400 mt-2">{{ page.data.title }}</p>
         {% endif %}
         {% if page.data.updated %}
-        <p class="text-sm text-surface-500 mt-2">
+        <p class="text-sm text-surface-600 dark:text-surface-400 mt-2">
           Updated: <time class="font-mono text-sm" datetime="{{ page.data.updated | isoDate }}">{{ page.data.updated | dateDisplay }}</time>
         </p>
         {% endif %}
@@ -49,7 +49,7 @@ eleventyImport:
         <li><code>@rmdes/indiekit-post-type-page</code> — registers the "page" post type with Indiekit, using root-level URL paths (<code>/slug</code> instead of <code>/type/YYYY/MM/DD/slug</code>)</li>
         <li><code>@rmdes/indiekit-endpoint-posts</code> — publishing UI that sends the <code>h=page</code> Micropub type so pages are created at root level</li>
       </ul>
-      <p class="text-surface-500 dark:text-surface-500 text-xs mt-3">
+      <p class="text-surface-600 dark:text-surface-400 text-xs mt-3">
         Once both plugins are installed, "Page" appears as a post type in the Indiekit admin UI, and pages are published directly at <code>/slug</code>.
       </p>
     </div>

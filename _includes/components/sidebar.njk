@@ -43,17 +43,17 @@
     {% elif widget.type == "fediverse-follow" %}
       {% set widgetIcon = "user-plus" %}{% set widgetIconClass = "w-5 h-5 text-[#a730b8]" %}{% set widgetBorder = "border-l-[3px] border-l-[#a730b8]" %}
     {% elif widget.type == "author-card" or widget.type == "author-card-compact" %}
-      {% set widgetIcon = "user" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+      {% set widgetIcon = "user" %}{% set widgetIconClass = "w-5 h-5 text-surface-600 dark:text-surface-400" %}{% set widgetBorder = "" %}
     {% elif widget.type == "recent-posts" %}
-      {% set widgetIcon = "list" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+      {% set widgetIcon = "list" %}{% set widgetIconClass = "w-5 h-5 text-surface-600 dark:text-surface-400" %}{% set widgetBorder = "" %}
     {% elif widget.type == "categories" %}
-      {% set widgetIcon = "tag" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+      {% set widgetIcon = "tag" %}{% set widgetIconClass = "w-5 h-5 text-surface-600 dark:text-surface-400" %}{% set widgetBorder = "" %}
     {% elif widget.type == "recent-comments" %}
-      {% set widgetIcon = "chat" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+      {% set widgetIcon = "chat" %}{% set widgetIconClass = "w-5 h-5 text-surface-600 dark:text-surface-400" %}{% set widgetBorder = "" %}
     {% elif widget.type == "search" %}
-      {% set widgetIcon = "search" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+      {% set widgetIcon = "search" %}{% set widgetIconClass = "w-5 h-5 text-surface-600 dark:text-surface-400" %}{% set widgetBorder = "" %}
     {% elif widget.type == "webmentions" %}
-      {% set widgetIcon = "share" %}{% set widgetIconClass = "w-5 h-5 text-surface-500" %}{% set widgetBorder = "" %}
+      {% set widgetIcon = "share" %}{% set widgetIconClass = "w-5 h-5 text-surface-600 dark:text-surface-400" %}{% set widgetBorder = "" %}
     {% elif widget.type == "ai-usage" %}
       {% set widgetIcon = "zap" %}{% set widgetIconClass = "w-5 h-5 text-amber-500" %}{% set widgetBorder = "border-l-[3px] border-l-amber-400 dark:border-l-amber-500" %}
     {% else %}
@@ -82,6 +82,7 @@
             class="widget-chevron"
             :class="open && 'rotate-180'"
             fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>
@@ -158,8 +159,8 @@
   <div class="widget-collapsible mb-4" x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : true }">
     <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
-        <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("user", "w-5 h-5 text-surface-500") }} Author</h3>
-        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("user", "w-5 h-5 text-surface-600 dark:text-surface-400") }} Author</h3>
+        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-cloak>
         {% include "components/widgets/author-card.njk" %}
@@ -173,7 +174,7 @@
     <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden border-l-[3px] border-l-[#0085ff]">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("globe", "w-5 h-5 text-[#0085ff]") }} Social Activity</h3>
-        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-cloak>
         {% include "components/widgets/social-activity.njk" %}
@@ -187,7 +188,7 @@
     <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden border-l-[3px] border-l-surface-400 dark:border-l-surface-500">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("github", "w-5 h-5 text-surface-800 dark:text-surface-200") }} GitHub</h3>
-        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-cloak>
         {% include "components/widgets/github-repos.njk" %}
@@ -201,7 +202,7 @@
     <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden border-l-[3px] border-l-purple-400 dark:border-l-purple-500">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("headphones", "w-5 h-5 text-purple-500") }} Listening</h3>
-        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-cloak>
         {% include "components/widgets/funkwhale.njk" %}
@@ -214,8 +215,8 @@
   <div class="widget-collapsible mb-4" x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : false }">
     <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
-        <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("list", "w-5 h-5 text-surface-500") }} Recent Posts</h3>
-        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("list", "w-5 h-5 text-surface-600 dark:text-surface-400") }} Recent Posts</h3>
+        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-cloak>
         {% include "components/widgets/recent-posts.njk" %}
@@ -230,7 +231,7 @@
     <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden border-l-[3px] border-l-amber-400 dark:border-l-amber-500">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("book-open", "w-5 h-5 text-amber-500") }} Blogroll</h3>
-        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-cloak>
         {% include "components/widgets/blogroll.njk" %}
@@ -246,7 +247,7 @@
     <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden border-l-[3px] border-l-amber-400 dark:border-l-amber-500">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
         <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("rss", "w-5 h-5 text-amber-500") }} FeedLand</h3>
-        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-cloak>
         {% include "components/widgets/feedland.njk" %}
@@ -260,8 +261,8 @@
   <div class="widget-collapsible mb-4" x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : false }">
     <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
-        <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("chat", "w-5 h-5 text-surface-500") }} Recent Comments</h3>
-        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("chat", "w-5 h-5 text-surface-600 dark:text-surface-400") }} Recent Comments</h3>
+        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-cloak>
         {% include "components/widgets/recent-comments.njk" %}
@@ -274,8 +275,8 @@
   <div class="widget-collapsible mb-4" x-data="{ open: localStorage.getItem('{{ widgetKey }}') !== null ? localStorage.getItem('{{ widgetKey }}') === 'true' : false }">
     <div class="bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
       <button class="widget-header w-full p-4" @click="open = !open; localStorage.setItem('{{ widgetKey }}', open)" :aria-expanded="open ? 'true' : 'false'">
-        <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("tag", "w-5 h-5 text-surface-500") }} Categories</h3>
-        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        <h3 class="widget-title font-bold text-lg flex items-center gap-2">{{ icon("tag", "w-5 h-5 text-surface-600 dark:text-surface-400") }} Categories</h3>
+        <svg class="widget-chevron" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-cloak>
         {% include "components/widgets/categories.njk" %}

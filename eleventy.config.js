@@ -321,7 +321,7 @@ export default function (eleventyConfig) {
     cacheOptions: {
       duration: process.env.ELEVENTY_RUN_MODE === "build" ? "1d" : "30d",
     },
-    concurrency: 4,
+    concurrency: 1,
     defaultAttributes: {
       loading: "lazy",
       decoding: "async",

@@ -240,8 +240,8 @@
 
     {# Sort links #}
     <div class="fl-sort">
-      <span :class="sortBy === 'title' ? 'selected' : ''" @click="sortBy = 'title'">Title</span>
-      <span :class="sortBy === 'when' ? 'selected' : ''" @click="sortBy = 'when'">When</span>
+      <span :class="sortBy === 'title' ? 'selected' : ''" @click="sortBy = 'title'" @keydown.enter="sortBy = 'title'" @keydown.space.prevent="sortBy = 'title'" tabindex="0" role="button" :aria-pressed="sortBy === 'title'">Title</span>
+      <span :class="sortBy === 'when' ? 'selected' : ''" @click="sortBy = 'when'" @keydown.enter="sortBy = 'when'" @keydown.space.prevent="sortBy = 'when'" tabindex="0" role="button" :aria-pressed="sortBy === 'when'">When</span>
     </div>
 
     {# Feed list — pure divs, no table #}
@@ -253,7 +253,13 @@
           <span class="fl-caret"
                 :class="expandedId === blog.id ? 'fl-caret-dark' : (selectedId === blog.id ? 'fl-caret-dark' : 'fl-caret-light')"
                 x-text="expandedId === blog.id ? '\u25BC' : '\u25B6'"
-                @click.stop="toggleExpand(blog)"></span>
+                @click.stop="toggleExpand(blog)"
+                @keydown.enter.stop="toggleExpand(blog)"
+                @keydown.space.prevent.stop="toggleExpand(blog)"
+                tabindex="0"
+                role="button"
+                :aria-label="expandedId === blog.id ? 'Collapse ' + blog.title : 'Expand ' + blog.title"
+                :aria-expanded="expandedId === blog.id"></span>
           <span class="fl-name">
             <a :href="blog.siteUrl || blog.feedUrl" target="_blank" rel="noopener"
                x-text="blog.title" @click.stop></a>

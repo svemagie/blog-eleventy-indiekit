@@ -17,17 +17,21 @@ permalink: /interactions/
 {# Tab navigation for Outbound/Inbound #}
 <div x-data="interactionsApp()" x-init="init()">
   {# Tab buttons #}
-  <div class="flex border-b border-surface-200 dark:border-surface-700 mb-6">
+  <div class="flex border-b border-surface-200 dark:border-surface-700 mb-6" role="tablist" aria-label="Interaction direction">
     <button
       @click="activeTab = 'outbound'"
-      :class="activeTab === 'outbound' ? 'border-rose-500 text-rose-600 dark:text-rose-400' : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+      :class="activeTab === 'outbound' ? 'border-rose-500 text-rose-600 dark:text-rose-400' : 'border-transparent text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300'"
+      :aria-selected="(activeTab === 'outbound').toString()"
+      role="tab" id="interactions-tab-outbound" aria-controls="interactions-panel-outbound"
       class="px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors">
       My Activity
       <span class="ml-1 text-xs text-surface-400">(outbound)</span>
     </button>
     <button
       @click="activeTab = 'inbound'"
-      :class="activeTab === 'inbound' ? 'border-rose-500 text-rose-600 dark:text-rose-400' : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+      :class="activeTab === 'inbound' ? 'border-rose-500 text-rose-600 dark:text-rose-400' : 'border-transparent text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300'"
+      :aria-selected="(activeTab === 'inbound').toString()"
+      role="tab" id="interactions-tab-inbound" aria-controls="interactions-panel-inbound"
       class="px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors">
       Received
       <span class="ml-1 text-xs text-surface-400">(inbound)</span>
@@ -36,7 +40,7 @@ permalink: /interactions/
   </div>
 
   {# ===== OUTBOUND TAB - My Activity ===== #}
-  <div x-show="activeTab === 'outbound'" x-transition>
+  <div x-show="activeTab === 'outbound'" x-transition role="tabpanel" id="interactions-panel-outbound" aria-labelledby="interactions-tab-outbound">
     <p class="text-surface-600 dark:text-surface-400 text-sm mb-6">Content I've interacted with across the web.</p>
 
     <div class="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -50,7 +54,7 @@ permalink: /interactions/
           </div>
           <div>
             <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-rose-600 dark:group-hover:text-rose-400">Likes</h2>
-            <p class="text-sm text-surface-500">{{ collections.likes.length }} item{% if collections.likes.length != 1 %}s{% endif %}</p>
+            <p class="text-sm text-surface-600 dark:text-surface-400">{{ collections.likes.length }} item{% if collections.likes.length != 1 %}s{% endif %}</p>
           </div>
         </div>
         <p class="text-surface-600 dark:text-surface-400 text-sm">Content I've appreciated across the web.</p>
@@ -66,7 +70,7 @@ permalink: /interactions/
           </div>
           <div>
             <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-rose-600 dark:group-hover:text-rose-400">Replies</h2>
-            <p class="text-sm text-surface-500">{{ collections.replies.length }} item{% if collections.replies.length != 1 %}s{% endif %}</p>
+            <p class="text-sm text-surface-600 dark:text-surface-400">{{ collections.replies.length }} item{% if collections.replies.length != 1 %}s{% endif %}</p>
           </div>
         </div>
         <p class="text-surface-600 dark:text-surface-400 text-sm">My responses to posts across the web.</p>
@@ -82,7 +86,7 @@ permalink: /interactions/
           </div>
           <div>
             <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-amber-600 dark:group-hover:text-amber-400">Bookmarks</h2>
-            <p class="text-sm text-surface-500">{{ collections.bookmarks.length }} item{% if collections.bookmarks.length != 1 %}s{% endif %}</p>
+            <p class="text-sm text-surface-600 dark:text-surface-400">{{ collections.bookmarks.length }} item{% if collections.bookmarks.length != 1 %}s{% endif %}</p>
           </div>
         </div>
         <p class="text-surface-600 dark:text-surface-400 text-sm">Links I've saved for later.</p>
@@ -98,7 +102,7 @@ permalink: /interactions/
           </div>
           <div>
             <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-rose-600 dark:group-hover:text-rose-400">Reposts</h2>
-            <p class="text-sm text-surface-500">{{ collections.reposts.length }} item{% if collections.reposts.length != 1 %}s{% endif %}</p>
+            <p class="text-sm text-surface-600 dark:text-surface-400">{{ collections.reposts.length }} item{% if collections.reposts.length != 1 %}s{% endif %}</p>
           </div>
         </div>
         <p class="text-surface-600 dark:text-surface-400 text-sm">Content I've shared from others.</p>
@@ -114,7 +118,7 @@ permalink: /interactions/
           </div>
           <div>
             <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 group-hover:text-purple-600 dark:group-hover:text-purple-400">Photos</h2>
-            <p class="text-sm text-surface-500">{{ collections.photos.length }} item{% if collections.photos.length != 1 %}s{% endif %}</p>
+            <p class="text-sm text-surface-600 dark:text-surface-400">{{ collections.photos.length }} item{% if collections.photos.length != 1 %}s{% endif %}</p>
           </div>
         </div>
         <p class="text-surface-600 dark:text-surface-400 text-sm">Photo posts and images.</p>
@@ -137,7 +141,7 @@ permalink: /interactions/
   </div>
 
   {# ===== INBOUND TAB - Received Webmentions ===== #}
-  <div x-show="activeTab === 'inbound'" x-transition>
+  <div x-show="activeTab === 'inbound'" x-transition role="tabpanel" id="interactions-panel-inbound" aria-labelledby="interactions-tab-inbound">
     <div class="flex items-center justify-between mb-6">
       <p class="text-surface-600 dark:text-surface-400 text-sm">Webmentions and interactions others have made with my content.</p>
       <button
@@ -154,7 +158,7 @@ permalink: /interactions/
     {# Loading state #}
     <div x-show="loading && !webmentions.length" class="text-center py-12">
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-rose-500"></div>
-      <p class="mt-4 text-surface-500">Loading webmentions...</p>
+      <p class="mt-4 text-surface-600 dark:text-surface-400">Loading webmentions...</p>
     </div>
 
     {# Setup required state — shown when webmentions proxy is not configured #}
@@ -263,7 +267,7 @@ permalink: /interactions/
                   <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
                 </span>
 
-                <a :href="wm.url || '#'" target="_blank" rel="noopener" class="text-xs text-surface-500 hover:underline">
+                <a :href="wm.url || '#'" target="_blank" rel="noopener" class="text-xs text-surface-600 dark:text-surface-400 hover:underline">
                   <time class="font-mono text-sm" :datetime="wm.published || wm['wm-received']" x-text="formatDate(wm.published || wm['wm-received'])"></time>
                 </a>
               </div>
@@ -272,7 +276,7 @@ permalink: /interactions/
               <div x-show="wm.content?.text" class="text-surface-700 dark:text-surface-300 text-sm mt-2" x-text="truncateText(wm.content?.text, 280)"></div>
 
               {# Target URL - which of my posts this is about #}
-              <div class="mt-2 text-xs text-surface-500">
+              <div class="mt-2 text-xs text-surface-600 dark:text-surface-400">
                 <span>on </span>
                 <a :href="wm['wm-target']" class="text-rose-600 dark:text-rose-400 hover:underline" x-text="formatTargetUrl(wm['wm-target'])"></a>
               </div>
@@ -282,7 +286,7 @@ permalink: /interactions/
       </template>
 
       {# Empty state #}
-      <div x-show="!loading && filteredWebmentions.length === 0" class="text-center py-12 text-surface-500">
+      <div x-show="!loading && filteredWebmentions.length === 0" class="text-center py-12 text-surface-600 dark:text-surface-400">
         <p>No webmentions found for this filter.</p>
       </div>
 
@@ -291,7 +295,7 @@ permalink: /interactions/
         <nav class="pagination" aria-label="Webmentions pagination">
           <div class="pagination-info">
             Page <span x-text="currentPage"></span> of <span x-text="totalPages"></span>
-            <span class="text-surface-400 dark:text-surface-500 ml-1">(<span x-text="filteredWebmentions.length"></span> total)</span>
+            <span class="text-surface-600 dark:text-surface-400 ml-1">(<span x-text="filteredWebmentions.length"></span> total)</span>
           </div>
           <div class="pagination-links">
             <button

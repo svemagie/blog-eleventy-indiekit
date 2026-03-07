@@ -78,9 +78,12 @@ class TimeDifference extends HTMLElement {
       const relative = rtf.format(value, unit);
 
       // Store original text as title for hover tooltip
+      const originalText = time.textContent.trim();
       if (!time.hasAttribute("title")) {
-        time.setAttribute("title", time.textContent.trim());
+        time.setAttribute("title", originalText);
       }
+      // aria-label provides the full context: "2 days ago (March 5, 2026)"
+      time.setAttribute("aria-label", relative + " (" + originalText + ")");
       time.textContent = relative;
     } catch {
       // Intl.RelativeTimeFormat not supported, keep static text

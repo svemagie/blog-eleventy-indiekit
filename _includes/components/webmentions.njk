@@ -28,22 +28,24 @@
       {{ likes.length }} Like{% if likes.length != 1 %}s{% endif %}
     </h3>
     <is-land on:visible>
-    <div class="facepile">
+    <ul class="facepile" role="list">
       {% for like in likes %}
-      <a href="{{ like.author.url }}"
-         class="facepile-avatar"
-         title="{{ like.author.name }}"
-         target="_blank"
-         rel="noopener">
-        <img
-          src="{{ like.author.photo or '/images/default-avatar.svg' }}"
-          alt="{{ like.author.name }}"
-          class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-surface-900"
-          loading="lazy"
-        >
-      </a>
+      <li class="inline">
+        <a href="{{ like.author.url }}"
+           class="facepile-avatar"
+           aria-label="{{ like.author.name }} (opens in new tab)"
+           target="_blank"
+           rel="noopener">
+          <img
+            src="{{ like.author.photo or '/images/default-avatar.svg' }}"
+            alt=""
+            class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-surface-900"
+            loading="lazy"
+          >
+        </a>
+      </li>
       {% endfor %}
-    </div>
+    </ul>
     </is-land>
   </div>
   {% endif %}
@@ -56,22 +58,24 @@
       {{ reposts.length }} Repost{% if reposts.length != 1 %}s{% endif %}
     </h3>
     <is-land on:visible>
-    <div class="facepile">
+    <ul class="facepile" role="list">
       {% for repost in reposts %}
-      <a href="{{ repost.author.url }}"
-         class="facepile-avatar"
-         title="{{ repost.author.name }}"
-         target="_blank"
-         rel="noopener">
-        <img
-          src="{{ repost.author.photo or '/images/default-avatar.svg' }}"
-          alt="{{ repost.author.name }}"
-          class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-surface-900"
-          loading="lazy"
-        >
-      </a>
+      <li class="inline">
+        <a href="{{ repost.author.url }}"
+           class="facepile-avatar"
+           aria-label="{{ repost.author.name }} (opens in new tab)"
+           target="_blank"
+           rel="noopener">
+          <img
+            src="{{ repost.author.photo or '/images/default-avatar.svg' }}"
+            alt=""
+            class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-surface-900"
+            loading="lazy"
+          >
+        </a>
+      </li>
       {% endfor %}
-    </div>
+    </ul>
     </is-land>
   </div>
   {% endif %}
@@ -84,22 +88,24 @@
       {{ bookmarks.length }} Bookmark{% if bookmarks.length != 1 %}s{% endif %}
     </h3>
     <is-land on:visible>
-    <div class="facepile">
+    <ul class="facepile" role="list">
       {% for bookmark in bookmarks %}
-      <a href="{{ bookmark.author.url }}"
-         class="facepile-avatar"
-         title="{{ bookmark.author.name }}"
-         target="_blank"
-         rel="noopener">
-        <img
-          src="{{ bookmark.author.photo or '/images/default-avatar.svg' }}"
-          alt="{{ bookmark.author.name }}"
-          class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-surface-900"
-          loading="lazy"
-        >
-      </a>
+      <li class="inline">
+        <a href="{{ bookmark.author.url }}"
+           class="facepile-avatar"
+           aria-label="{{ bookmark.author.name }} (opens in new tab)"
+           target="_blank"
+           rel="noopener">
+          <img
+            src="{{ bookmark.author.photo or '/images/default-avatar.svg' }}"
+            alt=""
+            class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-surface-900"
+            loading="lazy"
+          >
+        </a>
+      </li>
       {% endfor %}
-    </div>
+    </ul>
     </is-land>
   </div>
   {% endif %}
@@ -132,7 +138,7 @@
                 {{ reply.author.name }}
               </a>
               <a href="{{ reply.url }}"
-                 class="text-xs text-surface-500 hover:underline"
+                 class="text-xs text-surface-600 dark:text-surface-400 hover:underline"
                  target="_blank"
                  rel="noopener">
                 <time class="font-mono" datetime="{{ reply.published }}">
@@ -189,7 +195,9 @@
     </p>
     <form action="https://webmention.io/{{ site.webmentions.domain }}/webmention" method="post" class="flex gap-2">
       <input type="hidden" name="target" value="{{ site.url }}{{ page.url }}">
+      <label for="webmention-source" class="sr-only">Your post URL</label>
       <input
+        id="webmention-source"
         type="url"
         name="source"
         placeholder="https://your-site.com/response"

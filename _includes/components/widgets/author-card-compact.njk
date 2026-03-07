@@ -4,10 +4,10 @@
   <div class="h-card p-author flex items-center gap-3">
     {# Hidden u-photo for reliable microformat parsing #}
     <data class="u-photo hidden" value="{{ site.author.avatar }}"></data>
-    <a href="{{ site.author.url }}" class="u-url u-uid" rel="me" itemprop="url">
+    <a href="{{ site.author.url }}" class="u-url u-uid" rel="me" itemprop="url" aria-label="{{ site.author.name }}">
       <img
         src="{{ site.author.avatar }}"
-        alt="{{ site.author.name }}"
+        alt=""
         class="w-12 h-12 rounded-full object-cover shadow-lg"
         loading="lazy"
       >
@@ -16,9 +16,9 @@
       <a href="{{ site.author.url }}" class="u-url p-name font-medium text-surface-900 dark:text-surface-100 hover:text-accent-600 dark:hover:text-accent-400 transition-colors">
         {{ site.author.name }}
       </a>
-      <p class="p-job-title text-xs text-surface-500">{{ site.author.title }}</p>
+      <p class="p-job-title text-xs text-surface-600 dark:text-surface-400">{{ site.author.title }}</p>
       {% if site.author.locality %}
-      <p class="p-locality text-xs text-surface-500">{{ site.author.locality }}{% if site.author.country %}, <span class="p-country-name">{{ site.author.country }}</span>{% endif %}</p>
+      <p class="p-locality text-xs text-surface-600 dark:text-surface-400">{{ site.author.locality }}{% if site.author.country %}, <span class="p-country-name">{{ site.author.country }}</span>{% endif %}</p>
       {% endif %}
     </div>
   </div>

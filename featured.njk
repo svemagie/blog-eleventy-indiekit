@@ -55,7 +55,7 @@ permalink: "featured/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
       <div class="post-header">
         <span class="text-xs font-medium text-rose-600 dark:text-rose-400">Liked</span>
         <a class="u-url ml-2" href="{{ post.url }}">
-          <time class="dt-published text-sm text-surface-500 dark:text-surface-400 font-mono" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
+          <time class="dt-published text-sm text-surface-600 dark:text-surface-400 font-mono" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
         </a>
       </div>
       <a class="u-like-of text-sm text-surface-600 dark:text-surface-400 hover:underline break-all mt-2 inline-block" href="{{ likedUrl }}">{{ likedUrl }}</a>
@@ -67,7 +67,7 @@ permalink: "featured/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
       {# ── Bookmark ── #}
       <div class="post-header">
         <span class="text-xs font-medium text-amber-600 dark:text-amber-400">Bookmarked</span>
-        <time class="dt-published text-sm text-surface-500 dark:text-surface-400 ml-2 font-mono" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
+        <time class="dt-published text-sm text-surface-600 dark:text-surface-400 ml-2 font-mono" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
       </div>
       {% if post.data.title %}
       <h2 class="p-name text-lg font-semibold mt-2">
@@ -84,7 +84,7 @@ permalink: "featured/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
       <div class="post-header">
         <span class="text-xs font-medium text-rose-600 dark:text-rose-400">Reposted</span>
         <a class="u-url ml-2" href="{{ post.url }}">
-          <time class="dt-published text-sm text-surface-500 dark:text-surface-400 font-mono" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
+          <time class="dt-published text-sm text-surface-600 dark:text-surface-400 font-mono" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
         </a>
       </div>
       <a class="u-repost-of text-sm text-surface-600 dark:text-surface-400 hover:underline break-all mt-2 inline-block" href="{{ repostedUrl }}">{{ repostedUrl }}</a>
@@ -97,7 +97,7 @@ permalink: "featured/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
       <div class="post-header">
         <span class="text-xs font-medium text-rose-600 dark:text-rose-400">In reply to</span>
         <a class="u-url ml-2" href="{{ post.url }}">
-          <time class="dt-published text-sm text-surface-500 dark:text-surface-400 font-mono" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
+          <time class="dt-published text-sm text-surface-600 dark:text-surface-400 font-mono" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
         </a>
       </div>
       <a class="u-in-reply-to text-sm text-surface-600 dark:text-surface-400 hover:underline break-all mt-2 inline-block" href="{{ replyToUrl }}">{{ replyToUrl }}</a>
@@ -127,7 +127,7 @@ permalink: "featured/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
       {# ── Note ── #}
       <div class="post-header">
         <a class="u-url" href="{{ post.url }}">
-          <time class="dt-published text-sm text-surface-500 dark:text-surface-400 font-medium font-mono" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
+          <time class="dt-published text-sm text-surface-600 dark:text-surface-400 font-medium font-mono" datetime="{{ post.date | isoDate }}">{{ post.date | dateDisplay }}</time>
         </a>
         {% if post.data.postType %}
         <span class="px-2 py-0.5 bg-surface-100 dark:bg-surface-700 rounded text-xs ml-2">{{ post.data.postType }}</span>
@@ -158,7 +158,7 @@ permalink: "featured/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         Previous
       </a>
       {% else %}
-      <span class="pagination-link disabled">
+      <span class="pagination-link disabled" aria-disabled="true">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         Previous
       </span>
@@ -170,7 +170,7 @@ permalink: "featured/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
       </a>
       {% else %}
-      <span class="pagination-link disabled">
+      <span class="pagination-link disabled" aria-disabled="true">
         Next
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
       </span>

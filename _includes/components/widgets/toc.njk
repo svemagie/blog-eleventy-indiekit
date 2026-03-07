@@ -3,7 +3,7 @@
 <is-land on:visible>
 <div class="widget">
   <h3 class="widget-title">Contents</h3>
-  <nav class="toc">
+  <nav class="toc" aria-label="Table of contents">
     <ul class="space-y-1 text-sm">
       {% for item in toc %}
       <li class="{% if item.level > 2 %}ml-{{ (item.level - 2) * 3 }}{% endif %}">

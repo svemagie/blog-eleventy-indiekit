@@ -14,11 +14,13 @@ withSidebar: false
 <div x-data="changelogApp()" x-init="init()">
 
   {# Tab navigation #}
-  <div class="flex gap-1 mb-6 border-b border-surface-200 dark:border-surface-700 overflow-x-auto">
+  <div class="flex gap-1 mb-6 border-b border-surface-200 dark:border-surface-700 overflow-x-auto" role="tablist" aria-label="Changelog categories">
     <template x-for="tab in tabs" :key="tab.key">
       <button
         @click="activeTab = tab.key"
-        :class="activeTab === tab.key ? 'border-b-2 border-accent-500 text-accent-600 dark:text-accent-400' : 'text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+        :class="activeTab === tab.key ? 'border-b-2 border-accent-500 text-accent-600 dark:text-accent-400' : 'text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300'"
+        :aria-selected="(activeTab === tab.key).toString()"
+        role="tab"
         class="flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors -mb-px whitespace-nowrap flex-shrink-0"
       >
         <span x-text="tab.label"></span>
@@ -37,13 +39,13 @@ withSidebar: false
       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
     </svg>
-    <span class="ml-3 text-surface-500">Loading changelog...</span>
+    <span class="ml-3 text-surface-600 dark:text-surface-400">Loading changelog...</span>
   </div>
 
   {# Commit list #}
   <div x-show="!loading" x-cloak>
     <template x-if="filteredCommits().length === 0">
-      <p class="text-surface-500 py-8 text-center">No recent activity in this category.</p>
+      <p class="text-surface-600 dark:text-surface-400 py-8 text-center">No recent activity in this category.</p>
     </template>
 
     <ul class="space-y-4">
@@ -64,12 +66,12 @@ withSidebar: false
                 <a :href="commit.repoUrl" target="_blank" rel="noopener"
                    class="text-xs px-2 py-0.5 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400"
                    x-text="commit.repoName"></a>
-                <span class="text-xs text-surface-500 font-mono" x-text="formatDate(commit.date)"></span>
+                <span class="text-xs text-surface-600 dark:text-surface-400 font-mono" x-text="formatDate(commit.date)"></span>
                 <span class="text-xs text-surface-400" x-text="'by ' + commit.author"></span>
               </div>
               <template x-if="commit.body">
                 <details class="mt-2">
-                  <summary class="text-xs text-surface-500 cursor-pointer hover:text-surface-700 dark:hover:text-surface-300">Show details</summary>
+                  <summary class="text-xs text-surface-600 dark:text-surface-400 cursor-pointer hover:text-surface-700 dark:hover:text-surface-300">Show details</summary>
                   <pre class="mt-1 text-xs text-surface-600 dark:text-surface-400 whitespace-pre-wrap break-words bg-surface-50 dark:bg-surface-800 rounded p-2" x-text="commit.body"></pre>
                 </details>
               </template>

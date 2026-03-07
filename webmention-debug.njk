@@ -52,7 +52,7 @@ pagefindIgnore: true
                   {{ post.url }}
                 </a>
               </td>
-              <td class="p-2 text-xs text-surface-500 font-mono">
+              <td class="p-2 text-xs text-surface-600 dark:text-surface-400 font-mono">
                 {% if legacyUrls.length %}
                   {% for legacyUrl in legacyUrls %}
                     <div>{{ legacyUrl }}</div>
@@ -94,7 +94,7 @@ pagefindIgnore: true
           {% for newUrl, oldUrls in aliasEntries | head(20) %}
           <tr>
             <td class="p-2 text-xs break-all">{{ newUrl }}</td>
-            <td class="p-2 text-xs break-all text-surface-500">
+            <td class="p-2 text-xs break-all text-surface-600 dark:text-surface-400">
               {% for oldUrl in oldUrls %}
                 <div>{{ oldUrl }}</div>
               {% endfor %}
@@ -115,7 +115,7 @@ pagefindIgnore: true
     <ul class="space-y-1 font-mono text-xs">
       {% for wm in webmentions | head(30) %}
       <li class="p-2 bg-surface-50 dark:bg-surface-800/50 rounded">
-        <span class="text-surface-500">{{ wm["wm-property"] }}:</span>
+        <span class="text-surface-600 dark:text-surface-400">{{ wm["wm-property"] }}:</span>
         <span class="break-all">{{ wm["wm-target"] }}</span>
       </li>
       {% endfor %}

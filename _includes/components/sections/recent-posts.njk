@@ -50,14 +50,14 @@
           </svg>
         </div>
         <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-3 text-xs text-surface-500">
+          <div class="flex items-center gap-3 text-xs text-surface-600 dark:text-surface-400">
             <span class="font-medium text-red-600 dark:text-red-400">Liked</span>
             <time class="dt-published font-mono" datetime="{{ post.date | isoDate }}">
               {{ post.date | dateDisplay }}
             </time>
           </div>
           {{ likedUrl | unfurlCard | safe }}
-          <a class="u-like-of text-xs text-surface-400 dark:text-surface-500 hover:underline break-all mt-1 inline-block" href="{{ likedUrl }}">
+          <a class="u-like-of text-xs text-surface-400 dark:text-surface-400 hover:underline break-all mt-1 inline-block" href="{{ likedUrl }}">
             {{ likedUrl }}
           </a>
           {% if post.templateContent %}
@@ -78,7 +78,7 @@
           </svg>
         </div>
         <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-3 text-xs text-surface-500">
+          <div class="flex items-center gap-3 text-xs text-surface-600 dark:text-surface-400">
             <span class="font-medium text-amber-600 dark:text-amber-400">Bookmarked</span>
             <time class="dt-published font-mono" datetime="{{ post.date | isoDate }}">
               {{ post.date | dateDisplay }}
@@ -90,7 +90,7 @@
           </h3>
           {% endif %}
           {{ bookmarkedUrl | unfurlCard | safe }}
-          <a class="u-bookmark-of text-xs text-surface-400 dark:text-surface-500 hover:underline break-all mt-1 inline-block" href="{{ bookmarkedUrl }}">
+          <a class="u-bookmark-of text-xs text-surface-400 dark:text-surface-400 hover:underline break-all mt-1 inline-block" href="{{ bookmarkedUrl }}">
             {{ bookmarkedUrl }}
           </a>
           {% if post.templateContent %}
@@ -111,14 +111,14 @@
           </svg>
         </div>
         <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-3 text-xs text-surface-500">
+          <div class="flex items-center gap-3 text-xs text-surface-600 dark:text-surface-400">
             <span class="font-medium text-green-600 dark:text-green-400">Reposted</span>
             <time class="dt-published font-mono" datetime="{{ post.date | isoDate }}">
               {{ post.date | dateDisplay }}
             </time>
           </div>
           {{ repostedUrl | unfurlCard | safe }}
-          <a class="u-repost-of text-xs text-surface-400 dark:text-surface-500 hover:underline break-all mt-1 inline-block" href="{{ repostedUrl }}">
+          <a class="u-repost-of text-xs text-surface-400 dark:text-surface-400 hover:underline break-all mt-1 inline-block" href="{{ repostedUrl }}">
             {{ repostedUrl }}
           </a>
           {% if post.templateContent %}
@@ -139,14 +139,14 @@
           </svg>
         </div>
         <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-3 text-xs text-surface-500">
+          <div class="flex items-center gap-3 text-xs text-surface-600 dark:text-surface-400">
             <span class="font-medium text-sky-600 dark:text-sky-400">In reply to</span>
             <time class="dt-published font-mono" datetime="{{ post.date | isoDate }}">
               {{ post.date | dateDisplay }}
             </time>
           </div>
           {{ replyToUrl | unfurlCard | safe }}
-          <a class="u-in-reply-to text-xs text-surface-400 dark:text-surface-500 hover:underline break-all mt-1 inline-block" href="{{ replyToUrl }}">
+          <a class="u-in-reply-to text-xs text-surface-400 dark:text-surface-400 hover:underline break-all mt-1 inline-block" href="{{ replyToUrl }}">
             {{ replyToUrl }}
           </a>
           {% if post.templateContent %}
@@ -168,7 +168,7 @@
           </svg>
         </div>
         <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-3 text-xs text-surface-500">
+          <div class="flex items-center gap-3 text-xs text-surface-600 dark:text-surface-400">
             <span class="font-medium text-purple-600 dark:text-purple-400">Photo</span>
             <time class="dt-published font-mono" datetime="{{ post.date | isoDate }}">
               {{ post.date | dateDisplay }}
@@ -206,7 +206,7 @@
         {{ post.templateContent | striptags | truncate(250) }}
       </p>
       {% endif %}
-      <div class="flex items-center gap-3 text-xs text-surface-500">
+      <div class="flex items-center gap-3 text-xs text-surface-600 dark:text-surface-400">
         <time class="dt-published font-mono" datetime="{{ post.date | isoDate }}">
           {{ post.date | dateDisplay }}
         </time>
@@ -219,9 +219,9 @@
 
       {% else %}
       {# ── Note card ── #}
-      <div class="flex items-center gap-3 text-xs text-surface-500 mb-2">
+      <div class="flex items-center gap-3 text-xs text-surface-600 dark:text-surface-400 mb-2">
         <a class="u-url" href="{{ post.url }}">
-          <time class="dt-published font-medium font-mono text-surface-500 dark:text-surface-400" datetime="{{ post.date | isoDate }}">
+          <time class="dt-published font-medium font-mono text-surface-600 dark:text-surface-400" datetime="{{ post.date | isoDate }}">
             {{ post.date | dateDisplay }}
           </time>
         </a>

@@ -60,8 +60,8 @@ permalink: "replies/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNum
           {% set protocol = replyTo | protocolType %}
           {% unfurl replyTo %}
           <p class="mt-2 text-sm flex items-center gap-2 flex-wrap">
-            <span class="text-surface-500">In reply to:</span>
-            <a class="u-in-reply-to text-xs text-surface-400 dark:text-surface-500 hover:underline break-all" href="{{ replyTo }}">
+            <span class="text-surface-600">In reply to:</span>
+            <a class="u-in-reply-to text-xs text-surface-600 dark:text-surface-400 hover:underline break-all" href="{{ replyTo }}">
               {{ replyTo | replace("https://", "") | replace("http://", "") | truncate(60) }}
             </a>
             {% if protocol == "atmosphere" %}
@@ -111,7 +111,7 @@ permalink: "replies/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNum
         Previous
       </a>
       {% else %}
-      <span class="pagination-link disabled">
+      <span class="pagination-link disabled" aria-disabled="true">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         Previous
       </span>
@@ -123,7 +123,7 @@ permalink: "replies/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNum
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
       </a>
       {% else %}
-      <span class="pagination-link disabled">
+      <span class="pagination-link disabled" aria-disabled="true">
         Next
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
       </span>

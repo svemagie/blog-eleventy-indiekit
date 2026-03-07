@@ -40,11 +40,11 @@
         </div>
         <div class="flex items-center gap-2 shrink-0">
           {% if item.startDate %}
-          <span class="text-xs text-surface-500 hidden sm:inline font-mono">
+          <span class="text-xs text-surface-600 dark:text-surface-400 hidden sm:inline font-mono">
             {{ item.startDate }}{% if item.endDate %} – {{ item.endDate }}{% else %} – Present{% endif %}
           </span>
           {% elif item.year %}
-          <span class="text-xs text-surface-500 hidden sm:inline font-mono">{{ item.year }}</span>
+          <span class="text-xs text-surface-600 dark:text-surface-400 hidden sm:inline font-mono">{{ item.year }}</span>
           {% endif %}
           <svg
             class="w-4 h-4 text-surface-400 transition-transform duration-200"
@@ -69,11 +69,11 @@
         class="px-4 pb-4"
       >
         {% if item.startDate %}
-        <p class="text-xs text-surface-500 mb-1 sm:hidden font-mono">
+        <p class="text-xs text-surface-600 dark:text-surface-400 mb-1 sm:hidden font-mono">
           {{ item.startDate }}{% if item.endDate %} – {{ item.endDate }}{% else %} – Present{% endif %}
         </p>
         {% elif item.year %}
-        <p class="text-xs text-surface-500 mb-1 sm:hidden font-mono">{{ item.year }}</p>
+        <p class="text-xs text-surface-600 dark:text-surface-400 mb-1 sm:hidden font-mono">{{ item.year }}</p>
         {% endif %}
 
         {% if item.description %}

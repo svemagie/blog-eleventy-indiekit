@@ -72,7 +72,7 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         Previous
       </a>
       {% else %}
-      <span class="pagination-link disabled">
+      <span class="pagination-link disabled" aria-disabled="true">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         Previous
       </span>
@@ -84,7 +84,7 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
       </a>
       {% else %}
-      <span class="pagination-link disabled">
+      <span class="pagination-link disabled" aria-disabled="true">
         Next
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
       </span>

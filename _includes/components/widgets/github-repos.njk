@@ -9,31 +9,39 @@
   </h3>
 
   {# Tab buttons — order: Commits, Repos, Featured, PRs #}
-  <div class="flex gap-1 mb-4 border-b border-surface-200 dark:border-surface-700">
+  <div class="flex gap-1 mb-4 border-b border-surface-200 dark:border-surface-700" role="tablist" aria-label="GitHub activity">
     <button
       @click="activeTab = 'commits'"
-      :class="activeTab === 'commits' ? 'border-b-2 border-accent-500 text-accent-600 dark:text-accent-400' : 'text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+      :class="activeTab === 'commits' ? 'border-b-2 border-accent-500 text-accent-600 dark:text-accent-400' : 'text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300'"
+      :aria-selected="(activeTab === 'commits').toString()"
+      role="tab" id="gh-tab-commits" aria-controls="gh-panel-commits"
       class="flex items-center gap-1.5 px-2 py-2 text-xs font-medium transition-colors -mb-px"
     >
       Commits
     </button>
     <button
       @click="activeTab = 'repos'"
-      :class="activeTab === 'repos' ? 'border-b-2 border-accent-500 text-accent-600 dark:text-accent-400' : 'text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+      :class="activeTab === 'repos' ? 'border-b-2 border-accent-500 text-accent-600 dark:text-accent-400' : 'text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300'"
+      :aria-selected="(activeTab === 'repos').toString()"
+      role="tab" id="gh-tab-repos" aria-controls="gh-panel-repos"
       class="flex items-center gap-1.5 px-2 py-2 text-xs font-medium transition-colors -mb-px"
     >
       Repos
     </button>
     <button
       @click="activeTab = 'featured'"
-      :class="activeTab === 'featured' ? 'border-b-2 border-accent-500 text-accent-600 dark:text-accent-400' : 'text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+      :class="activeTab === 'featured' ? 'border-b-2 border-accent-500 text-accent-600 dark:text-accent-400' : 'text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300'"
+      :aria-selected="(activeTab === 'featured').toString()"
+      role="tab" id="gh-tab-featured" aria-controls="gh-panel-featured"
       class="flex items-center gap-1.5 px-2 py-2 text-xs font-medium transition-colors -mb-px"
     >
       Featured
     </button>
     <button
       @click="activeTab = 'prs'"
-      :class="activeTab === 'prs' ? 'border-b-2 border-accent-500 text-accent-600 dark:text-accent-400' : 'text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+      :class="activeTab === 'prs' ? 'border-b-2 border-accent-500 text-accent-600 dark:text-accent-400' : 'text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300'"
+      :aria-selected="(activeTab === 'prs').toString()"
+      role="tab" id="gh-tab-prs" aria-controls="gh-panel-prs"
       class="flex items-center gap-1.5 px-2 py-2 text-xs font-medium transition-colors -mb-px"
     >
       PRs
@@ -44,18 +52,18 @@
   <div class="h-[420px] overflow-y-auto">
 
     {# Loading state #}
-    <div x-show="loading" class="text-sm text-surface-500 py-4 text-center">
+    <div x-show="loading" class="text-sm text-surface-600 dark:text-surface-400 py-4 text-center">
       Loading...
     </div>
 
     {# Commits Tab #}
-    <div x-show="activeTab === 'commits' && !loading" x-cloak>
+    <div x-show="activeTab === 'commits' && !loading" x-cloak role="tabpanel" id="gh-panel-commits" aria-labelledby="gh-tab-commits">
       <ul x-show="commits.length > 0" class="space-y-3">
         <template x-for="commit in commits.slice(0, 5)" :key="commit.sha">
           <li class="border-b border-surface-200 dark:border-surface-700 pb-3 last:border-0">
             <a :href="commit.url" target="_blank" rel="noopener" class="block group">
               <p class="text-sm text-surface-700 dark:text-surface-300 group-hover:text-surface-900 dark:group-hover:text-surface-100 transition-colors line-clamp-2" x-text="commit.message"></p>
-              <div class="flex items-center gap-2 mt-1.5 text-xs text-surface-500">
+              <div class="flex items-center gap-2 mt-1.5 text-xs text-surface-600 dark:text-surface-400">
                 <code class="text-xs font-mono bg-surface-100 dark:bg-surface-800 px-1 py-0.5 rounded" x-text="commit.sha"></code>
                 <span class="truncate" x-text="commit.repo?.split('/')[1] || commit.repo"></span>
                 <span class="font-mono" x-text="formatDate(commit.date)"></span>
@@ -64,11 +72,11 @@
           </li>
         </template>
       </ul>
-      <div x-show="commits.length === 0" class="text-sm text-surface-500 py-2">No recent commits.</div>
+      <div x-show="commits.length === 0" class="text-sm text-surface-600 dark:text-surface-400 py-2">No recent commits.</div>
     </div>
 
     {# Repos Tab #}
-    <div x-show="activeTab === 'repos' && !loading" x-cloak>
+    <div x-show="activeTab === 'repos' && !loading" x-cloak role="tabpanel" id="gh-panel-repos" aria-labelledby="gh-tab-repos">
       <ul x-show="repos.length > 0" class="space-y-3">
         <template x-for="repo in repos.slice(0, 5)" :key="repo.name">
           <li class="border-b border-surface-200 dark:border-surface-700 pb-3 last:border-0">
@@ -78,7 +86,7 @@
                 <span x-show="repo.language" class="text-xs px-1.5 py-0.5 rounded bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 flex-shrink-0" x-text="repo.language"></span>
               </div>
               <p x-show="repo.description" class="text-xs text-surface-600 dark:text-surface-400 mt-1 line-clamp-2" x-text="repo.description"></p>
-              <div class="flex items-center gap-3 mt-1.5 text-xs text-surface-500">
+              <div class="flex items-center gap-3 mt-1.5 text-xs text-surface-600 dark:text-surface-400">
                 <span x-show="repo.stargazers_count > 0" class="flex items-center gap-1">
                   <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                   <span x-text="repo.stargazers_count"></span>
@@ -89,11 +97,11 @@
           </li>
         </template>
       </ul>
-      <div x-show="repos.length === 0" class="text-sm text-surface-500 py-2">No repositories found.</div>
+      <div x-show="repos.length === 0" class="text-sm text-surface-600 dark:text-surface-400 py-2">No repositories found.</div>
     </div>
 
     {# Featured Tab #}
-    <div x-show="activeTab === 'featured' && !loading" x-cloak>
+    <div x-show="activeTab === 'featured' && !loading" x-cloak role="tabpanel" id="gh-panel-featured" aria-labelledby="gh-tab-featured">
       <ul x-show="featured.length > 0" class="space-y-3">
         <template x-for="repo in featured.slice(0, 5)" :key="repo.fullName || repo.name">
           <li class="border-b border-surface-200 dark:border-surface-700 pb-3 last:border-0">
@@ -103,7 +111,7 @@
                 <span x-show="repo.language" class="text-xs px-1.5 py-0.5 rounded bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 flex-shrink-0" x-text="repo.language"></span>
               </div>
               <p x-show="repo.description" class="text-xs text-surface-600 dark:text-surface-400 mt-1 line-clamp-2" x-text="repo.description"></p>
-              <div class="flex items-center gap-3 mt-1.5 text-xs text-surface-500">
+              <div class="flex items-center gap-3 mt-1.5 text-xs text-surface-600 dark:text-surface-400">
                 <span x-show="repo.stars > 0" class="flex items-center gap-1">
                   <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                   <span x-text="repo.stars"></span>
@@ -117,11 +125,11 @@
           </li>
         </template>
       </ul>
-      <div x-show="featured.length === 0" class="text-sm text-surface-500 py-2">No featured projects.</div>
+      <div x-show="featured.length === 0" class="text-sm text-surface-600 dark:text-surface-400 py-2">No featured projects.</div>
     </div>
 
     {# PRs Tab #}
-    <div x-show="activeTab === 'prs' && !loading" x-cloak>
+    <div x-show="activeTab === 'prs' && !loading" x-cloak role="tabpanel" id="gh-panel-prs" aria-labelledby="gh-tab-prs">
       <ul x-show="contributions.length > 0" class="space-y-3">
         <template x-for="item in contributions.slice(0, 5)" :key="item.url">
           <li class="border-b border-surface-200 dark:border-surface-700 pb-3 last:border-0">
@@ -136,7 +144,7 @@
                 </span>
                 <span class="text-sm text-surface-700 dark:text-surface-300 group-hover:text-surface-900 dark:group-hover:text-surface-100 transition-colors truncate" x-text="item.title"></span>
               </div>
-              <div class="flex items-center gap-2 mt-1.5 text-xs text-surface-500 pl-6">
+              <div class="flex items-center gap-2 mt-1.5 text-xs text-surface-600 dark:text-surface-400 pl-6">
                 <span x-text="item.repo?.split('/')[1] || item.repo"></span>
                 <span x-show="item.number" x-text="'#' + item.number"></span>
                 <span class="font-mono" x-text="formatDate(item.date)"></span>
@@ -145,7 +153,7 @@
           </li>
         </template>
       </ul>
-      <div x-show="contributions.length === 0" class="text-sm text-surface-500 py-2">No recent PRs or issues.</div>
+      <div x-show="contributions.length === 0" class="text-sm text-surface-600 dark:text-surface-400 py-2">No recent PRs or issues.</div>
     </div>
 
   </div>

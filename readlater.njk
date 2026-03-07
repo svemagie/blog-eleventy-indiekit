@@ -20,8 +20,8 @@ permalink: /readlater/
     {# Main Content #}
     <div class="main-content">
       {# Loading State #}
-      <div x-show="loading" class="text-center py-12">
-        <svg class="w-8 h-8 mx-auto text-orange-600 animate-spin mb-4" fill="none" viewBox="0 0 24 24">
+      <div x-show="loading" class="text-center py-12" role="status">
+        <svg class="w-8 h-8 mx-auto text-orange-600 animate-spin mb-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
@@ -29,7 +29,7 @@ permalink: /readlater/
       </div>
 
       {# Error State #}
-      <div x-show="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+      <div x-show="error" role="alert" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
         <p class="text-red-700 dark:text-red-400" x-text="error"></p>
         <button @click="fetchData()" class="mt-2 text-sm text-red-600 hover:text-red-700 underline">Try again</button>
       </div>
@@ -38,7 +38,9 @@ permalink: /readlater/
       <div x-show="!loading && items.length > 0" class="mb-6">
         <div class="flex flex-wrap items-center gap-3">
           <div class="relative">
+            <label for="readlater-source" class="sr-only">Filter by source</label>
             <select
+              id="readlater-source"
               x-model="selectedSource"
               @change="fetchData()"
               class="appearance-none bg-surface-50 dark:bg-surface-800 border border-surface-300 dark:border-surface-600 rounded-lg pl-3 pr-8 py-2 text-sm"
@@ -53,7 +55,9 @@ permalink: /readlater/
             </svg>
           </div>
           <div class="relative flex-1 max-w-xs">
+            <label for="readlater-search" class="sr-only">Search reading list</label>
             <input
+              id="readlater-search"
               type="search"
               x-model.debounce.300ms="searchQuery"
               @input="fetchData()"
@@ -91,7 +95,7 @@ permalink: /readlater/
                 <h2 class="font-semibold text-surface-900 dark:text-surface-100 mb-1">
                   <a :href="item.url" class="hover:text-orange-600 dark:hover:text-orange-400 transition-colors" target="_blank" rel="noopener" x-text="item.title"></a>
                 </h2>
-                <div class="flex flex-wrap items-center gap-2 text-sm text-surface-500">
+                <div class="flex flex-wrap items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
                   <span
                     class="inline-flex items-center px-2 py-0.5 bg-surface-100 dark:bg-surface-700 rounded-full text-xs"
                     x-text="item.source"
@@ -132,11 +136,11 @@ permalink: /readlater/
 
       {# Empty State #}
       <div x-show="!loading && items.length === 0 && !error" class="text-center py-12">
-        <svg class="w-16 h-16 mx-auto text-surface-300 dark:text-surface-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-16 h-16 mx-auto text-surface-300 dark:text-surface-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
         </svg>
         <p class="text-surface-600 dark:text-surface-400 text-lg">No saved items yet.</p>
-        <p class="text-surface-500 text-sm mt-2">Save articles from around the web using the bookmark button.</p>
+        <p class="text-surface-600 dark:text-surface-400 text-sm mt-2">Save articles from around the web using the bookmark button.</p>
       </div>
     </div>
 
@@ -148,11 +152,11 @@ permalink: /readlater/
         <div class="grid grid-cols-2 gap-3 text-center">
           <div class="p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
             <span class="text-2xl font-bold text-orange-600 dark:text-orange-400 block" x-text="items.length"></span>
-            <span class="text-xs text-surface-500 uppercase">Saved</span>
+            <span class="text-xs text-surface-600 dark:text-surface-400 uppercase">Saved</span>
           </div>
           <div class="p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
             <span class="text-2xl font-bold text-orange-600 dark:text-orange-400 block" x-text="sources.length"></span>
-            <span class="text-xs text-surface-500 uppercase">Sources</span>
+            <span class="text-xs text-surface-600 dark:text-surface-400 uppercase">Sources</span>
           </div>
         </div>
       </div>

@@ -5,11 +5,13 @@
   <h3 class="widget-title">Social Activity</h3>
 
   {# Tab buttons #}
-  <div class="flex gap-1 mb-4 border-b border-surface-200 dark:border-surface-700">
+  <div class="flex gap-1 mb-4 border-b border-surface-200 dark:border-surface-700" role="tablist" aria-label="Social feeds">
     {% if blueskyFeed and blueskyFeed.length %}
     <button
       @click="activeTab = 'bluesky'"
-      :class="activeTab === 'bluesky' ? 'border-b-2 border-[#0085ff] text-[#0085ff]' : 'text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+      :class="activeTab === 'bluesky' ? 'border-b-2 border-[#0085ff] text-[#0085ff]' : 'text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300'"
+      :aria-selected="(activeTab === 'bluesky').toString()"
+      role="tab" id="social-tab-bluesky" aria-controls="social-panel-bluesky"
       class="flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors -mb-px"
     >
       <svg class="w-4 h-4 text-[#0085ff]" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -21,7 +23,9 @@
     {% if mastodonFeed and mastodonFeed.length %}
     <button
       @click="activeTab = 'mastodon'"
-      :class="activeTab === 'mastodon' ? 'border-b-2 border-[#a730b8] text-[#a730b8]' : 'text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
+      :class="activeTab === 'mastodon' ? 'border-b-2 border-[#a730b8] text-[#a730b8]' : 'text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300'"
+      :aria-selected="(activeTab === 'mastodon').toString()"
+      role="tab" id="social-tab-mastodon" aria-controls="social-panel-mastodon"
       class="flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors -mb-px"
     >
       <svg class="w-4 h-4 text-[#6364ff]" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -34,7 +38,7 @@
 
   {# Bluesky Tab Content #}
   {% if blueskyFeed and blueskyFeed.length %}
-  <div x-show="activeTab === 'bluesky'" x-cloak>
+  <div x-show="activeTab === 'bluesky'" x-cloak role="tabpanel" id="social-panel-bluesky" aria-labelledby="social-tab-bluesky">
     <ul class="space-y-3">
       {% for post in blueskyFeed | head(5) %}
       <li class="border-b border-surface-200 dark:border-surface-700 pb-3 last:border-0">
@@ -42,7 +46,7 @@
           <p class="text-sm text-surface-700 dark:text-surface-300 group-hover:text-[#0085ff] transition-colors">
             {{ post.text | truncate(140) }}
           </p>
-          <div class="flex items-center gap-3 mt-2 text-xs text-surface-500">
+          <div class="flex items-center gap-3 mt-2 text-xs text-surface-600 dark:text-surface-400">
             <time class="font-mono" datetime="{{ post.createdAt }}">{{ post.createdAt | date("MMM d, yyyy") }}</time>
             {% if post.likeCount > 0 %}
             <span class="flex items-center gap-1">
@@ -64,7 +68,7 @@
 
   {# Mastodon Tab Content #}
   {% if mastodonFeed and mastodonFeed.length %}
-  <div x-show="activeTab === 'mastodon'" x-cloak>
+  <div x-show="activeTab === 'mastodon'" x-cloak role="tabpanel" id="social-panel-mastodon" aria-labelledby="social-tab-mastodon">
     <ul class="space-y-3">
       {% for post in mastodonFeed | head(5) %}
       <li class="border-b border-surface-200 dark:border-surface-700 pb-3 last:border-0">
@@ -72,7 +76,7 @@
           <p class="text-sm text-surface-700 dark:text-surface-300 group-hover:text-[#a730b8] transition-colors">
             {{ post.text | truncate(140) }}
           </p>
-          <div class="flex items-center gap-3 mt-2 text-xs text-surface-500">
+          <div class="flex items-center gap-3 mt-2 text-xs text-surface-600 dark:text-surface-400">
             <time class="font-mono" datetime="{{ post.createdAt }}">{{ post.createdAt | date("MMM d, yyyy") }}</time>
             {% if post.favouritesCount > 0 %}
             <span class="flex items-center gap-1">

@@ -41,11 +41,11 @@
         {{ authorName }}
       </a>
       {% if authorPronoun %}
-      <span class="p-pronoun text-xs text-surface-500">({{ authorPronoun }})</span>
+      <span class="p-pronoun text-xs text-surface-600 dark:text-surface-400">({{ authorPronoun }})</span>
       {% endif %}
       <p class="p-job-title text-sm text-surface-600 dark:text-surface-400" itemprop="jobTitle">{{ authorTitle }}</p>
       {# Structured address #}
-      <p class="p-adr h-adr text-sm text-surface-500 dark:text-surface-500" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+      <p class="p-adr h-adr text-sm text-surface-600 dark:text-surface-400" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
         {% if authorLocality %}
         <span class="p-locality" itemprop="addressLocality">{{ authorLocality }}</span>{% if authorCountry %}, {% endif %}
         {% endif %}
@@ -79,7 +79,7 @@
     </a>
     {% endif %}
     {% if authorKeyUrl %}
-    <a href="{{ authorKeyUrl }}" class="u-key text-surface-500 dark:text-surface-400 hover:underline" rel="pgpkey">
+    <a href="{{ authorKeyUrl }}" class="u-key text-surface-600 dark:text-surface-400 hover:underline" rel="pgpkey">
       🔐 PGP Key
     </a>
     {% endif %}
@@ -87,11 +87,11 @@
 
   {# Categories / Skills #}
   {% if authorCategories and authorCategories.length %}
-  <div class="mt-3 flex flex-wrap gap-1">
+  <ul class="mt-3 flex flex-wrap gap-1 list-none p-0 m-0" role="list" aria-label="Skills and interests">
     {% for category in authorCategories %}
-    <span class="p-category text-xs px-2 py-0.5 bg-surface-100 dark:bg-surface-800 rounded-full">{{ category }}</span>
+    <li class="p-category text-xs px-2 py-0.5 bg-surface-100 dark:bg-surface-800 rounded-full">{{ category }}</li>
     {% endfor %}
-  </div>
+  </ul>
   {% endif %}
 
   {# Social links with rel="me" - critical for IndieWeb identity verification #}
@@ -102,8 +102,8 @@
     <a
       href="{{ link.url }}"
       rel="{{ link.rel }} noopener"
-      class="u-url text-surface-500 hover:text-accent-600 dark:hover:text-accent-400 transition-colors"
-      aria-label="{{ link.name }}"
+      class="u-url text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 transition-colors"
+      aria-label="{{ link.name }} (opens in new tab)"
       target="_blank">
       {{ socialIcon(link.icon, "w-5 h-5") }}
     </a>

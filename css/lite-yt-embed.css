@@ -70,8 +70,11 @@ lite-youtube > .lty-playbtn {
 }
 
 lite-youtube:hover > .lty-playbtn,
-lite-youtube .lty-playbtn:focus {
+lite-youtube .lty-playbtn:focus-visible {
     filter: none;
+    outline: 2px solid #fbbf24;
+    outline-offset: -2px;
+    border-radius: 4px;
 }
 
 /* Post-click styles */
