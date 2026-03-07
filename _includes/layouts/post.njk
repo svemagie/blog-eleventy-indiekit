@@ -24,7 +24,7 @@ withBlogSidebar: true
       {{ date | dateDisplay }}
     </time></time-difference>
     {% if category %}
-    <ul class="post-categories" role="list" aria-label="Categories">
+    <ul class="post-categories flex flex-wrap gap-2 list-none p-0 m-0" role="list" aria-label="Categories">
       {# Handle both string and array categories #}
       {% if category is string %}
       <li><a href="/categories/{{ category | slugify }}/" class="p-category">{{ category }}</a></li>
