@@ -58,7 +58,7 @@
               <div class="flex items-center gap-2 mt-1.5 text-xs text-surface-500">
                 <code class="text-xs font-mono bg-surface-100 dark:bg-surface-800 px-1 py-0.5 rounded" x-text="commit.sha"></code>
                 <span class="truncate" x-text="commit.repo?.split('/')[1] || commit.repo"></span>
-                <span x-text="formatDate(commit.date)"></span>
+                <span class="font-mono" x-text="formatDate(commit.date)"></span>
               </div>
             </a>
           </li>
@@ -83,7 +83,7 @@
                   <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                   <span x-text="repo.stargazers_count"></span>
                 </span>
-                <span x-text="formatDate(repo.updated_at)"></span>
+                <span class="font-mono" x-text="formatDate(repo.updated_at)"></span>
               </div>
             </a>
           </li>
@@ -139,7 +139,7 @@
               <div class="flex items-center gap-2 mt-1.5 text-xs text-surface-500 pl-6">
                 <span x-text="item.repo?.split('/')[1] || item.repo"></span>
                 <span x-show="item.number" x-text="'#' + item.number"></span>
-                <span x-text="formatDate(item.date)"></span>
+                <span class="font-mono" x-text="formatDate(item.date)"></span>
               </div>
             </a>
           </li>
