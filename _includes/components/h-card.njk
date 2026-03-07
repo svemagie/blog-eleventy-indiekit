@@ -31,7 +31,7 @@
         alt="{{ authorName }}"
         width="64"
         height="64"
-        class="w-16 h-16 rounded-full object-cover"
+        class="w-16 h-16 rounded-full object-cover shadow-lg"
         loading="lazy"
         itemprop="image"
       >
@@ -89,7 +89,7 @@
   {% if authorCategories and authorCategories.length %}
   <div class="mt-3 flex flex-wrap gap-1">
     {% for category in authorCategories %}
-    <span class="p-category text-xs px-2 py-0.5 bg-surface-100 dark:bg-surface-800 rounded">{{ category }}</span>
+    <span class="p-category text-xs px-2 py-0.5 bg-surface-100 dark:bg-surface-800 rounded-full">{{ category }}</span>
     {% endfor %}
   </div>
   {% endif %}
