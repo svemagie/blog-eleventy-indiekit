@@ -25,10 +25,10 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
   {% if paginatedArticles.length > 0 %}
   <ul class="post-list">
     {% for post in paginatedArticles %}
-    <li class="h-entry post-card border-l-[3px] border-l-surface-300 dark:border-l-surface-600">
+    <li class="h-entry post-card border-l-[3px] border-l-amber-400 dark:border-l-amber-500">
       <div class="post-header">
         <h2 class="text-xl font-semibold mb-1 flex-1">
-          <a class="p-name u-url text-surface-900 dark:text-surface-100 hover:text-accent-600 dark:hover:text-accent-400" href="{{ post.url }}">
+          <a class="p-name u-url text-surface-900 dark:text-surface-100 hover:text-amber-600 dark:hover:text-amber-400" href="{{ post.url }}">
             {{ post.data.title or "Untitled" }}
           </a>
         </h2>
@@ -52,7 +52,7 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
       <p class="p-summary text-surface-700 dark:text-surface-300 mt-3">
         {{ post.templateContent | striptags | truncate(250) }}
       </p>
-      <a href="{{ post.url }}" class="text-sm text-accent-600 dark:text-accent-400 hover:underline mt-3 inline-block">
+      <a href="{{ post.url }}" class="text-sm text-amber-600 dark:text-amber-400 hover:underline mt-3 inline-block">
         Read more &rarr;
       </a>
     </li>

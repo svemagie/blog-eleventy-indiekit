@@ -25,7 +25,7 @@ permalink: "photos/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumb
   {% if paginatedPhotos.length > 0 %}
   <ul class="post-list photo-list">
     {% for post in paginatedPhotos %}
-    <li class="h-entry post-card border-l-[3px] border-l-amber-400 dark:border-l-amber-500">
+    <li class="h-entry post-card border-l-[3px] border-l-purple-400 dark:border-l-purple-500">
       <div class="post-meta">
         <time class="dt-published font-mono text-sm" datetime="{{ post.date | isoDate }}">
           {{ post.date | dateDisplay }}
@@ -59,7 +59,7 @@ permalink: "photos/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumb
       {% if post.templateContent %}
       <div class="e-content photo-caption prose dark:prose-invert prose-sm mt-3 max-w-none">{{ post.templateContent | safe }}</div>
       {% endif %}
-      <a class="u-url text-sm text-amber-600 dark:text-amber-400 hover:underline mt-3 inline-block" href="{{ post.url }}">Permalink</a>
+      <a class="u-url text-sm text-purple-600 dark:text-purple-400 hover:underline mt-3 inline-block" href="{{ post.url }}">Permalink</a>
     </li>
     {% endfor %}
   </ul>
