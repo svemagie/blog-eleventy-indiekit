@@ -7,7 +7,7 @@
     <ul class="space-y-1 text-sm">
       {% for item in toc %}
       <li class="{% if item.level > 2 %}ml-{{ (item.level - 2) * 3 }}{% endif %}">
-        <a href="#{{ item.slug }}" class="text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 transition-colors">
+        <a href="#{{ item.slug }}" class="text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:underline transition-colors">
           {{ item.text }}
         </a>
       </li>

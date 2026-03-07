@@ -5,7 +5,7 @@
   <h3 class="widget-title">Categories</h3>
   <div class="flex flex-wrap gap-2">
     {% for category in categories %}
-    <a href="/categories/{{ category | slugify }}/" class="p-category">
+    <a href="/categories/{{ category | slugify }}/" class="p-category hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors">
       {{ category }}
     </a>
     {% endfor %}
