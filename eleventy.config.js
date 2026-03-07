@@ -834,7 +834,7 @@ export default function (eleventyConfig) {
     // Closed polygon for gradient fill (line path + bottom corners)
     const fillPoints = `${points} ${w},${h} 0,${h}`;
     return [
-      `<svg viewBox="0 0 ${w} ${h}" class="sparkline" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Posting frequency over the last 12 months">`,
+      `<svg viewBox="0 0 ${w} ${h}" width="100%" height="100%" preserveAspectRatio="none" class="sparkline" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Posting frequency over the last 12 months">`,
       `<defs><linearGradient id="spk-fill" x1="0" y1="0" x2="0" y2="1">`,
       `<stop offset="0%" stop-color="currentColor" stop-opacity="0.25"/>`,
       `<stop offset="100%" stop-color="currentColor" stop-opacity="0.02"/>`,
