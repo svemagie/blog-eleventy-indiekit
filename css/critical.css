@@ -41,12 +41,20 @@ body{background-color:#faf8f5;color:#1c1b19}
 main.container{padding-top:1.5rem;padding-bottom:1.5rem}
 @media(min-width:768px){main.container{padding-top:2rem;padding-bottom:2rem}}
 
-/* Layout with sidebar */
-.layout-with-sidebar{display:grid;grid-template-columns:1fr;gap:1.5rem}
-@media(min-width:1024px){.layout-with-sidebar{grid-template-columns:2fr 1fr;gap:2rem}}
+/* Layout with sidebar — must match Tailwind's compiled output exactly to prevent CLS */
+.layout-with-sidebar{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:1.5rem}
+@media(min-width:768px){.layout-with-sidebar{gap:2rem}}
+@media(min-width:1024px){.layout-with-sidebar{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .main-content{min-width:0;overflow-x:hidden}
+@media(min-width:1024px){.main-content{grid-column:span 2/span 2}}
 /* Reserve sidebar space on desktop to prevent CLS when Alpine.js hydrates collapsible widgets */
 @media(min-width:1024px){.sidebar{min-height:600px}}
+
+/* Font faces — in critical CSS so fonts begin downloading immediately.
+   font-display:optional prevents FOUT/CLS: font either loads in time or fallback is kept. */
+@font-face{font-family:'Inter';font-style:normal;font-display:optional;font-weight:400;src:url(/fonts/inter-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-display:optional;font-weight:600;src:url(/fonts/inter-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-display:optional;font-weight:700;src:url(/fonts/inter-latin-700-normal.woff2) format('woff2')}
 
 /* Basic typography — prevent FOUT */
 h1,h2,h3,h4{margin:0;line-height:1.25}
