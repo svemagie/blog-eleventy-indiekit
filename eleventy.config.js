@@ -1333,6 +1333,19 @@ export default function (eleventyConfig) {
       }
     }
 
+    // Force garbage collection after post-build work completes.
+    // V8 doesn't return freed heap pages to the OS without GC pressure.
+    // In watch mode the watcher sits idle after its initial full build,
+    // so without this, ~2 GB of build-time allocations stay resident.
+    // Requires --expose-gc in NODE_OPTIONS (set in start.sh for the watcher).
+    if (typeof global.gc === "function") {
+      const before = process.memoryUsage();
+      global.gc();
+      const after = process.memoryUsage();
+      const freed = ((before.heapUsed - after.heapUsed) / 1024 / 1024).toFixed(0);
+      console.log(`[gc] Post-build GC freed ${freed} MB (heap: ${(after.heapUsed / 1024 / 1024).toFixed(0)} MB)`);
+    }
+
     // WebSub hub notification — skip on incremental rebuilds
     if (incremental) return;
     const hubUrl = "https://websubhub.com/hub";
