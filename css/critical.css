@@ -72,13 +72,6 @@ button:focus-visible,[type="button"]:focus-visible{outline:2px solid #b45309;out
 .skip-link{position:absolute;top:-100%;left:0;z-index:100;background:#b45309;color:#fff;padding:0.5rem 1rem;font-weight:600;text-decoration:none}
 .skip-link:focus{top:0;outline:none}
 
-/* Skeleton loader — visible until Tailwind stylesheet loads */
-html.loading main.container>.page-content{display:none}
-html:not(.loading) .page-skeleton{display:none}
-@keyframes skel-pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.skel-bone{background:#e8e5df;border-radius:.5rem;animation:skel-pulse 1.5s ease-in-out infinite}
-.dark .skel-bone{background:#3f3b35}
-.skel-circle{border-radius:50%}
 
 /* Reduced motion — disable animations for users who prefer it */
-@media(prefers-reduced-motion:reduce){.skel-bone{animation:none}*{transition-duration:0.01ms!important;animation-duration:0.01ms!important}}
+@media(prefers-reduced-motion:reduce){*{transition-duration:0.01ms!important;animation-duration:0.01ms!important}}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ site.locale | default('en') }}" class="loading">
+<html lang="{{ site.locale | default('en') }}">
 <head>
   {# OG image resolution handled by og-fix transform in eleventy.config.js
      to bypass Eleventy 3.x parallel rendering race condition (#3183).
@@ -57,7 +57,7 @@
   {# Critical CSS — inlined for fast first paint #}
   <style>{{ "css/critical.css" | inlineFile | safe }}</style>
   {# Defer full stylesheet — loads after first paint #}
-  <link rel="stylesheet" href="/css/style.css?v={{ '/css/style.css' | hash }}" media="print" onload="this.media='all';document.documentElement.classList.remove('loading')">
+  <link rel="stylesheet" href="/css/style.css?v={{ '/css/style.css' | hash }}" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="/css/style.css?v={{ '/css/style.css' | hash }}"></noscript>
   <link rel="stylesheet" href="/css/prism-theme.css?v={{ '/css/prism-theme.css' | hash }}" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="/css/prism-theme.css?v={{ '/css/prism-theme.css' | hash }}"></noscript>
@@ -90,9 +90,7 @@
       [x-data] > .flex.border-b { display: none !important; }
       /* Hide loading spinners and JS-only buttons */
       [x-show*="loading"], button[\\@click*="fetch"], button[\\@click*="loadMore"] { display: none !important; }
-      /* Show content and hide skeleton for no-JS (stylesheet loads synchronously via noscript link) */
-      .page-skeleton { display: none !important; }
-      html.loading main.container > .page-content { display: block !important; }
+      /* Content is always visible — no skeleton loader */
     </style>
   </noscript>
   <link rel="canonical" href="{{ site.url }}{{ page.url }}">
@@ -282,23 +280,6 @@
   </header>
 
   <main class="container py-8" id="main-content" data-pagefind-body>
-    {# Skeleton loader — shown until Tailwind stylesheet loads #}
-    <div class="page-skeleton" aria-hidden="true">
-      <div style="display:flex;gap:1.5rem;align-items:flex-start;margin-bottom:2rem">
-        <div class="skel-bone skel-circle" style="width:96px;height:96px;flex-shrink:0"></div>
-        <div style="flex:1">
-          <div class="skel-bone" style="height:1.75rem;width:50%;margin-bottom:.75rem"></div>
-          <div class="skel-bone" style="height:1rem;width:35%;margin-bottom:.75rem"></div>
-          <div class="skel-bone" style="height:3rem;width:90%"></div>
-        </div>
-      </div>
-      <div class="skel-bone" style="height:5rem;margin-bottom:.75rem"></div>
-      <div class="skel-bone" style="height:5rem;margin-bottom:.75rem"></div>
-      <div class="skel-bone" style="height:5rem;margin-bottom:.75rem"></div>
-      <div class="skel-bone" style="height:5rem"></div>
-    </div>
-
-    <div class="page-content">
     {% if withSidebar and page.url == "/" and homepageConfig and homepageConfig.sections %}
     {# Homepage: builder controls its own layout and sidebar #}
     {{ content | safe }}
@@ -323,7 +304,6 @@
     {% else %}
     {{ content | safe }}
     {% endif %}
-    </div>
   </main>
 
   <footer class="border-t border-surface-200 dark:border-surface-700 mt-12 pt-8 pb-6">
