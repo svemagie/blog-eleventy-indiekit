@@ -1114,25 +1114,46 @@ export default function (eleventyConfig) {
     return digests;
   });
 
-  // Generate OpenGraph images for posts without photos
-  // Runs on every build (including watcher rebuilds) — manifest caching makes it fast
-  // for incremental: only new posts without an OG image get generated (~200ms each)
+  // Generate OpenGraph images for posts without photos.
+  // Uses batch spawning: each invocation generates up to BATCH_SIZE images then exits,
+  // fully releasing WASM native memory (Satori Yoga + Resvg Rust) between batches.
+  // Exit code 2 = batch complete, more work remains → re-spawn.
+  // Manifest caching makes incremental builds fast (only new posts get generated).
   eleventyConfig.on("eleventy.before", () => {
     const contentDir = resolve(__dirname, "content");
     const cacheDir = resolve(__dirname, ".cache");
     const siteName = process.env.SITE_NAME || "My IndieWeb Blog";
+    const BATCH_SIZE = 100;
+    let totalGenerated = 0;
+    let batch = 0;
     try {
-      execFileSync(process.execPath, [
-        "--max-old-space-size=512",
-        "--expose-gc",
-        resolve(__dirname, "lib", "og-cli.js"),
-        contentDir,
-        cacheDir,
-        siteName,
-      ], {
-        stdio: "inherit",
-        env: { ...process.env, NODE_OPTIONS: "" },
-      });
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        batch++;
+        try {
+          execFileSync(process.execPath, [
+            "--max-old-space-size=512",
+            "--expose-gc",
+            resolve(__dirname, "lib", "og-cli.js"),
+            contentDir,
+            cacheDir,
+            siteName,
+            String(BATCH_SIZE),
+          ], {
+            stdio: "inherit",
+            env: { ...process.env, NODE_OPTIONS: "" },
+          });
+          // Exit code 0 = all done
+          break;
+        } catch (err) {
+          if (err.status === 2) {
+            // Exit code 2 = batch complete, more images remain
+            totalGenerated += BATCH_SIZE;
+            continue;
+          }
+          throw err;
+        }
+      }
 
       // Sync new OG images to output directory.
       // During incremental builds, .cache/og is in watchIgnores so Eleventy's
