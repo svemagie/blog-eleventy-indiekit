@@ -1124,6 +1124,7 @@ export default function (eleventyConfig) {
     try {
       execFileSync(process.execPath, [
         "--max-old-space-size=768",
+        "--expose-gc",
         resolve(__dirname, "lib", "og-cli.js"),
         contentDir,
         cacheDir,
