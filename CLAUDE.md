@@ -286,6 +286,21 @@ Page templates in the root directory:
 | `htmlmin` | Minifies HTML (build mode only, not watch mode) |
 | `eleventyImageTransformPlugin` | Optimizes `<img>` tags |
 
+#### Pre-Build Hook: OG Image Generation (`eleventy.before`)
+
+Generates OpenGraph images for posts without photos using Satori (Yoga WASM → SVG) + Resvg (Rust WASM → PNG).
+
+**Key files:**
+- `lib/og.js` — generation logic, card layout, manifest-based caching
+- `lib/og-cli.js` — CLI wrapper, accepts `batchSize` argument
+- `eleventy.config.js` — spawns og-cli with batch loop
+
+**Architecture:** Runs as a separate process (`execFileSync`) to isolate WASM native memory from Eleventy. Uses **batch spawning** — each invocation generates up to 100 images, then exits with code 2 ("more remain"). The spawner re-loops until exit code 0. This keeps peak RSS at ~460 MB per batch regardless of total image count.
+
+**Why batch spawning:** Satori and Resvg allocate native memory outside V8's heap. `--max-old-space-size` only limits V8 — WASM native allocations are invisible to it. Without batching, 2,350+ images grow native memory to ~3 GB, OOM-killing the process in the 3 GB container. Batching fully releases native memory between invocations.
+
+**Caching:** Manifest at `.cache/og/manifest.json` maps slug → content hash. Only changed/new posts generate images. Manifest saved every 10 images for crash resilience.
+
 #### Post-Build Hooks (`eleventy.after`)
 
 1. **Pagefind indexing** — indexes all HTML files for search
