@@ -1123,7 +1123,7 @@ export default function (eleventyConfig) {
     const siteName = process.env.SITE_NAME || "My IndieWeb Blog";
     try {
       execFileSync(process.execPath, [
-        "--max-old-space-size=768",
+        "--max-old-space-size=512",
         "--expose-gc",
         resolve(__dirname, "lib", "og-cli.js"),
         contentDir,
