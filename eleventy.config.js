@@ -1344,6 +1344,31 @@ export default function (eleventyConfig) {
       const after = process.memoryUsage();
       const freed = ((before.heapUsed - after.heapUsed) / 1024 / 1024).toFixed(0);
       console.log(`[gc] Post-build GC freed ${freed} MB (heap: ${(after.heapUsed / 1024 / 1024).toFixed(0)} MB)`);
+
+      // Log V8 heap space breakdown for memory investigation
+      try {
+        const v8 = await import("node:v8");
+        const spaces = v8.getHeapSpaceStatistics();
+        console.log(`[gc] Heap spaces after GC:`);
+        for (const s of spaces) {
+          const usedMB = (s.space_used_size / 1024 / 1024).toFixed(1);
+          if (s.space_used_size > 1024 * 1024) {
+            console.log(`[gc]   ${s.space_name}: ${usedMB} MB`);
+          }
+        }
+
+        // Write heap snapshot to /tmp if HEAP_SNAPSHOT=1 is set
+        if (process.env.HEAP_SNAPSHOT === "1") {
+          const filename = `/tmp/eleventy-heap-${Date.now()}.heapsnapshot`;
+          console.log(`[gc] Writing heap snapshot to ${filename}...`);
+          v8.writeHeapSnapshot(filename);
+          console.log(`[gc] Snapshot written`);
+          // Only take one snapshot, then unset
+          delete process.env.HEAP_SNAPSHOT;
+        }
+      } catch (e) {
+        console.log(`[gc] Heap stats unavailable: ${e.message}`);
+      }
     }
 
     // WebSub hub notification — skip on incremental rebuilds
