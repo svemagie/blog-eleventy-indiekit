@@ -335,6 +335,22 @@ export default function (eleventyConfig) {
     },
   });
 
+  // Performance: skip PostHTML parsing for pages without <img> tags.
+  // Both registered PostHTML plugins (remote-image-marker, eleventy-img) only
+  // target <img> elements — no point parsing+serializing HTML without them.
+  // Overrides the default @11ty/eleventy/html-transformer transform (same name
+  // overwrites via addTransform) with a pre-check that avoids the full PostHTML
+  // parse/serialize cycle (~3ms/page) for image-free pages.
+  eleventyConfig.addTransform("@11ty/eleventy/html-transformer", async function(content) {
+    if (this.outputPath?.endsWith(".html") && !content.includes("<img")) {
+      // Safety: if URL transform callbacks exist (they modify <a>, <link>, etc.)
+      // we must still run the full pipeline even without images.
+      const hasUrlCallbacks = eleventyConfig.htmlTransformer.getCallbacks("html", this).length > 0;
+      if (!hasUrlCallbacks) return content;
+    }
+    return eleventyConfig.htmlTransformer.transformContent(this.outputPath, content, this);
+  });
+
   // Sitemap generation
   eleventyConfig.addPlugin(sitemap, {
     sitemap: {
@@ -874,17 +890,26 @@ export default function (eleventyConfig) {
   });
 
   // Filter AI-involved posts (ai-text-level > "0" or aiTextLevel > "0")
+  // Memoized: same collections.posts input produces same output — compute once per build
+  // (694 calls × 2,350 posts = 1.6M iterations without cache)
+  let _aiPostsCache = null;
+  let _aiStatsCache = null;
+  eleventyConfig.on("eleventy.before", () => { _aiPostsCache = null; _aiStatsCache = null; });
+
   eleventyConfig.addFilter("aiPosts", (posts) => {
     if (!Array.isArray(posts)) return [];
-    return posts.filter((post) => {
+    if (_aiPostsCache) return _aiPostsCache;
+    _aiPostsCache = posts.filter((post) => {
       const level = post.data?.aiTextLevel || post.data?.["ai-text-level"] || "0";
       return level !== "0" && level !== 0;
     });
+    return _aiPostsCache;
   });
 
   // AI stats — returns { total, aiCount, percentage, byLevel }
   eleventyConfig.addFilter("aiStats", (posts) => {
     if (!Array.isArray(posts)) return { total: 0, aiCount: 0, percentage: 0, byLevel: {} };
+    if (_aiStatsCache) return _aiStatsCache;
     const total = posts.length;
     const byLevel = { 0: 0, 1: 0, 2: 0, 3: 0 };
     for (const post of posts) {
@@ -892,12 +917,13 @@ export default function (eleventyConfig) {
       byLevel[level] = (byLevel[level] || 0) + 1;
     }
     const aiCount = total - byLevel[0];
-    return {
+    _aiStatsCache = {
       total,
       aiCount,
       percentage: total > 0 ? ((aiCount / total) * 100).toFixed(1) : "0",
       byLevel,
     };
+    return _aiStatsCache;
   });
 
   // Helper: exclude drafts from collections
