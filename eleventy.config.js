@@ -1205,10 +1205,26 @@ export default function (eleventyConfig) {
       }
     };
     walk(contentDir);
+    // Free parsed markdown content before starting network-heavy prefetch
+    if (typeof global.gc === "function") global.gc();
 
     if (urls.size === 0) return;
-    console.log(`[unfurl] Pre-fetching ${urls.size} interaction URLs...`);
-    await Promise.all([...urls].map((url) => prefetchUrl(url)));
+    const urlArray = [...urls];
+    const UNFURL_BATCH = 50;
+    const totalBatches = Math.ceil(urlArray.length / UNFURL_BATCH);
+    console.log(`[unfurl] Pre-fetching ${urlArray.length} interaction URLs (${totalBatches} batches of ${UNFURL_BATCH})...`);
+    let fetched = 0;
+    for (let i = 0; i < urlArray.length; i += UNFURL_BATCH) {
+      const batch = urlArray.slice(i, i + UNFURL_BATCH);
+      const batchNum = Math.floor(i / UNFURL_BATCH) + 1;
+      await Promise.all(batch.map((url) => prefetchUrl(url)));
+      fetched += batch.length;
+      if (typeof global.gc === "function") global.gc();
+      if (batchNum === 1 || batchNum % 5 === 0 || batchNum === totalBatches) {
+        const rss = (process.memoryUsage.rss() / 1024 / 1024).toFixed(0);
+        console.log(`[unfurl] Batch ${batchNum}/${totalBatches} (${fetched}/${urlArray.length}) | RSS: ${rss} MB`);
+      }
+    }
     console.log(`[unfurl] Pre-fetch complete.`);
   });
 
