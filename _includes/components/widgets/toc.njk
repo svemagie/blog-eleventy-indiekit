@@ -1,19 +1,27 @@
-{# Table of Contents Widget (for articles with headings) #}
-{% if toc and toc.length %}
-<is-land on:visible>
-<div class="widget">
-  <h3 class="widget-title">Contents</h3>
-  <nav class="toc" aria-label="Table of contents">
-    <ul class="space-y-1 text-sm">
-      {% for item in toc %}
-      <li class="{% if item.level == 3 %}ml-3{% elif item.level == 4 %}ml-6{% elif item.level == 5 %}ml-9{% elif item.level == 6 %}ml-12{% endif %}">
-        <a href="#{{ item.slug }}" class="text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 hover:underline transition-colors">
-          {{ item.text }}
-        </a>
-      </li>
-      {% endfor %}
-    </ul>
-  </nav>
+{# Table of Contents Widget — client-side Alpine.js heading scanner with scroll spy #}
+{# Only renders on Articles/Notes with 3+ headings (h2-h4) #}
+{% if title or (not (bookmarkOf or bookmark_of or likeOf or like_of or repostOf or repost_of)) %}
+<div x-data="tocScanner" x-show="items.length > 0" x-cloak>
+  <div class="widget">
+    <h3 class="widget-title">Contents</h3>
+    <nav class="toc" aria-label="Table of contents">
+      <ul class="space-y-1 text-sm">
+        <template x-for="item in items" :key="item.id">
+          <li :class="{
+            'ml-3': item.level === 3,
+            'ml-6': item.level === 4
+          }">
+            <a :href="'#' + item.id"
+               x-text="item.text"
+               class="transition-colors hover:underline"
+               :class="item.active
+                 ? 'text-accent-600 dark:text-accent-400 font-medium'
+                 : 'text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400'"
+            ></a>
+          </li>
+        </template>
+      </ul>
+    </nav>
+  </div>
 </div>
-</is-land>
 {% endif %}
