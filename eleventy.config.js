@@ -277,11 +277,12 @@ export default function (eleventyConfig) {
   // Custom transform to convert YouTube links to lite-youtube embeds
   // Catches bare YouTube links in Markdown that the embed plugin misses
   eleventyConfig.addTransform("youtube-link-to-embed", function (content, outputPath) {
-    if (!outputPath || !outputPath.endsWith(".html")) {
+    if (typeof outputPath !== "string" || !outputPath.endsWith(".html")) {
       return content;
     }
-    // Fast substring check — skip regex on pages without YouTube links (vast majority)
-    if (!content.includes("youtube.com/watch") && !content.includes("youtu.be/")) {
+    // Single substring check — "youtu" covers both youtube.com/watch and youtu.be/
+    // Avoids scanning large HTML twice (was two includes() calls on 15-50KB per page)
+    if (!content.includes("youtu")) {
       return content;
     }
     // Match <a> tags where href contains youtube.com/watch or youtu.be
@@ -529,20 +530,35 @@ export default function (eleventyConfig) {
   });
 
   // Date formatting filter
+  // Memoized: same dates repeat across pages (sidebars, pagination, feeds)
+  // 16,935 calls → unique dates are ~2,350 (one per post)
+  const _dateDisplayCache = new Map();
+  eleventyConfig.on("eleventy.before", () => { _dateDisplayCache.clear(); });
   eleventyConfig.addFilter("dateDisplay", (dateObj) => {
     if (!dateObj) return "";
-    const date = new Date(dateObj);
-    return date.toLocaleDateString("en-GB", {
+    const key = dateObj instanceof Date ? dateObj.getTime() : dateObj;
+    const cached = _dateDisplayCache.get(key);
+    if (cached !== undefined) return cached;
+    const result = new Date(dateObj).toLocaleDateString("en-GB", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
+    _dateDisplayCache.set(key, result);
+    return result;
   });
 
   // ISO date filter
+  const _isoDateCache = new Map();
+  eleventyConfig.on("eleventy.before", () => { _isoDateCache.clear(); });
   eleventyConfig.addFilter("isoDate", (dateObj) => {
     if (!dateObj) return "";
-    return new Date(dateObj).toISOString();
+    const key = dateObj instanceof Date ? dateObj.getTime() : dateObj;
+    const cached = _isoDateCache.get(key);
+    if (cached !== undefined) return cached;
+    const result = new Date(dateObj).toISOString();
+    _isoDateCache.set(key, result);
+    return result;
   });
 
   // Digest-to-HTML filter for RSS feed descriptions
@@ -722,8 +738,16 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("timestamp", () => Date.now());
 
   // Date filter (for sidebar dates)
+  // Memoized: same date+format combos repeat across pages
+  // 33,025 calls on initial build → unique combos ~2,350
+  const _dateFilterCache = new Map();
+  eleventyConfig.on("eleventy.before", () => { _dateFilterCache.clear(); });
   eleventyConfig.addFilter("date", (dateObj, format) => {
     if (!dateObj) return "";
+    const dateKey = dateObj instanceof Date ? dateObj.getTime() : dateObj;
+    const key = `${dateKey}|${format}`;
+    const cached = _dateFilterCache.get(key);
+    if (cached !== undefined) return cached;
     const date = new Date(dateObj);
     const options = {};
 
@@ -731,7 +755,9 @@ export default function (eleventyConfig) {
     if (format.includes("d")) options.day = "numeric";
     if (format.includes("yyyy")) options.year = "numeric";
 
-    return date.toLocaleDateString("en-US", options);
+    const result = date.toLocaleDateString("en-US", options);
+    _dateFilterCache.set(key, result);
+    return result;
   });
 
   // Webmention filters - with legacy URL support
