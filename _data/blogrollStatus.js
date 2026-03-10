@@ -4,7 +4,7 @@
  * Used for conditional navigation — the blogroll page itself loads data client-side.
  */
 
-import EleventyFetch from "@11ty/eleventy-fetch";
+import { cachedFetch } from "../lib/data-fetch.js";
 
 const INDIEKIT_URL = process.env.SITE_URL || "https://example.com";
 
@@ -12,7 +12,7 @@ export default async function () {
   try {
     const url = `${INDIEKIT_URL}/blogrollapi/api/status`;
     console.log(`[blogrollStatus] Checking API: ${url}`);
-    const data = await EleventyFetch(url, {
+    const data = await cachedFetch(url, {
       duration: "15m",
       type: "json",
     });

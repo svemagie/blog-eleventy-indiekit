@@ -6,14 +6,14 @@
  * The starred page fetches all data client-side via Alpine.js.
  */
 
-import EleventyFetch from "@11ty/eleventy-fetch";
+import { cachedFetch } from "../lib/data-fetch.js";
 
 const INDIEKIT_URL = process.env.SITE_URL || "https://example.com";
 
 export default async function () {
   try {
     const url = `${INDIEKIT_URL}/githubapi/api/starred/all`;
-    const response = await EleventyFetch(url, {
+    const response = await cachedFetch(url, {
       duration: "15m",
       type: "json",
     });

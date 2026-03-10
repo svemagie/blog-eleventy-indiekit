@@ -3,7 +3,7 @@
  * Fetches public repositories from GitHub API
  */
 
-import EleventyFetch from "@11ty/eleventy-fetch";
+import { cachedFetch } from "../lib/data-fetch.js";
 
 export default async function () {
   const username = process.env.GITHUB_USERNAME || "";
@@ -12,7 +12,7 @@ export default async function () {
     // Fetch public repos, sorted by updated date
     const url = `https://api.github.com/users/${username}/repos?sort=updated&per_page=10&type=owner`;
 
-    const repos = await EleventyFetch(url, {
+    const repos = await cachedFetch(url, {
       duration: "1h", // Cache for 1 hour
       type: "json",
       fetchOptions: {

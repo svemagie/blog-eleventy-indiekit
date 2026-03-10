@@ -4,7 +4,7 @@
  * Falls back to direct GitHub API if Indiekit is unavailable
  */
 
-import EleventyFetch from "@11ty/eleventy-fetch";
+import { cachedFetch } from "../lib/data-fetch.js";
 
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || "";
 const INDIEKIT_URL = process.env.SITE_URL || "https://example.com";
@@ -19,7 +19,7 @@ async function fetchFromIndiekit(endpoint) {
   try {
     const url = `${INDIEKIT_URL}/githubapi/api/${endpoint}`;
     console.log(`[githubActivity] Fetching from Indiekit: ${url}`);
-    const data = await EleventyFetch(url, {
+    const data = await cachedFetch(url, {
       duration: "15m",
       type: "json",
     });
@@ -47,7 +47,7 @@ async function fetchFromGitHub(endpoint) {
     headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   }
 
-  return await EleventyFetch(url, {
+  return await cachedFetch(url, {
     duration: "15m",
     type: "json",
     fetchOptions: { headers },

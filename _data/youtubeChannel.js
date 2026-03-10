@@ -4,7 +4,7 @@
  * Supports single or multiple channels
  */
 
-import EleventyFetch from "@11ty/eleventy-fetch";
+import { cachedFetch } from "../lib/data-fetch.js";
 
 const INDIEKIT_URL = process.env.SITE_URL || "https://example.com";
 
@@ -15,7 +15,7 @@ async function fetchFromIndiekit(endpoint) {
   try {
     const url = `${INDIEKIT_URL}/youtubeapi/api/${endpoint}`;
     console.log(`[youtubeChannel] Fetching from Indiekit: ${url}`);
-    const data = await EleventyFetch(url, {
+    const data = await cachedFetch(url, {
       duration: "5m",
       type: "json",
     });

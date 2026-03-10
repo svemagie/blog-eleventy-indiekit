@@ -3,7 +3,7 @@
  * Fetches from Indiekit's endpoint-funkwhale public API
  */
 
-import EleventyFetch from "@11ty/eleventy-fetch";
+import { cachedFetch } from "../lib/data-fetch.js";
 
 const INDIEKIT_URL = process.env.SITE_URL || "https://example.com";
 const FUNKWHALE_INSTANCE = process.env.FUNKWHALE_INSTANCE || "";
@@ -15,7 +15,7 @@ async function fetchFromIndiekit(endpoint) {
   try {
     const url = `${INDIEKIT_URL}/funkwhaleapi/api/${endpoint}`;
     console.log(`[funkwhaleActivity] Fetching from Indiekit: ${url}`);
-    const data = await EleventyFetch(url, {
+    const data = await cachedFetch(url, {
       duration: "15m",
       type: "json",
     });

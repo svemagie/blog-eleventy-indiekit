@@ -3,7 +3,7 @@
  * Fetches the 5 most recent comments at build time for the sidebar widget.
  */
 
-import EleventyFetch from "@11ty/eleventy-fetch";
+import { cachedFetch } from "../lib/data-fetch.js";
 
 const INDIEKIT_URL = process.env.SITE_URL || "https://example.com";
 
@@ -11,7 +11,7 @@ export default async function () {
   try {
     const url = `${INDIEKIT_URL}/comments/api/comments?limit=5`;
     console.log(`[recentComments] Fetching: ${url}`);
-    const data = await EleventyFetch(url, {
+    const data = await cachedFetch(url, {
       duration: "15m",
       type: "json",
     });

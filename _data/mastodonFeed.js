@@ -3,7 +3,7 @@
  * Fetches recent posts from Mastodon using the public API
  */
 
-import EleventyFetch from "@11ty/eleventy-fetch";
+import { cachedFetch } from "../lib/data-fetch.js";
 
 export default async function () {
   const instance = process.env.MASTODON_INSTANCE?.replace("https://", "") || "";
@@ -13,7 +13,7 @@ export default async function () {
     // First, look up the account ID
     const lookupUrl = `https://${instance}/api/v1/accounts/lookup?acct=${username}`;
 
-    const account = await EleventyFetch(lookupUrl, {
+    const account = await cachedFetch(lookupUrl, {
       duration: "1h", // Cache account lookup for 1 hour
       type: "json",
       fetchOptions: {
@@ -31,7 +31,7 @@ export default async function () {
     // Fetch recent statuses (excluding replies and boosts for cleaner feed)
     const statusesUrl = `https://${instance}/api/v1/accounts/${account.id}/statuses?limit=10&exclude_replies=true&exclude_reblogs=true`;
 
-    const statuses = await EleventyFetch(statusesUrl, {
+    const statuses = await cachedFetch(statusesUrl, {
       duration: "15m", // Cache for 15 minutes
       type: "json",
       fetchOptions: {

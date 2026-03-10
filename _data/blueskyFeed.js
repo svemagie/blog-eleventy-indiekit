@@ -3,7 +3,7 @@
  * Fetches recent posts from Bluesky using the AT Protocol API
  */
 
-import EleventyFetch from "@11ty/eleventy-fetch";
+import { cachedFetch } from "../lib/data-fetch.js";
 import { BskyAgent } from "@atproto/api";
 
 export default async function () {
@@ -16,7 +16,7 @@ export default async function () {
     // Get the author's feed using public API (no auth needed for public posts)
     const feedUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${handle}&limit=10`;
 
-    const response = await EleventyFetch(feedUrl, {
+    const response = await cachedFetch(feedUrl, {
       duration: "15m", // Cache for 15 minutes
       type: "json",
       fetchOptions: {
