@@ -280,6 +280,10 @@ export default function (eleventyConfig) {
     if (!outputPath || !outputPath.endsWith(".html")) {
       return content;
     }
+    // Fast substring check — skip regex on pages without YouTube links (vast majority)
+    if (!content.includes("youtube.com/watch") && !content.includes("youtu.be/")) {
+      return content;
+    }
     // Match <a> tags where href contains youtube.com/watch or youtu.be
     // Link text can be: URL, www.youtube..., youtube..., or youtube-related text
     const youtubePattern = /<a[^>]+href="https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)[^"]*"[^>]*>(?:https?:\/\/)?(?:www\.)?[^<]*(?:youtube|youtu\.be)[^<]*<\/a>/gi;
@@ -350,6 +354,20 @@ export default function (eleventyConfig) {
   // page.url is unreliable during parallel rendering, but outputPath IS correct
   // since files are written to the correct location. Derives the OG slug from
   // outputPath and replaces placeholders emitted by base.njk.
+  // Cache: directory listing built once per build instead of 3,426 existsSync calls
+  let _ogFileSet = null;
+  eleventyConfig.on("eleventy.before", () => { _ogFileSet = null; });
+  function hasOgImage(ogSlug) {
+    if (!_ogFileSet) {
+      const ogDir = resolve(__dirname, ".cache", "og");
+      try {
+        _ogFileSet = new Set(readdirSync(ogDir));
+      } catch {
+        _ogFileSet = new Set();
+      }
+    }
+    return _ogFileSet.has(`${ogSlug}.png`);
+  }
   eleventyConfig.addTransform("og-fix", function (content, outputPath) {
     if (!outputPath || !outputPath.endsWith(".html")) return content;
 
@@ -364,7 +382,7 @@ export default function (eleventyConfig) {
       const pageUrlPath = `/${type}/${year}/${month}/${day}/${slug}/`;
       const correctFullUrl = `${siteUrl}${pageUrlPath}`;
       const ogSlug = `${year}-${month}-${day}-${slug}`;
-      const hasOg = existsSync(resolve(__dirname, ".cache", "og", `${ogSlug}.png`));
+      const hasOg = hasOgImage(ogSlug);
       const ogImageUrl = hasOg
         ? `${siteUrl}/og/${ogSlug}.png`
         : `${siteUrl}/images/og-default.png`;
@@ -621,16 +639,25 @@ export default function (eleventyConfig) {
   });
 
   // Hash filter for cache busting - generates MD5 hash of file content
+  // Cache: same 16 static files are hashed once per build instead of once per page
+  // (16 files × 3,426 pages = 55,332 readFileSync calls without cache)
+  const _hashCache = new Map();
   eleventyConfig.addFilter("hash", (filePath) => {
+    const cached = _hashCache.get(filePath);
+    if (cached) return cached;
     try {
       const fullPath = resolve(__dirname, filePath.startsWith("/") ? `.${filePath}` : filePath);
       const content = readFileSync(fullPath);
-      return createHash("md5").update(content).digest("hex").slice(0, 8);
+      const hash = createHash("md5").update(content).digest("hex").slice(0, 8);
+      _hashCache.set(filePath, hash);
+      return hash;
     } catch {
       // Return timestamp as fallback if file not found
       return Date.now().toString(36);
     }
   });
+  // Clear hash cache on rebuild so changed files get new hashes
+  eleventyConfig.on("eleventy.before", () => { _hashCache.clear(); });
 
   // Derive OG slug from page.url (reliable) instead of page.fileSlug
   // (which suffers from Nunjucks race conditions in Eleventy 3.x parallel rendering).
