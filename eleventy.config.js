@@ -342,7 +342,7 @@ export default function (eleventyConfig) {
   // overwrites via addTransform) with a pre-check that avoids the full PostHTML
   // parse/serialize cycle (~3ms/page) for image-free pages.
   eleventyConfig.addTransform("@11ty/eleventy/html-transformer", async function(content) {
-    if (this.outputPath?.endsWith(".html") && !content.includes("<img")) {
+    if (typeof this.outputPath === "string" && this.outputPath.endsWith(".html") && !content.includes("<img")) {
       // Safety: if URL transform callbacks exist (they modify <a>, <link>, etc.)
       // we must still run the full pipeline even without images.
       const hasUrlCallbacks = eleventyConfig.htmlTransformer.getCallbacks("html", this).length > 0;
