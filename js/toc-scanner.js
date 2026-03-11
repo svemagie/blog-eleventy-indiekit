@@ -11,10 +11,10 @@ document.addEventListener("alpine:init", () => {
 
     init() {
       const content = document.querySelector(".e-content");
-      if (!content) return;
+      if (!content) { this._hideWrapper(); return; }
 
       const headings = content.querySelectorAll("h2[id], h3[id], h4[id]");
-      if (headings.length < 3) return;
+      if (headings.length < 3) { this._hideWrapper(); return; }
 
       this.items = Array.from(headings).map((h) => ({
         id: h.id,
@@ -37,6 +37,11 @@ document.addEventListener("alpine:init", () => {
       );
 
       headings.forEach((h) => this._observer.observe(h));
+    },
+
+    _hideWrapper() {
+      const wrapper = this.$root.closest(".widget-collapsible");
+      if (wrapper) wrapper.style.display = "none";
     },
 
     destroy() {
