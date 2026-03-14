@@ -57,12 +57,40 @@
 
     let mentionsToShow;
     if (hasBuildTimeSection) {
-      // Build-time section exists - only show NEW webmentions to avoid duplicates.
-      // Both webmention.io and conversations items are included at build time,
-      // so filter all by timestamp (only show items received after the build).
-      mentionsToShow = allChildren.filter((wm) => {
-        const wmTime = new Date(wm['wm-received']).getTime();
-        return wmTime > buildTime;
+      // Build-time section exists — deduplicate against what's actually rendered
+      // in the DOM rather than using timestamps (which miss webmentions that the
+      // build-time cache didn't include but that the API returns).
+
+      // Collect author URLs already shown in facepiles (likes, reposts, bookmarks)
+      var renderedAvatars = new Set();
+      document.querySelectorAll('.webmention-likes li[data-author-url], .webmention-reposts li[data-author-url], .webmention-bookmarks li[data-author-url]').forEach(function(li) {
+        var authorUrl = li.dataset.authorUrl;
+        // Determine the type from the parent section class
+        var parent = li.closest('[class*="webmention-"]');
+        var type = 'like-of';
+        if (parent) {
+          if (parent.classList.contains('webmention-reposts')) type = 'repost-of';
+          if (parent.classList.contains('webmention-bookmarks')) type = 'bookmark-of';
+        }
+        if (authorUrl) renderedAvatars.add(authorUrl + '::' + type);
+      });
+
+      // Collect reply URLs already shown in reply cards
+      var renderedReplies = new Set();
+      document.querySelectorAll('.webmention-replies li[data-wm-url]').forEach(function(li) {
+        if (li.dataset.wmUrl) renderedReplies.add(li.dataset.wmUrl);
+      });
+
+      mentionsToShow = allChildren.filter(function(wm) {
+        var prop = wm['wm-property'] || 'mention-of';
+        if (prop === 'in-reply-to') {
+          // Skip replies whose source URL is already rendered
+          return !renderedReplies.has(wm.url);
+        }
+        // Skip likes/reposts/bookmarks whose author is already in a facepile
+        var authorUrl = (wm.author && wm.author.url) || '';
+        if (authorUrl && renderedAvatars.has(authorUrl + '::' + prop)) return false;
+        return true;
       });
     } else {
       // No build-time section - show ALL webmentions from API
