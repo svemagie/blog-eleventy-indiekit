@@ -642,8 +642,6 @@
 
     if (syndicateTo) {
       body.properties['mp-syndicate-to'] = [syndicateTo];
-    } else {
-      body.properties['mp-syndicate-to'] = [];
     }
 
     fetch('/micropub', {
