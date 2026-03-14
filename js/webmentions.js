@@ -247,6 +247,8 @@
       const li = document.createElement('li');
       li.className = 'p-4 bg-surface-100 dark:bg-surface-800 rounded-lg ring-2 ring-accent-500';
       li.dataset.new = 'true';
+      li.dataset.platform = detectPlatform(item);
+      li.dataset.wmUrl = item.url || '';
 
       // Build reply card using DOM methods
       const wrapper = document.createElement('div');
@@ -296,6 +298,9 @@
       newBadge.textContent = 'NEW';
 
       headerDiv.appendChild(authorLink);
+      // Add provenance badge
+      var platform = detectPlatform(item);
+      headerDiv.appendChild(createProvenanceBadge(platform));
       headerDiv.appendChild(dateLink);
       headerDiv.appendChild(newBadge);
 
@@ -471,4 +476,187 @@
       year: 'numeric',
     });
   }
+
+  function detectPlatform(item) {
+    var source = item['wm-source'] || '';
+    var authorUrl = (item.author && item.author.url) || '';
+    if (source.includes('brid.gy/') && source.includes('/mastodon/')) return 'mastodon';
+    if (source.includes('brid.gy/') && source.includes('/bluesky/')) return 'bluesky';
+    if (source.includes('fed.brid.gy')) return 'activitypub';
+    if (authorUrl.includes('bsky.app')) return 'bluesky';
+    if (authorUrl.includes('mstdn') || authorUrl.includes('mastodon') || authorUrl.includes('social.') ||
+        authorUrl.includes('fosstodon.') || authorUrl.includes('hachyderm.') || authorUrl.includes('infosec.exchange') ||
+        authorUrl.includes('pleroma.') || authorUrl.includes('misskey.') || authorUrl.includes('pixelfed.')) return 'mastodon';
+    return 'webmention';
+  }
+
+  function createSvgIcon(viewBox, fillAttr, paths, strokeAttrs) {
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'w-3 h-3');
+    svg.setAttribute('viewBox', viewBox);
+    svg.setAttribute('fill', fillAttr || 'currentColor');
+    if (strokeAttrs) {
+      svg.setAttribute('stroke', strokeAttrs.stroke || 'currentColor');
+      svg.setAttribute('stroke-width', strokeAttrs.strokeWidth || '2');
+      svg.setAttribute('stroke-linecap', strokeAttrs.strokeLinecap || 'round');
+      svg.setAttribute('stroke-linejoin', strokeAttrs.strokeLinejoin || 'round');
+    }
+    paths.forEach(function(p) {
+      var el = document.createElementNS(NS, p.tag || 'path');
+      var attrs = p.attrs || {};
+      Object.keys(attrs).forEach(function(attr) {
+        el.setAttribute(attr, attrs[attr]);
+      });
+      svg.appendChild(el);
+    });
+    return svg;
+  }
+
+  function createProvenanceBadge(platform) {
+    var span = document.createElement('span');
+    var svg;
+    if (platform === 'mastodon') {
+      span.className = 'inline-flex items-center gap-1 px-1.5 py-0.5 text-xs bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full';
+      span.title = 'Mastodon';
+      svg = createSvgIcon('0 0 24 24', 'currentColor', [
+        { tag: 'path', attrs: { d: 'M23.268 5.313c-.35-2.578-2.617-4.61-5.304-5.004C17.51.242 15.792 0 11.813 0h-.03c-3.98 0-4.835.242-5.288.309C3.882.692 1.496 2.518.917 5.127.64 6.412.61 7.837.661 9.143c.074 1.874.088 3.745.26 5.611.118 1.24.325 2.47.62 3.68.55 2.237 2.777 4.098 4.96 4.857 2.336.792 4.849.923 7.256.38.265-.061.527-.132.786-.213.585-.184 1.27-.39 1.774-.753a.057.057 0 0 0 .023-.043v-1.809a.052.052 0 0 0-.02-.041.053.053 0 0 0-.046-.01 20.282 20.282 0 0 1-4.709.545c-2.73 0-3.463-1.284-3.674-1.818a5.593 5.593 0 0 1-.319-1.433.053.053 0 0 1 .066-.054c1.517.363 3.072.546 4.632.546.376 0 .75 0 1.125-.01 1.57-.044 3.224-.124 4.768-.422.038-.008.077-.015.11-.024 2.435-.464 4.753-1.92 4.989-5.604.008-.145.03-1.52.03-1.67.002-.512.167-3.63-.024-5.545zm-3.748 9.195h-2.561V8.29c0-1.309-.55-1.976-1.67-1.976-1.23 0-1.846.79-1.846 2.35v3.403h-2.546V8.663c0-1.56-.617-2.35-1.848-2.35-1.112 0-1.668.668-1.668 1.977v6.218H4.822V8.102c0-1.31.337-2.35 1.011-3.12.696-.77 1.608-1.164 2.74-1.164 1.311 0 2.302.5 2.962 1.498l.638 1.06.638-1.06c.66-.999 1.65-1.498 2.96-1.498 1.13 0 2.043.395 2.74 1.164.675.77 1.012 1.81 1.012 3.12z' } }
+      ]);
+    } else if (platform === 'bluesky') {
+      span.className = 'inline-flex items-center gap-1 px-1.5 py-0.5 text-xs bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-full';
+      span.title = 'Bluesky';
+      svg = createSvgIcon('0 0 568 501', 'currentColor', [
+        { tag: 'path', attrs: { d: 'M123.121 33.664C188.241 82.553 258.281 181.68 284 234.873c25.719-53.192 95.759-152.32 160.879-201.21C491.866-1.611 568-28.906 568 57.947c0 17.346-9.945 145.713-15.778 166.555-20.275 72.453-94.155 90.933-159.875 79.748C507.222 323.8 536.444 388.56 473.333 453.32c-119.86 122.992-172.272-30.859-185.702-70.281-2.462-7.227-3.614-10.608-3.631-7.733-.017-2.875-1.169.506-3.631 7.733-13.43 39.422-65.842 193.273-185.702 70.281-63.111-64.76-33.89-129.52 80.986-149.071-65.72 11.185-139.6-7.295-159.875-79.748C9.945 203.659 0 75.291 0 57.946 0-28.906 76.135-1.612 123.121 33.664Z' } }
+      ]);
+    } else if (platform === 'activitypub') {
+      span.className = 'inline-flex items-center gap-1 px-1.5 py-0.5 text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full';
+      span.title = 'Fediverse (ActivityPub)';
+      svg = createSvgIcon('0 0 24 24', 'currentColor', [
+        { tag: 'path', attrs: { d: 'M13.09 4.43L24 10.73v2.51L13.09 19.58v-2.51L21.83 12 13.09 6.98v-2.55zM13.09 9.49L17.44 12l-4.35 2.51V9.49z' } },
+        { tag: 'path', attrs: { d: 'M10.91 4.43L0 10.73v2.51l8.74-5.03v10.09l2.18 1.28V4.43zM6.56 12L2.18 14.51l4.35 2.51V12z' } }
+      ]);
+    } else {
+      span.className = 'inline-flex items-center gap-1 px-1.5 py-0.5 text-xs bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-full';
+      span.title = 'IndieWeb';
+      svg = createSvgIcon('0 0 24 24', 'none', [
+        { tag: 'circle', attrs: { cx: '12', cy: '12', r: '10' } },
+        { tag: 'line', attrs: { x1: '2', y1: '12', x2: '22', y2: '12' } },
+        { tag: 'path', attrs: { d: 'M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z' } }
+      ], { stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' });
+    }
+    span.appendChild(svg);
+    return span;
+  }
+
+  // Populate provenance badges on build-time reply cards
+  document.querySelectorAll('.webmention-replies li[data-wm-url]').forEach(function(li) {
+    var source = li.dataset.wmSource || '';
+    var authorUrl = li.dataset.authorUrl || '';
+    var platform = detectPlatform({ 'wm-source': source, author: { url: authorUrl } });
+    li.dataset.platform = platform;
+
+    var badgeSlot = li.querySelector('.wm-provenance-badge');
+    if (badgeSlot) {
+      badgeSlot.replaceWith(createProvenanceBadge(platform));
+    }
+
+    // Set platform on reply button
+    var replyBtn = li.querySelector('.wm-reply-btn');
+    if (replyBtn) {
+      replyBtn.dataset.platform = platform;
+    }
+  });
+
+  // Show reply buttons and wire click handlers if owner is detected
+  // Wait for Alpine to initialize the store
+  document.addEventListener('alpine:initialized', function() {
+    var ownerStore = Alpine.store && Alpine.store('owner');
+    if (!ownerStore || !ownerStore.isOwner) return;
+
+    document.querySelectorAll('.wm-reply-btn').forEach(function(btn) {
+      btn.classList.remove('hidden');
+      btn.addEventListener('click', function() {
+        var replyUrl = btn.dataset.replyUrl;
+        var platform = btn.dataset.platform || 'webmention';
+        var syndicateTo = null;
+        if (platform === 'bluesky') syndicateTo = ownerStore.syndicationTargets.bluesky || null;
+        if (platform === 'mastodon') syndicateTo = ownerStore.syndicationTargets.mastodon || null;
+
+        // Find the commentsSection Alpine component and call startReply
+        var commentsEl = document.querySelector('[x-data*="commentsSection"]');
+        if (commentsEl && commentsEl.__x) {
+          commentsEl.__x.$data.startReply(replyUrl, platform, replyUrl, syndicateTo);
+          // Scroll to the comments section where the form will appear
+          commentsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else if (window.Alpine) {
+          // Alternative: dispatch event for Alpine component to handle
+          var evt = new CustomEvent('owner-reply', {
+            detail: { replyUrl: replyUrl, platform: platform, syndicateTo: syndicateTo },
+            bubbles: true
+          });
+          btn.dispatchEvent(evt);
+        }
+      });
+    });
+
+    // Render threaded owner replies under matching webmention cards
+    var ownerReplies = ownerStore.replies || [];
+    ownerReplies.forEach(function(reply) {
+      var inReplyTo = reply['in-reply-to'];
+      if (!inReplyTo) return;
+
+      // Find the webmention card whose URL matches
+      var matchingLi = document.querySelector('.webmention-replies li[data-wm-url="' + CSS.escape(inReplyTo) + '"]');
+      if (!matchingLi) return;
+
+      var slot = matchingLi.querySelector('.wm-owner-reply-slot');
+      if (!slot) return;
+
+      // Build owner reply card
+      var replyCard = document.createElement('div');
+      replyCard.className = 'p-3 bg-surface-100 dark:bg-surface-900 rounded-lg border-l-2 border-amber-400 dark:border-amber-600';
+
+      var innerDiv = document.createElement('div');
+      innerDiv.className = 'flex items-start gap-2';
+
+      var avatar = document.createElement('div');
+      avatar.className = 'w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900 flex-shrink-0 flex items-center justify-center text-xs font-bold';
+      avatar.textContent = (reply.author && reply.author.name ? reply.author.name[0] : 'O').toUpperCase();
+
+      var contentArea = document.createElement('div');
+      contentArea.className = 'flex-1';
+
+      var headerRow = document.createElement('div');
+      headerRow.className = 'flex items-center gap-2 flex-wrap';
+
+      var nameSpan = document.createElement('span');
+      nameSpan.className = 'font-medium text-sm';
+      nameSpan.textContent = (reply.author && reply.author.name) || 'Owner';
+
+      var authorBadge = document.createElement('span');
+      authorBadge.className = 'inline-flex items-center px-1.5 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full';
+      authorBadge.textContent = 'Author';
+
+      var timeEl = document.createElement('time');
+      timeEl.className = 'text-xs text-surface-600 dark:text-surface-400 font-mono';
+      timeEl.dateTime = reply.published || '';
+      timeEl.textContent = formatDate(reply.published);
+
+      headerRow.appendChild(nameSpan);
+      headerRow.appendChild(authorBadge);
+      headerRow.appendChild(timeEl);
+
+      var textDiv = document.createElement('div');
+      textDiv.className = 'mt-1 text-sm prose dark:prose-invert';
+      textDiv.textContent = (reply.content && reply.content.text) || '';
+
+      contentArea.appendChild(headerRow);
+      contentArea.appendChild(textDiv);
+
+      innerDiv.appendChild(avatar);
+      innerDiv.appendChild(contentArea);
+      replyCard.appendChild(innerDiv);
+      slot.appendChild(replyCard);
+    });
+  });
 })();

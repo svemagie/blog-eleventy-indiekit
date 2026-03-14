@@ -30,7 +30,7 @@
       </div>
 
       {# Sign-in form (shown when not authenticated) #}
-      <div x-show="!user" x-cloak>
+      <div x-show="!user && !isOwner" x-cloak>
         <p class="text-sm text-surface-600 dark:text-surface-400 mb-3">Sign in with your website to comment:</p>
         <form x-on:submit.prevent="startAuth()" class="flex gap-2 items-end flex-wrap">
           <div class="flex-1 min-w-[200px]">
@@ -76,28 +76,83 @@
           <p class="text-sm text-surface-600 dark:text-surface-400">Loading comments...</p>
         </template>
 
-        <template x-for="comment in comments" x-bind:key="comment.published">
-          <div class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm">
-            <div class="flex items-start gap-3">
-              <template x-if="comment.author?.photo">
-                <img x-bind:src="comment.author.photo" x-bind:alt="comment.author.name"
-                     class="w-8 h-8 rounded-full flex-shrink-0" loading="lazy">
-              </template>
-              <template x-if="!comment.author?.photo">
-                <div class="w-8 h-8 rounded-full bg-surface-200 dark:bg-surface-700 flex-shrink-0 flex items-center justify-center text-xs font-bold"
-                     x-text="(comment.author?.name || '?')[0].toUpperCase()">
+        <template x-for="comment in comments.filter(c => !c.parent_id)" x-bind:key="comment._id || comment.published">
+          <div>
+            {# Parent comment #}
+            <div class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm">
+              <div class="flex items-start gap-3">
+                <template x-if="comment.author?.photo">
+                  <img x-bind:src="comment.author.photo" x-bind:alt="comment.author.name"
+                       class="w-8 h-8 rounded-full flex-shrink-0" loading="lazy">
+                </template>
+                <template x-if="!comment.author?.photo">
+                  <div class="w-8 h-8 rounded-full bg-surface-200 dark:bg-surface-700 flex-shrink-0 flex items-center justify-center text-xs font-bold"
+                       x-text="(comment.author?.name || '?')[0].toUpperCase()">
+                  </div>
+                </template>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <a x-bind:href="comment.author?.url" class="font-medium text-sm hover:underline" target="_blank" rel="noopener"
+                       x-text="comment.author?.name || comment.author?.url"></a>
+                    <span x-show="comment.is_owner || (ownerProfile && comment.author?.url === ownerProfile.url)"
+                          class="inline-flex items-center px-1.5 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full">
+                      Author
+                    </span>
+                    <time class="text-xs text-surface-600 dark:text-surface-400 font-mono" x-bind:datetime="comment.published"
+                          x-text="new Date(comment.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })"></time>
+                  </div>
+                  <div class="mt-1 text-sm prose dark:prose-invert" x-html="comment.content?.html || comment.content?.text"></div>
+                  <div class="mt-2" x-show="isOwner && !(comment.is_owner || (ownerProfile && comment.author?.url === ownerProfile.url))">
+                    <button class="text-xs text-primary-600 dark:text-primary-400 hover:underline"
+                            @click="startReply(comment._id, 'comment', null, null)">
+                      Reply
+                    </button>
+                  </div>
                 </div>
-              </template>
-              <div class="flex-1">
-                <div class="flex items-center gap-2">
-                  <a x-bind:href="comment.author?.url" class="font-medium text-sm hover:underline" target="_blank" rel="noopener"
-                     x-text="comment.author?.name || comment.author?.url"></a>
-                  <time class="text-xs text-surface-600 dark:text-surface-400 font-mono" x-bind:datetime="comment.published"
-                        x-text="new Date(comment.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })"></time>
-                </div>
-                <div class="mt-1 text-sm prose dark:prose-invert" x-html="comment.content?.html || comment.content?.text"></div>
               </div>
             </div>
+
+            {# Inline reply form #}
+            <div x-show="replyingTo && replyingTo.commentId === comment._id && replyingTo.platform === 'comment'"
+                 class="ml-8 mt-2 p-3 bg-surface-100 dark:bg-surface-900 rounded-lg border-l-2 border-primary-400" x-cloak>
+              <textarea x-model="replyText" rows="3" placeholder="Write your reply..."
+                        class="w-full px-3 py-2 border rounded-lg text-sm dark:bg-surface-800 dark:border-surface-700 dark:text-surface-100"></textarea>
+              <div class="flex gap-2 mt-2">
+                <button class="button text-sm" @click="submitReply()" x-bind:disabled="replySubmitting">
+                  <span x-show="!replySubmitting">Send Reply</span>
+                  <span x-show="replySubmitting" x-cloak>Sending...</span>
+                </button>
+                <button class="text-xs text-surface-500 hover:underline" @click="cancelReply()">Cancel</button>
+              </div>
+            </div>
+
+            {# Threaded child replies #}
+            <template x-for="reply in comments.filter(c => c.parent_id === comment._id)" x-bind:key="reply._id || reply.published">
+              <div class="ml-8 mt-2 p-3 bg-surface-100 dark:bg-surface-900 rounded-lg border-l-2 border-amber-400 dark:border-amber-600">
+                <div class="flex items-start gap-2">
+                  <template x-if="reply.author?.photo">
+                    <img x-bind:src="reply.author.photo" x-bind:alt="reply.author.name"
+                         class="w-6 h-6 rounded-full flex-shrink-0" loading="lazy">
+                  </template>
+                  <template x-if="!reply.author?.photo">
+                    <div class="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900 flex-shrink-0 flex items-center justify-center text-xs font-bold"
+                         x-text="(reply.author?.name || '?')[0].toUpperCase()">
+                    </div>
+                  </template>
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="font-medium text-sm" x-text="reply.author?.name || 'Owner'"></span>
+                      <span class="inline-flex items-center px-1.5 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full">
+                        Author
+                      </span>
+                      <time class="text-xs text-surface-600 dark:text-surface-400 font-mono" x-bind:datetime="reply.published"
+                            x-text="new Date(reply.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })"></time>
+                    </div>
+                    <div class="mt-1 text-sm prose dark:prose-invert" x-html="reply.content?.html || reply.content?.text"></div>
+                  </div>
+                </div>
+              </div>
+            </template>
           </div>
         </template>
 

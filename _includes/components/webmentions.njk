@@ -30,7 +30,7 @@
     <is-land on:visible>
     <ul class="facepile" role="list">
       {% for like in likes %}
-      <li class="inline">
+      <li class="inline" data-wm-source="{{ like['wm-source'] if like['wm-source'] else '' }}" data-author-url="{{ like.author.url }}">
         <a href="{{ like.author.url }}"
            class="facepile-avatar"
            aria-label="{{ like.author.name }} (opens in new tab)"
@@ -60,7 +60,7 @@
     <is-land on:visible>
     <ul class="facepile" role="list">
       {% for repost in reposts %}
-      <li class="inline">
+      <li class="inline" data-wm-source="{{ repost['wm-source'] if repost['wm-source'] else '' }}" data-author-url="{{ repost.author.url }}">
         <a href="{{ repost.author.url }}"
            class="facepile-avatar"
            aria-label="{{ repost.author.name }} (opens in new tab)"
@@ -90,7 +90,7 @@
     <is-land on:visible>
     <ul class="facepile" role="list">
       {% for bookmark in bookmarks %}
-      <li class="inline">
+      <li class="inline" data-wm-source="{{ bookmark['wm-source'] if bookmark['wm-source'] else '' }}" data-author-url="{{ bookmark.author.url }}">
         <a href="{{ bookmark.author.url }}"
            class="facepile-avatar"
            aria-label="{{ bookmark.author.name }} (opens in new tab)"
@@ -119,7 +119,10 @@
     </h3>
     <ul class="space-y-4">
       {% for reply in replies %}
-      <li class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm">
+      <li class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 shadow-sm"
+          data-wm-url="{{ reply.url }}"
+          data-wm-source="{{ reply['wm-source'] if reply['wm-source'] else '' }}"
+          data-author-url="{{ reply.author.url }}">
         <div class="flex gap-3">
           <a href="{{ reply.author.url }}" target="_blank" rel="noopener">
             <img
@@ -130,13 +133,14 @@
             >
           </a>
           <div class="flex-1 min-w-0">
-            <div class="flex items-baseline gap-2 mb-1">
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
               <a href="{{ reply.author.url }}"
                  class="font-semibold text-surface-900 dark:text-surface-100 hover:underline"
                  target="_blank"
                  rel="noopener">
                 {{ reply.author.name }}
               </a>
+              <span class="wm-provenance-badge" data-detect="true"></span>
               <a href="{{ reply.url }}"
                  class="text-xs text-surface-600 dark:text-surface-400 hover:underline"
                  target="_blank"
@@ -149,8 +153,14 @@
             <div class="text-surface-700 dark:text-surface-300 prose dark:prose-invert prose-sm max-w-none">
               {{ reply.content.html | safe if reply.content.html else reply.content.text }}
             </div>
+            <button class="wm-reply-btn hidden text-xs text-primary-600 dark:text-primary-400 hover:underline mt-2"
+                    data-reply-url="{{ reply.url }}"
+                    data-platform="">
+              Reply
+            </button>
           </div>
         </div>
+        <div class="wm-owner-reply-slot ml-13 mt-2"></div>
       </li>
       {% endfor %}
     </ul>
