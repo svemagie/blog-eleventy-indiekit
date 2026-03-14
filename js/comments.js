@@ -41,6 +41,9 @@ document.addEventListener("alpine:init", () => {
       await this.loadComments();
       if (this.isOwner) {
         await this.loadOwnerReplies();
+        // Notify webmentions.js that owner state + replies are ready
+        // (alpine:initialized fires before these async fetches resolve)
+        document.dispatchEvent(new CustomEvent("owner:detected"));
       }
       this.handleAuthReturn();
     },
@@ -79,6 +82,9 @@ document.addEventListener("alpine:init", () => {
             Alpine.store("owner").isOwner = true;
             Alpine.store("owner").profile = this.ownerProfile;
             Alpine.store("owner").syndicationTargets = this.syndicationTargets;
+
+            // Note: owner:detected event is dispatched from init() after
+            // loadOwnerReplies() completes, so replies are available in the store
           }
         }
       } catch {

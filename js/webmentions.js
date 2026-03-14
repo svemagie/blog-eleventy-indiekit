@@ -596,8 +596,8 @@
   });
 
   // Show reply buttons and wire click handlers if owner is detected
-  // Wait for Alpine to initialize the store
-  document.addEventListener('alpine:initialized', function() {
+  // Listen for custom event dispatched by comments.js after async owner check
+  document.addEventListener('owner:detected', function() {
     var ownerStore = Alpine.store && Alpine.store('owner');
     if (!ownerStore || !ownerStore.isOwner) return;
 
