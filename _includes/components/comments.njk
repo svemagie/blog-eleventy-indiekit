@@ -46,12 +46,13 @@
         </form>
       </div>
 
-      {# Comment form (shown when authenticated) #}
-      <div x-show="user" x-cloak>
+      {# Comment form (shown when authenticated via IndieAuth OR as site owner) #}
+      <div x-show="user || isOwner" x-cloak>
         <div class="flex items-center gap-2 mb-3 text-sm text-surface-600 dark:text-surface-400">
           <span>Signed in as</span>
-          <a x-bind:href="user?.url" class="font-medium hover:underline" x-text="user?.name || user?.url" target="_blank" rel="noopener"></a>
-          <button x-on:click="signOut()" class="text-xs underline hover:no-underline">Sign out</button>
+          <a x-bind:href="user?.url || ownerProfile?.url" class="font-medium hover:underline"
+             x-text="user?.name || ownerProfile?.name || user?.url || 'Owner'" target="_blank" rel="noopener"></a>
+          <button x-show="user" x-on:click="signOut()" class="text-xs underline hover:no-underline">Sign out</button>
         </div>
 
         <form x-on:submit.prevent="submitComment()">

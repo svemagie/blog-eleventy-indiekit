@@ -337,16 +337,36 @@
       replyDiv.className = 'text-surface-700 dark:text-surface-300 prose dark:prose-invert prose-sm max-w-none';
       replyDiv.textContent = content.text || '';
 
+      // Reply button (hidden by default, shown for owner)
+      const replyBtn = document.createElement('button');
+      replyBtn.className = 'wm-reply-btn hidden text-xs text-primary-600 dark:text-primary-400 hover:underline mt-2';
+      replyBtn.dataset.replyUrl = item.url || '';
+      replyBtn.dataset.platform = platform;
+      replyBtn.textContent = 'Reply';
+
       contentDiv.appendChild(headerDiv);
       contentDiv.appendChild(replyDiv);
+      contentDiv.appendChild(replyBtn);
 
       wrapper.appendChild(avatarLink);
       wrapper.appendChild(contentDiv);
       li.appendChild(wrapper);
 
+      // Owner reply slot for threaded replies
+      const ownerReplySlot = document.createElement('div');
+      ownerReplySlot.className = 'wm-owner-reply-slot ml-13 mt-2';
+      li.appendChild(ownerReplySlot);
+
+      // Also set data attributes for build-time parity
+      li.dataset.wmSource = item['wm-source'] || '';
+      li.dataset.authorUrl = author.url || '';
+
       // Prepend to show newest first
       list.insertBefore(li, list.firstChild);
     });
+
+    // Wire up new reply buttons if owner is already detected
+    wireReplyButtons();
   }
 
   function appendMentions(selector, items) {
@@ -595,13 +615,15 @@
     }
   });
 
-  // Show reply buttons and wire click handlers if owner is detected
-  // Listen for custom event dispatched by comments.js after async owner check
-  document.addEventListener('owner:detected', function() {
+  // Wire reply buttons: unhide and attach click handlers for unwired buttons
+  // Called from owner:detected handler AND after dynamic replies are appended
+  function wireReplyButtons() {
     var ownerStore = Alpine.store && Alpine.store('owner');
     if (!ownerStore || !ownerStore.isOwner) return;
 
     document.querySelectorAll('.wm-reply-btn').forEach(function(btn) {
+      if (btn.dataset.wired) return; // already wired
+      btn.dataset.wired = 'true';
       btn.classList.remove('hidden');
       btn.addEventListener('click', function() {
         var replyUrl = btn.dataset.replyUrl;
@@ -614,10 +636,8 @@
         var commentsEl = document.querySelector('[x-data*="commentsSection"]');
         if (commentsEl && commentsEl.__x) {
           commentsEl.__x.$data.startReply(replyUrl, platform, replyUrl, syndicateTo);
-          // Scroll to the comments section where the form will appear
           commentsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else if (window.Alpine) {
-          // Alternative: dispatch event for Alpine component to handle
           var evt = new CustomEvent('owner-reply', {
             detail: { replyUrl: replyUrl, platform: platform, syndicateTo: syndicateTo },
             bubbles: true
@@ -626,6 +646,15 @@
         }
       });
     });
+  }
+
+  // Show reply buttons and wire click handlers if owner is detected
+  // Listen for custom event dispatched by comments.js after async owner check
+  document.addEventListener('owner:detected', function() {
+    var ownerStore = Alpine.store && Alpine.store('owner');
+    if (!ownerStore || !ownerStore.isOwner) return;
+
+    wireReplyButtons();
 
     // Render threaded owner replies under matching webmention cards
     var ownerReplies = ownerStore.replies || [];
