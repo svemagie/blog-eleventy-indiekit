@@ -634,15 +634,12 @@
 
         // Find the commentsSection Alpine component and call startReply
         var commentsEl = document.querySelector('[x-data*="commentsSection"]');
-        if (commentsEl && commentsEl.__x) {
-          commentsEl.__x.$data.startReply(replyUrl, platform, replyUrl, syndicateTo);
-          commentsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else if (window.Alpine) {
-          var evt = new CustomEvent('owner-reply', {
-            detail: { replyUrl: replyUrl, platform: platform, syndicateTo: syndicateTo },
-            bubbles: true
-          });
-          btn.dispatchEvent(evt);
+        if (commentsEl && window.Alpine) {
+          var data = Alpine.$data(commentsEl);
+          if (data && data.startReply) {
+            data.startReply(replyUrl, platform, replyUrl, syndicateTo);
+            commentsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
         }
       });
     });
