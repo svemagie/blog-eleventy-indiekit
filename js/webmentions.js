@@ -13,6 +13,11 @@
 
   if (!target || !domain) return;
 
+  // Extract site origin for filtering self-mentions
+  // (owner replies sent via webmention-sender appear as webmentions on own posts)
+  var siteOrigin = '';
+  try { siteOrigin = new URL(target).origin; } catch(e) {}
+
   // Use server-side proxy to keep webmention.io token secure
   // Fetch both with and without trailing slash since webmention.io
   // stores targets inconsistently (Bridgy sends different formats)
@@ -54,6 +59,14 @@
 
   function processWebmentions(allChildren) {
     if (!allChildren || !allChildren.length) return;
+
+    // Filter out self-mentions (may exist in older cached data)
+    allChildren = allChildren.filter(function(wm) {
+      if (!siteOrigin) return true;
+      var source = wm['wm-source'] || wm.url || '';
+      return !source.startsWith(siteOrigin);
+    });
+    if (!allChildren.length) return;
 
     let mentionsToShow;
     if (hasBuildTimeSection) {
@@ -155,6 +168,13 @@
       const wmItems = [...(wmData1.children || []), ...(wmData2.children || [])];
       const convItems = [...(convData1.children || []), ...(convData2.children || [])];
 
+      // Filter out self-mentions (owner's own replies appearing as webmentions)
+      function isSelfMention(wm) {
+        if (!siteOrigin) return false;
+        var source = wm['wm-source'] || wm.url || '';
+        return source.startsWith(siteOrigin);
+      }
+
       // Build dedup sets from conversations items (richer metadata, take priority)
       const convUrls = new Set(convItems.map(c => c.url).filter(Boolean));
       const seen = new Set();
@@ -162,6 +182,7 @@
 
       // Add conversations items first (they have platform provenance)
       for (const wm of convItems) {
+        if (isSelfMention(wm)) continue;
         const key = wm['wm-id'] || wm.url;
         if (key && !seen.has(key)) {
           seen.add(key);
@@ -177,8 +198,9 @@
         if (authorUrl) authorActions.add(authorUrl + '::' + action);
       }
 
-      // Add webmention-io items, skipping duplicates
+      // Add webmention-io items, skipping duplicates and self-mentions
       for (const wm of wmItems) {
+        if (isSelfMention(wm)) continue;
         const key = wm['wm-id'];
         if (seen.has(key)) continue;
         // Also skip if same source URL exists in conversations

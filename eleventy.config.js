@@ -820,8 +820,14 @@ export default function (eleventyConfig) {
       urlsToCheck.add(`${siteUrl}${contentUrl}`.replace(/\/$/, ""));
     }
 
-    // Filter merged data matching any of our URLs
-    const matched = merged.filter((wm) => urlsToCheck.has(wm["wm-target"]));
+    // Filter merged data matching any of our URLs, excluding self-mentions
+    // (owner replies sent via webmention-sender appear as webmentions on own posts)
+    const matched = merged.filter((wm) => {
+      if (!urlsToCheck.has(wm["wm-target"])) return false;
+      const source = wm["wm-source"] || wm.url || "";
+      if (source.startsWith(siteUrl)) return false;
+      return true;
+    });
 
     // Deduplicate cross-source: same author + same interaction type = same mention
     // (webmention.io and conversations API may both report the same like/reply)
