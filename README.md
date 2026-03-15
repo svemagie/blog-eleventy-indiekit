@@ -52,6 +52,8 @@ Integrates with custom Indiekit endpoint plugins:
 | `@rmdes/indiekit-endpoint-podroll` | Podcast episode aggregator |
 | `@rmdes/indiekit-endpoint-rss` | RSS feed reader with MongoDB caching |
 | `@rmdes/indiekit-endpoint-microsub` | Social reader with channels and timeline |
+| `@rmdes/indiekit-endpoint-conversations` | Multi-platform interaction aggregation + owner reply threading |
+| `@rmdes/indiekit-endpoint-comments` | IndieAuth visitor comments with owner replies |
 
 ### Modern Tech Stack
 
@@ -427,6 +429,72 @@ See `indiekit-deploy` repository for Docker Compose deployment with this theme a
 - [webmention.io](https://webmention.io/) — Webmention service
 - [IndieAuth](https://indieauth.com/) — Authentication protocol
 - [Bridgy](https://brid.gy/) — Backfeed social interactions
+
+## Reply-to-Interactions
+
+The theme supports threaded owner replies on all interaction types: IndieWeb webmentions, Mastodon/Bluesky backfills, and native authenticated comments.
+
+### How It Works
+
+```
+Visitor interaction (Mastodon reply, Bluesky like, webmention, native comment)
+    │
+    v
+Conversations API (/conversations/api/mentions)
+    │ Enriches response with owner replies from posts collection
+    │ Adds is_owner: true + parent_url for threading
+    v
+webmentions.js (client-side)
+    │ processWebmentions() separates owner replies from regular interactions
+    │ Renders regular interactions (likes, reposts, replies)
+    │ threadOwnerReplies() inserts owner reply cards under parent interactions
+    v
+Threaded display:
+    ┌─────────────────────────────────┐
+    │ Jane Doe [Mastodon] Mar 11      │
+    │ Great post!                      │
+    │ [Reply]                          │
+    │  ┌─────────────────────────────┐ │
+    │  │ Ricardo Mendes [Author]      │ │
+    │  │ Thanks!                      │ │
+    │  └─────────────────────────────┘ │
+    └─────────────────────────────────┘
+```
+
+### Key Files
+
+| File | Role |
+|------|------|
+| `js/webmentions.js` | Fetches interactions from 3 APIs (webmentions, conversations, comments), deduplicates, renders, and threads owner replies |
+| `js/comments.js` | Alpine.js component for native comment form, IndieAuth flow, and inline reply UI |
+| `_includes/components/webmentions.njk` | Server-side template with `data-wm-url` attributes and `wm-owner-reply-slot` divs for threading |
+
+### Threading Mechanism
+
+1. **`processWebmentions(allChildren)`** separates items with `is_owner: true` and `parent_url` from regular interactions
+2. Regular interactions render normally (likes, reposts, reply cards)
+3. Each reply `<li>` gets a `data-wm-url` attribute matching the interaction's source URL
+4. Each reply `<li>` includes an empty `<div class="wm-owner-reply-slot">` for threading
+5. **`threadOwnerReplies(ownerReplies)`** matches each owner reply's `parent_url` to a reply `<li>`'s `data-wm-url`, then inserts an amber-bordered reply card into the slot
+
+### Reply Routing
+
+When the site owner clicks "Reply" on an interaction, the routing depends on the interaction's source:
+
+| Source | Route | Syndication |
+|--------|-------|-------------|
+| Mastodon reply | `POST /micropub` with `in-reply-to` | `mp-syndicate-to: mastodon` |
+| Bluesky reply | `POST /micropub` with `in-reply-to` | `mp-syndicate-to: bluesky` |
+| IndieWeb webmention | `POST /micropub` with `in-reply-to` | No syndication (webmention sent) |
+| Native comment | `POST /comments/api/reply` | Stored in comments collection |
+
+### Plugin Dependencies
+
+| Plugin | Role |
+|--------|------|
+| [`@rmdes/indiekit-endpoint-conversations`](https://github.com/rmdes/indiekit-endpoint-conversations) | Serves interactions with owner reply enrichment (`is_owner`, `parent_url`) |
+| [`@rmdes/indiekit-endpoint-comments`](https://github.com/rmdes/indiekit-endpoint-comments) | Handles native comment replies and owner detection (`/api/is-owner`) |
+| `@rmdes/indiekit-endpoint-webmention-io` | Serves webmention.io data (likes, reposts, replies from IndieWeb) |
 
 ## Troubleshooting
 

@@ -158,7 +158,7 @@ Most plugin-dependent data files:
 | `blog-sidebar.njk` | Sidebar for blog/post pages (recent posts, categories) |
 | `h-card.njk` | Microformat2 h-card for author identity |
 | `reply-context.njk` | Displays reply-to/like-of/repost-of/bookmark-of context with h-cite |
-| `webmentions.njk` | Renders likes, reposts, replies from webmention.io + send form |
+| `webmentions.njk` | Renders likes, reposts, replies from webmention.io + conversations API, with threaded owner replies |
 | `empty-collection.njk` | Fallback message when a post type collection is empty |
 
 #### Sections (_includes/components/sections/)
@@ -315,13 +315,26 @@ Generates OpenGraph images for posts without photos using Satori (Yoga WASM → 
 - **h-feed** (feed markup): Machine-readable post lists
 - **h-cite** (reply context): Cites external content in replies/likes/reposts
 
-#### Webmentions
+#### Webmentions & Interactions
 
 - Build-time caching via `@chrisburnell/eleventy-cache-webmentions`
-- Client-side real-time fetching via `/js/webmentions.js`
-- Displays likes, reposts, replies with avatars
+- Client-side real-time fetching via `/js/webmentions.js` from three APIs:
+  - `/webmentions/api/mentions` — IndieWeb webmentions (webmention.io)
+  - `/conversations/api/mentions` — Mastodon/Bluesky/AP interactions (conversations plugin)
+  - `/comments/api/comments` — Native authenticated comments (comments plugin)
+- Displays likes, reposts, replies with avatars and platform badges
+- **Owner reply threading** — owner replies appear nested under parent interactions with amber Author badge
 - Send webmention form on every post
 - Legacy URL support via `urlAliases` (for micro.blog and old blog URLs)
+
+#### Reply-to-Interactions Architecture
+
+The conversations API enriches its response with owner replies (`is_owner: true`, `parent_url`). The frontend's `threadOwnerReplies()` function matches `parent_url` to reply `<li>` elements via `data-wm-url` attributes and inserts threaded reply cards into `wm-owner-reply-slot` divs.
+
+Reply routing is provenance-aware:
+- **Mastodon/Bluesky replies** — `POST /micropub` with `mp-syndicate-to` for platform threading
+- **IndieWeb webmention replies** — `POST /micropub` without syndication (webmention sent automatically)
+- **Native comment replies** — `POST /comments/api/reply` (stored in comments collection)
 
 #### IndieAuth
 
