@@ -13,11 +13,6 @@
 
   if (!target || !domain) return;
 
-  // Extract site origin for filtering self-mentions
-  // (owner replies sent via webmention-sender appear as webmentions on own posts)
-  var siteOrigin = '';
-  try { siteOrigin = new URL(target).origin; } catch(e) {}
-
   // Use server-side proxy to keep webmention.io token secure
   // Fetch both with and without trailing slash since webmention.io
   // stores targets inconsistently (Bridgy sends different formats)
@@ -60,13 +55,9 @@
   function processWebmentions(allChildren) {
     if (!allChildren || !allChildren.length) return;
 
-    // Filter out self-mentions (may exist in older cached data)
-    allChildren = allChildren.filter(function(wm) {
-      if (!siteOrigin) return true;
-      var source = wm['wm-source'] || wm.url || '';
-      return !source.startsWith(siteOrigin);
-    });
-    if (!allChildren.length) return;
+    // Separate owner replies (threaded under parent) from regular interactions
+    var ownerReplies = allChildren.filter(function(wm) { return wm.is_owner && wm.parent_url; });
+    var regularItems = allChildren.filter(function(wm) { return !wm.is_owner; });
 
     let mentionsToShow;
     if (hasBuildTimeSection) {
@@ -94,7 +85,7 @@
         if (li.dataset.wmUrl) renderedReplies.add(li.dataset.wmUrl);
       });
 
-      mentionsToShow = allChildren.filter(function(wm) {
+      mentionsToShow = regularItems.filter(function(wm) {
         var prop = wm['wm-property'] || 'mention-of';
         if (prop === 'in-reply-to') {
           // Skip replies whose source URL is already rendered
@@ -106,44 +97,108 @@
         return true;
       });
     } else {
-      // No build-time section - show ALL webmentions from API
-      mentionsToShow = allChildren;
+      // No build-time section - show ALL regular webmentions from API
+      mentionsToShow = regularItems;
     }
 
-    if (!mentionsToShow.length) return;
+    if (mentionsToShow.length) {
+      // Group by type
+      const likes = mentionsToShow.filter((m) => m['wm-property'] === 'like-of');
+      const reposts = mentionsToShow.filter((m) => m['wm-property'] === 'repost-of');
+      const replies = mentionsToShow.filter((m) => m['wm-property'] === 'in-reply-to');
+      const mentions = mentionsToShow.filter((m) => m['wm-property'] === 'mention-of');
 
-    // Group by type
-    const likes = mentionsToShow.filter((m) => m['wm-property'] === 'like-of');
-    const reposts = mentionsToShow.filter((m) => m['wm-property'] === 'repost-of');
-    const replies = mentionsToShow.filter((m) => m['wm-property'] === 'in-reply-to');
-    const mentions = mentionsToShow.filter((m) => m['wm-property'] === 'mention-of');
+      if (likes.length) {
+        appendAvatars('.webmention-likes .facepile, .webmention-likes .avatar-row', likes, 'likes');
+        updateCount('.webmention-likes h3', likes.length, 'Like');
+      }
 
-    // Append new likes
-    if (likes.length) {
-      appendAvatars('.webmention-likes .facepile, .webmention-likes .avatar-row', likes, 'likes');
-      updateCount('.webmention-likes h3', likes.length, 'Like');
+      if (reposts.length) {
+        appendAvatars('.webmention-reposts .facepile, .webmention-reposts .avatar-row', reposts, 'reposts');
+        updateCount('.webmention-reposts h3', reposts.length, 'Repost');
+      }
+
+      if (replies.length) {
+        appendReplies('.webmention-replies ul', replies);
+        updateCount('.webmention-replies h3', replies.length, 'Repl', 'ies', 'y');
+      }
+
+      if (mentions.length) {
+        appendMentions('.webmention-mentions ul', mentions);
+        updateCount('.webmention-mentions h3', mentions.length, 'Mention');
+      }
+
+      // Update total count in main header
+      updateTotalCount(mentionsToShow.length);
     }
 
-    // Append new reposts
-    if (reposts.length) {
-      appendAvatars('.webmention-reposts .facepile, .webmention-reposts .avatar-row', reposts, 'reposts');
-      updateCount('.webmention-reposts h3', reposts.length, 'Repost');
-    }
+    // Thread owner replies under their parent interaction cards
+    threadOwnerReplies(ownerReplies);
+  }
 
-    // Append new replies
-    if (replies.length) {
-      appendReplies('.webmention-replies ul', replies);
-      updateCount('.webmention-replies h3', replies.length, 'Repl', 'ies', 'y');
-    }
+  function threadOwnerReplies(ownerReplies) {
+    if (!ownerReplies || !ownerReplies.length) return;
 
-    // Append new mentions
-    if (mentions.length) {
-      appendMentions('.webmention-mentions ul', mentions);
-      updateCount('.webmention-mentions h3', mentions.length, 'Mention');
-    }
+    ownerReplies.forEach(function(reply) {
+      var parentUrl = reply.parent_url;
+      if (!parentUrl) return;
 
-    // Update total count in main header
-    updateTotalCount(mentionsToShow.length);
+      // Find the interaction card whose URL matches the parent
+      var matchingLi = document.querySelector('.webmention-replies li[data-wm-url="' + CSS.escape(parentUrl) + '"]');
+      if (!matchingLi) return;
+
+      var slot = matchingLi.querySelector('.wm-owner-reply-slot');
+      if (!slot) return;
+
+      // Skip if already rendered (dedup by reply URL)
+      if (slot.querySelector('[data-reply-url="' + CSS.escape(reply.url) + '"]')) return;
+
+      var replyCard = document.createElement('div');
+      replyCard.className = 'p-3 bg-surface-100 dark:bg-surface-900 rounded-lg border-l-2 border-amber-400 dark:border-amber-600';
+      replyCard.dataset.replyUrl = reply.url || '';
+
+      var innerDiv = document.createElement('div');
+      innerDiv.className = 'flex items-start gap-2';
+
+      var avatar = document.createElement('div');
+      avatar.className = 'w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900 flex-shrink-0 flex items-center justify-center text-xs font-bold';
+      avatar.textContent = (reply.author && reply.author.name ? reply.author.name[0] : 'O').toUpperCase();
+
+      var contentArea = document.createElement('div');
+      contentArea.className = 'flex-1';
+
+      var headerRow = document.createElement('div');
+      headerRow.className = 'flex items-center gap-2 flex-wrap';
+
+      var nameSpan = document.createElement('span');
+      nameSpan.className = 'font-medium text-sm';
+      nameSpan.textContent = (reply.author && reply.author.name) || 'Owner';
+
+      var authorBadge = document.createElement('span');
+      authorBadge.className = 'inline-flex items-center px-1.5 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full';
+      authorBadge.textContent = 'Author';
+
+      var timeEl = document.createElement('time');
+      timeEl.className = 'text-xs text-surface-600 dark:text-surface-400 font-mono';
+      timeEl.dateTime = reply.published || '';
+      timeEl.textContent = formatDate(reply.published);
+
+      headerRow.appendChild(nameSpan);
+      headerRow.appendChild(authorBadge);
+      headerRow.appendChild(timeEl);
+
+      var textDiv = document.createElement('div');
+      textDiv.className = 'mt-1 text-sm prose dark:prose-invert';
+      textDiv.textContent = (reply.content && reply.content.text) || '';
+
+      contentArea.appendChild(headerRow);
+      contentArea.appendChild(textDiv);
+
+      innerDiv.appendChild(avatar);
+      innerDiv.appendChild(contentArea);
+      replyCard.appendChild(innerDiv);
+      slot.appendChild(replyCard);
+    });
   }
 
   // Try cached data first (renders instantly on refresh)
@@ -168,13 +223,6 @@
       const wmItems = [...(wmData1.children || []), ...(wmData2.children || [])];
       const convItems = [...(convData1.children || []), ...(convData2.children || [])];
 
-      // Filter out self-mentions (owner's own replies appearing as webmentions)
-      function isSelfMention(wm) {
-        if (!siteOrigin) return false;
-        var source = wm['wm-source'] || wm.url || '';
-        return source.startsWith(siteOrigin);
-      }
-
       // Build dedup sets from conversations items (richer metadata, take priority)
       const convUrls = new Set(convItems.map(c => c.url).filter(Boolean));
       const seen = new Set();
@@ -182,7 +230,6 @@
 
       // Add conversations items first (they have platform provenance)
       for (const wm of convItems) {
-        if (isSelfMention(wm)) continue;
         const key = wm['wm-id'] || wm.url;
         if (key && !seen.has(key)) {
           seen.add(key);
@@ -198,9 +245,8 @@
         if (authorUrl) authorActions.add(authorUrl + '::' + action);
       }
 
-      // Add webmention-io items, skipping duplicates and self-mentions
+      // Add webmention-io items, skipping duplicates
       for (const wm of wmItems) {
-        if (isSelfMention(wm)) continue;
         const key = wm['wm-id'];
         if (seen.has(key)) continue;
         // Also skip if same source URL exists in conversations
@@ -765,72 +811,9 @@
     });
   }
 
-  // Show reply buttons and wire click handlers if owner is detected
+  // Show reply buttons when owner is detected
   // Listen for custom event dispatched by comments.js after async owner check
   document.addEventListener('owner:detected', function() {
-    var ownerStore = Alpine.store && Alpine.store('owner');
-    if (!ownerStore || !ownerStore.isOwner) return;
-
     wireReplyButtons();
-
-    // Render threaded owner replies under matching webmention cards
-    var ownerReplies = ownerStore.replies || [];
-    ownerReplies.forEach(function(reply) {
-      var inReplyTo = reply['in-reply-to'];
-      if (!inReplyTo) return;
-
-      // Find the webmention card whose URL matches
-      var matchingLi = document.querySelector('.webmention-replies li[data-wm-url="' + CSS.escape(inReplyTo) + '"]');
-      if (!matchingLi) return;
-
-      var slot = matchingLi.querySelector('.wm-owner-reply-slot');
-      if (!slot) return;
-
-      // Build owner reply card
-      var replyCard = document.createElement('div');
-      replyCard.className = 'p-3 bg-surface-100 dark:bg-surface-900 rounded-lg border-l-2 border-amber-400 dark:border-amber-600';
-
-      var innerDiv = document.createElement('div');
-      innerDiv.className = 'flex items-start gap-2';
-
-      var avatar = document.createElement('div');
-      avatar.className = 'w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900 flex-shrink-0 flex items-center justify-center text-xs font-bold';
-      avatar.textContent = (reply.author && reply.author.name ? reply.author.name[0] : 'O').toUpperCase();
-
-      var contentArea = document.createElement('div');
-      contentArea.className = 'flex-1';
-
-      var headerRow = document.createElement('div');
-      headerRow.className = 'flex items-center gap-2 flex-wrap';
-
-      var nameSpan = document.createElement('span');
-      nameSpan.className = 'font-medium text-sm';
-      nameSpan.textContent = (reply.author && reply.author.name) || 'Owner';
-
-      var authorBadge = document.createElement('span');
-      authorBadge.className = 'inline-flex items-center px-1.5 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full';
-      authorBadge.textContent = 'Author';
-
-      var timeEl = document.createElement('time');
-      timeEl.className = 'text-xs text-surface-600 dark:text-surface-400 font-mono';
-      timeEl.dateTime = reply.published || '';
-      timeEl.textContent = formatDate(reply.published);
-
-      headerRow.appendChild(nameSpan);
-      headerRow.appendChild(authorBadge);
-      headerRow.appendChild(timeEl);
-
-      var textDiv = document.createElement('div');
-      textDiv.className = 'mt-1 text-sm prose dark:prose-invert';
-      textDiv.textContent = (reply.content && reply.content.text) || '';
-
-      contentArea.appendChild(headerRow);
-      contentArea.appendChild(textDiv);
-
-      innerDiv.appendChild(avatar);
-      innerDiv.appendChild(contentArea);
-      replyCard.appendChild(innerDiv);
-      slot.appendChild(replyCard);
-    });
   });
 })();

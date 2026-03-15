@@ -509,6 +509,20 @@ export default async function () {
 3. **CSS utilities:** Add custom utilities to `css/tailwind.css`
 4. **Rebuild CSS:** `npm run build:css` (or `make build:css` in parent repo)
 
+## Performance Debugging
+
+For diagnosing and fixing Eleventy build performance issues, see the comprehensive guide at `/home/rick/code/indiekit-dev/docs/eleventy-debugging-guide.md`.
+
+**Quick diagnostic steps:**
+
+1. **Baseline:** `time npx @11ty/eleventy --quiet` (run 3x, take median)
+2. **Benchmark:** `DEBUG=Eleventy:Benchmark*  npx @11ty/eleventy` — find entries >15% of total or with call count matching page count
+3. **Classify:** Network requests (high avg, low count) vs. redundant computation (low avg, high count) vs. client-side bloat (fast build, low Lighthouse)
+4. **Fix:** Timeout + cache for network; memoize with `Map` for per-page computation; Web Components for client-side bloat
+5. **Verify:** Re-measure against baseline
+
+**Relevant to this theme:** Data files in `_data/` that fetch from external APIs (GitHub, Mastodon, Bluesky, YouTube, Funkwhale, Last.fm) are Pattern A candidates — always use `eleventy-fetch` with appropriate `duration` and handle failures gracefully. The OG image generation hook is a Pattern B candidate — it already uses batch spawning and manifest caching to manage memory and avoid redundant work.
+
 ## Anti-Patterns
 
 1. ❌ **Forgetting to update submodule** after changes

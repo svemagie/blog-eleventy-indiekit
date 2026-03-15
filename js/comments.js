@@ -1,6 +1,6 @@
 /**
  * Client-side comments component (Alpine.js)
- * Handles IndieAuth flow, comment submission, display, and owner replies
+ * Handles IndieAuth flow, comment submission, display, and owner detection
  *
  * Registered via Alpine.data() so the component is available
  * regardless of script loading order.
@@ -12,7 +12,6 @@ document.addEventListener("alpine:init", () => {
     isOwner: false,
     profile: null,
     syndicationTargets: {},
-    replies: [],
   });
 
   Alpine.data("commentsSection", (targetUrl) => ({
@@ -40,9 +39,7 @@ document.addEventListener("alpine:init", () => {
       await this.checkOwner();
       await this.loadComments();
       if (this.isOwner) {
-        await this.loadOwnerReplies();
-        // Notify webmentions.js that owner state + replies are ready
-        // (alpine:initialized fires before these async fetches resolve)
+        // Notify webmentions.js that owner is detected (for reply buttons)
         document.dispatchEvent(new CustomEvent("owner:detected"));
       }
       this.handleAuthReturn();
@@ -84,25 +81,11 @@ document.addEventListener("alpine:init", () => {
             Alpine.store("owner").syndicationTargets = this.syndicationTargets;
 
             // Note: owner:detected event is dispatched from init() after
-            // loadOwnerReplies() completes, so replies are available in the store
+            // this completes, so the Alpine store is populated before the event fires
           }
         }
       } catch {
         // Not owner
-      }
-    },
-
-    async loadOwnerReplies() {
-      try {
-        const url = `/comments/api/owner-replies?target=${encodeURIComponent(this.targetUrl)}`;
-        const res = await fetch(url);
-        if (res.ok) {
-          const data = await res.json();
-          // Store for webmentions component to use via Alpine store
-          Alpine.store("owner").replies = data.children || [];
-        }
-      } catch {
-        // Silently fail
       }
     },
 
