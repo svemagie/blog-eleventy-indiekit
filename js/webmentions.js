@@ -594,15 +594,23 @@
   }
 
   function detectPlatform(item) {
+    // Conversations API provides a resolved platform field via NodeInfo
+    if (item.platform) {
+      var p = item.platform.toLowerCase();
+      if (p === 'mastodon') return 'mastodon';
+      if (p === 'bluesky') return 'bluesky';
+      if (p === 'webmention') return 'webmention';
+      // All other fediverse software (pleroma, misskey, gotosocial, fedify, etc.)
+      return 'activitypub';
+    }
+
+    // Fallback: URL heuristics for webmention.io data and build-time cards
     var source = item['wm-source'] || '';
     var authorUrl = (item.author && item.author.url) || '';
     if (source.includes('brid.gy/') && source.includes('/mastodon/')) return 'mastodon';
     if (source.includes('brid.gy/') && source.includes('/bluesky/')) return 'bluesky';
     if (source.includes('fed.brid.gy')) return 'activitypub';
     if (authorUrl.includes('bsky.app')) return 'bluesky';
-    if (authorUrl.includes('mstdn') || authorUrl.includes('mastodon') || authorUrl.includes('social.') ||
-        authorUrl.includes('fosstodon.') || authorUrl.includes('hachyderm.') || authorUrl.includes('infosec.exchange') ||
-        authorUrl.includes('pleroma.') || authorUrl.includes('misskey.') || authorUrl.includes('pixelfed.')) return 'mastodon';
     return 'webmention';
   }
 
