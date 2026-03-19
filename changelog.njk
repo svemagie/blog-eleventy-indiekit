@@ -13,9 +13,26 @@ withSidebar: false
 
 <div x-data="changelogApp()" x-init="init()">
 
+  {# View mode toggle #}
+  <div class="flex items-center gap-2 mb-4">
+    <span class="text-sm text-surface-600 dark:text-surface-400">Group by:</span>
+    <div class="inline-flex rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden">
+      <button
+        @click="setViewMode('repo')"
+        :class="viewMode === 'repo' ? 'bg-accent-100 dark:bg-accent-900 text-accent-700 dark:text-accent-300' : 'text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800'"
+        class="px-3 py-1.5 text-xs font-medium transition-colors"
+      >Repository</button>
+      <button
+        @click="setViewMode('type')"
+        :class="viewMode === 'type' ? 'bg-accent-100 dark:bg-accent-900 text-accent-700 dark:text-accent-300' : 'text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800'"
+        class="px-3 py-1.5 text-xs font-medium transition-colors border-l border-surface-200 dark:border-surface-700"
+      >Change Type</button>
+    </div>
+  </div>
+
   {# Tab navigation #}
   <div class="flex gap-1 mb-6 border-b border-surface-200 dark:border-surface-700 overflow-x-auto" role="tablist" aria-label="Changelog categories">
-    <template x-for="tab in tabs" :key="tab.key">
+    <template x-for="tab in activeTabs" :key="tab.key">
       <button
         @click="activeTab = tab.key"
         :class="activeTab === tab.key ? 'border-b-2 border-accent-500 text-accent-600 dark:text-accent-400' : 'text-surface-600 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300'"
@@ -60,8 +77,8 @@ withSidebar: false
               <div class="flex flex-wrap items-center gap-2 mt-2">
                 <span
                   class="text-xs px-2 py-0.5 rounded-full font-medium"
-                  :class="categoryColors[commit.category]"
-                  x-text="categoryLabels[commit.category] || commit.category"
+                  :class="activeCategoryColors[activeCommitCategory(commit)]"
+                  x-text="activeCategoryLabels[activeCommitCategory(commit)] || activeCommitCategory(commit)"
                 ></span>
                 <a :href="commit.repoUrl" target="_blank" rel="noopener"
                    class="text-xs px-2 py-0.5 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400"
@@ -109,14 +126,16 @@ withSidebar: false
 function changelogApp() {
   return {
     activeTab: 'all',
+    viewMode: 'repo',
     loading: true,
     loadingMore: false,
     commits: [],
     categories: {},
+    commitCategories: {},
     currentDays: 30,
     daysProgression: [30, 90, 180, 'all'],
 
-    tabs: [
+    repoTabs: [
       { key: 'all', label: 'All' },
       { key: 'core', label: 'Core' },
       { key: 'deployment', label: 'Deployment' },
@@ -127,7 +146,19 @@ function changelogApp() {
       { key: 'presets', label: 'Presets' },
     ],
 
-    categoryLabels: {
+    typeTabs: [
+      { key: 'all', label: 'All' },
+      { key: 'features', label: 'Features' },
+      { key: 'fixes', label: 'Fixes' },
+      { key: 'refactor', label: 'Refactor' },
+      { key: 'performance', label: 'Performance' },
+      { key: 'accessibility', label: 'Accessibility' },
+      { key: 'documentation', label: 'Docs' },
+      { key: 'chores', label: 'Chores' },
+      { key: 'tests', label: 'Tests' },
+    ],
+
+    repoCategoryLabels: {
       core: 'Core',
       deployment: 'Deployment',
       theme: 'Theme',
@@ -138,7 +169,20 @@ function changelogApp() {
       other: 'Other',
     },
 
-    categoryColors: {
+    typeCategoryLabels: {
+      features: 'Feature',
+      fixes: 'Fix',
+      performance: 'Perf',
+      accessibility: 'A11y',
+      documentation: 'Docs',
+      refactor: 'Refactor',
+      chores: 'Chore',
+      style: 'Style',
+      tests: 'Test',
+      other: 'Other',
+    },
+
+    repoCategoryColors: {
       core: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300',
       deployment: 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300',
       theme: 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300',
@@ -149,9 +193,43 @@ function changelogApp() {
       other: 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300',
     },
 
+    typeCategoryColors: {
+      features: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300',
+      fixes: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300',
+      performance: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300',
+      accessibility: 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300',
+      documentation: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300',
+      refactor: 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300',
+      chores: 'bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-300',
+      style: 'bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300',
+      tests: 'bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-300',
+      other: 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300',
+    },
+
+    get activeTabs() {
+      return this.viewMode === 'repo' ? this.repoTabs : this.typeTabs;
+    },
+
+    get activeCategoryLabels() {
+      return this.viewMode === 'repo' ? this.repoCategoryLabels : this.typeCategoryLabels;
+    },
+
+    get activeCategoryColors() {
+      return this.viewMode === 'repo' ? this.repoCategoryColors : this.typeCategoryColors;
+    },
+
     get canLoadMore() {
       const idx = this.daysProgression.indexOf(this.currentDays);
       return idx >= 0 && idx < this.daysProgression.length - 1;
+    },
+
+    setViewMode(mode) {
+      this.viewMode = mode;
+      this.activeTab = 'all';
+    },
+
+    activeCommitCategory(commit) {
+      return this.viewMode === 'repo' ? commit.category : commit.commitCategory;
     },
 
     async init() {
@@ -165,6 +243,7 @@ function changelogApp() {
         const data = await response.json();
         this.commits = data.commits || [];
         this.categories = data.categories || {};
+        this.commitCategories = data.commitCategories || {};
         this.currentDays = data.days;
       } catch (err) {
         console.error('Changelog error:', err);
@@ -184,12 +263,14 @@ function changelogApp() {
 
     filteredCommits() {
       if (this.activeTab === 'all') return this.commits;
-      return this.commits.filter(c => c.category === this.activeTab);
+      const field = this.viewMode === 'repo' ? 'category' : 'commitCategory';
+      return this.commits.filter(c => c[field] === this.activeTab);
     },
 
     getCount(tabKey) {
       if (tabKey === 'all') return this.commits.length;
-      return this.commits.filter(c => c.category === tabKey).length;
+      const field = this.viewMode === 'repo' ? 'category' : 'commitCategory';
+      return this.commits.filter(c => c[field] === tabKey).length;
     },
 
     formatDate(dateStr) {
